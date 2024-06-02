@@ -1,21 +1,18 @@
 package com.example.termproject
 
-import android.app.ActionBar.LayoutParams
 import android.content.Context
-import android.media.Image
+import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.util.TypedValue
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import kotlin.concurrent.timer
 import kotlin.random.Random
 
 // Enum 클래스 정의
@@ -25,7 +22,7 @@ enum class DiceType {
     COUNTER
 }
 
-class MainActivity : AppCompatActivity() {
+class InGameActivity : AppCompatActivity() {
     // XML Reference
     private lateinit var imgDiceAttack : ImageView
     private lateinit var imgDiceDefense : ImageView
@@ -53,12 +50,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnAttack : Button
     private lateinit var btnDefense : Button
     private lateinit var btnCounter : Button
+    private lateinit var btnGoLobby : Button
 
     private lateinit var txtOpponentResult : TextView
     private lateinit var txtPlayerResult : TextView
     private lateinit var txtRoundTimer: TextView
     private lateinit var txtHpBar : TextView
     private lateinit var txtOpponentHpBar : TextView
+    private lateinit var txtResult : TextView
+    private lateinit var txtScore : TextView
+
+    private lateinit var layoutResult : LinearLayout
 
     // dice roll result tuple(int, int, int)
     private var playerRolls: Triple<Int, Int, Int>? = null
@@ -75,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     private val roundTimeLimit: Long = 15000 // 15 seconds
 
     private var resultTimer: CountDownTimer? = null
-    private val resultTimeLimit: Long = 3500 // 3.5 seconds
+    private val resultTimeLimit: Long = 1000 //3500 // 3.5 seconds
 
     // Flow Control Boolean
     private var isWaiting: Boolean = false // 상대방이 고를 때까지 기다리는 중인가
@@ -85,7 +87,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_ingame)
 
         // ### Init Variables
         imgDiceAttack  = findViewById(R.id.ImgDiceAttack)
@@ -114,13 +116,17 @@ class MainActivity : AppCompatActivity() {
         btnAttack = findViewById(R.id.BtnAttack)
         btnDefense = findViewById(R.id.BtnDefense)
         btnCounter = findViewById(R.id.BtnCounter)
+        btnGoLobby = findViewById(R.id.BtnGoLobby)
 
         txtRoundTimer = findViewById(R.id.TxtRoundTimer)
         txtPlayerResult = findViewById(R.id.TxtPlayerResult)
         txtOpponentResult = findViewById(R.id.TxtOpponentResult)
         txtHpBar = findViewById(R.id.TxtHpBar)
         txtOpponentHpBar = findViewById(R.id.TxtOpponentHpBar)
+        txtResult = findViewById(R.id.TxtResult)
+        txtScore = findViewById(R.id.TxtScore)
 
+        layoutResult = findViewById(R.id.LayoutResult)
 
         // Hp Section
         playerHealth = 10 // Opponent's Max Health Read from firebase
@@ -140,32 +146,44 @@ class MainActivity : AppCompatActivity() {
             if (!rollDiceOnce) {
                 rollDiceOnce = true
                 playerRolls = rollDices()
+
+                // 버튼 interactive 설정
+                btnDice.isEnabled = false;
+                btnAttack.isEnabled = true;
+                btnDefense.isEnabled = true;
+                btnCounter.isEnabled = true;
+
                 onUpdateDiceImage()
             }
         }
 
         btnAttack.setOnClickListener {
-            if (!isWaiting) {
+            if (!isWaiting && rollDiceOnce) {
                 playerType = DiceType.ATTACK
-                imgDiceAttackBackground.visibility = View.VISIBLE
+                imgDiceAttackBackground.setBackgroundColor(Color.GREEN)
                 waitForOppoenent()
             }
         }
 
         btnDefense.setOnClickListener {
-            if (!isWaiting) {
+            if (!isWaiting && rollDiceOnce) {
                 playerType = DiceType.DEFENSE
-                imgDiceDefenseBackground.visibility = View.VISIBLE
+                imgDiceDefenseBackground.setBackgroundColor(Color.GREEN)
                 waitForOppoenent()
             }
         }
 
         btnCounter.setOnClickListener {
-            if (!isWaiting) {
+            if (!isWaiting && rollDiceOnce) {
                 playerType = DiceType.COUNTER
-                imgDiceCounterBackground.visibility = View.VISIBLE
+                imgDiceCounterBackground.setBackgroundColor(Color.GREEN)
                 waitForOppoenent()
             }
+        }
+
+        btnGoLobby.setOnClickListener {
+            var intent = Intent(this, LobbyActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -203,18 +221,24 @@ class MainActivity : AppCompatActivity() {
         rollDiceOnce = false;
         isWaiting = false;
 
+        // 버튼 interactive 설정
+        btnDice.isEnabled = true;
+        btnAttack.isEnabled = false;
+        btnDefense.isEnabled = false;
+        btnCounter.isEnabled = false;
+
         // 상대방 주사위 이미지 안 보이게 설정
         imgOpponentDiceAttack.setImageResource(R.drawable.hide)
         imgOpponentDiceDefense.setImageResource(R.drawable.hide)
         imgOpponentDiceCounter.setImageResource(R.drawable.hide)
 
         // 주사위 뒷 이미지 안 보이게
-        imgDiceAttackBackground.visibility = View.GONE
-        imgDiceDefenseBackground.visibility = View.GONE
-        imgDiceCounterBackground.visibility = View.GONE
-        imgOpponentDiceAttackBackground.visibility = View.GONE
-        imgOpponentDiceDefenseBackground.visibility = View.GONE
-        imgOpponentDiceCounterBackground.visibility = View.GONE
+        imgDiceAttackBackground.setBackgroundColor(Color.BLACK)
+        imgDiceDefenseBackground.setBackgroundColor(Color.BLACK)
+        imgDiceCounterBackground.setBackgroundColor(Color.BLACK)
+        imgOpponentDiceAttackBackground.setBackgroundColor(Color.BLACK)
+        imgOpponentDiceDefenseBackground.setBackgroundColor(Color.BLACK)
+        imgOpponentDiceCounterBackground.setBackgroundColor(Color.BLACK)
 
         // 결과 텍스트 초기화
         imgPlayerResult.setImageResource(R.drawable.hide)
@@ -233,7 +257,6 @@ class MainActivity : AppCompatActivity() {
         // 간단한 구현으로, 실제 게임에서는 네트워크 대기 로직이 들어가야 함
         opponentRolls = rollDices()
         opponentType = DiceType.ATTACK
-        imgOpponentDiceAttackBackground.visibility = View.VISIBLE
 
         // round timer 종료 후 게임 결과 프로세스로 넘어간다
         roundTimer?.cancel()
@@ -264,9 +287,9 @@ class MainActivity : AppCompatActivity() {
         imgOpponentDiceDefense.setImageResource(imgName[opDefenseValue - 1])
         imgOpponentDiceCounter.setImageResource(imgName[opCounterValue - 1])
         when (opponentType) {
-            DiceType.ATTACK -> imgOpponentDiceAttackBackground.visibility = View.VISIBLE
-            DiceType.DEFENSE -> imgOpponentDiceDefenseBackground.visibility = View.VISIBLE
-            DiceType.COUNTER -> imgOpponentDiceCounterBackground.visibility = View.VISIBLE
+            DiceType.ATTACK -> imgOpponentDiceAttackBackground.setBackgroundColor(Color.RED)
+            DiceType.DEFENSE -> imgOpponentDiceDefenseBackground.setBackgroundColor(Color.RED)
+            DiceType.COUNTER -> imgOpponentDiceCounterBackground.setBackgroundColor(Color.RED)
         }
 
         // Update Result
@@ -393,26 +416,21 @@ class MainActivity : AppCompatActivity() {
         imgOpponentDiceCounter.setImageResource(imgName[counterValue - 1])
 
         // Update Hp Bar
-        imgHpBackground.viewTreeObserver.addOnGlobalLayoutListener (object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                val backgroundWidth = imgHpBackground.width
-                val curWidth = (backgroundWidth * (curPlayerHealth.toFloat() / playerHealth)).toInt()
-                val layoutParams = imgCurrentHp.layoutParams
-                layoutParams.width = curWidth
-                imgCurrentHp.layoutParams = layoutParams
-                imgHpBackground.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
-        imgOpponentHpBackground.viewTreeObserver.addOnGlobalLayoutListener (object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                val backgroundWidth = imgOpponentHpBackground.width
-                val curWidth = (backgroundWidth * (curOpponentHealth.toFloat() / opponentHealth)).toInt()
-                val layoutParams = imgOpponentCurrentHp.layoutParams
-                layoutParams.width = curWidth
-                imgOpponentCurrentHp.layoutParams = layoutParams
-                imgOpponentHpBackground.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
+        imgHpBackground.post {
+            val backgroundWidth = imgHpBackground.width
+            val curWidth = (backgroundWidth * (curPlayerHealth.toFloat() / playerHealth)).toInt()
+            val layoutParams = imgCurrentHp.layoutParams
+            layoutParams.width = curWidth
+            imgCurrentHp.layoutParams = layoutParams
+        }
+
+        imgOpponentHpBackground.post {
+            val backgroundWidth = imgOpponentHpBackground.width
+            val curWidth = (backgroundWidth * (curOpponentHealth.toFloat() / opponentHealth)).toInt()
+            val layoutParams = imgOpponentCurrentHp.layoutParams
+            layoutParams.width = curWidth
+            imgOpponentCurrentHp.layoutParams = layoutParams
+        }
         txtHpBar.text = "$curPlayerHealth/$playerHealth"
         txtOpponentHpBar.text = "$curOpponentHealth/$opponentHealth"
 
@@ -455,23 +473,61 @@ class MainActivity : AppCompatActivity() {
 
     private fun exitGame() {
         // 무승부
-        if (playerHealth <= 0 && opponentHealth <= 0)
+        if (curPlayerHealth <= 0 && curOpponentHealth <= 0)
             draw();
-        else if (playerHealth <= 0)
-            win()
+        else if (curPlayerHealth <= 0)
+            defeat()
         else
-            defeat();
+            win();
     }
 
     private fun draw() {
         Log.d("LogTemp", "########### Draw!! ###########")
+
+        // Set Result Popup
+        txtResult.text = "DRAW"
+        txtScore.text = "0"
+
+        // Apply Score - firebase
+
+        showResultPopup()
     }
 
     private fun win() {
         Log.d("LogTemp", "########### Winner!! ###########")
+
+        // Set Result
+        txtResult.text = "WINNER"
+        txtScore.text = curPlayerHealth.toString()
+
+        // Apply Score - firebase
+
+
+        showResultPopup()
     }
 
     private fun defeat() {
         Log.d("LogTemp", "########### Loser... ###########")
+
+        // Set Result
+        txtResult.text = "DEFEAT"
+        txtScore.text = (-curOpponentHealth).toString()
+
+        // Apply Score - firebase
+
+        showResultPopup()
+    }
+
+    private fun showResultPopup() {
+        // layoutResult 의 width를 300dp 로 바꿔야함
+
+        layoutResult.post {
+            val layoutParams = FrameLayout.LayoutParams(
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
+            )
+            layoutResult.layoutParams.width = layoutParams.width
+            layoutResult.layoutParams.height = layoutParams.height
+        }
     }
 }

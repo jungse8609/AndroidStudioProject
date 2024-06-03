@@ -148,10 +148,10 @@ class InGameActivity : AppCompatActivity() {
                 playerRolls = rollDices()
 
                 // 버튼 interactive 설정
-                btnDice.isEnabled = false;
-                btnAttack.isEnabled = true;
-                btnDefense.isEnabled = true;
-                btnCounter.isEnabled = true;
+                btnDice.isEnabled = false; btnDice.setTextColor(Color.parseColor("#dddddd"))
+                btnAttack.isEnabled = true; btnAttack.setTextColor(Color.parseColor("#b80080"))
+                btnDefense.isEnabled = true; btnDefense.setTextColor(Color.parseColor("#00008b"))
+                btnCounter.isEnabled = true; btnCounter.setTextColor(Color.parseColor("#9011d3"))
 
                 onUpdateDiceImage()
             }
@@ -222,10 +222,10 @@ class InGameActivity : AppCompatActivity() {
         isWaiting = false;
 
         // 버튼 interactive 설정
-        btnDice.isEnabled = true;
-        btnAttack.isEnabled = false;
-        btnDefense.isEnabled = false;
-        btnCounter.isEnabled = false;
+        btnDice.isEnabled = true; btnDice.setTextColor(Color.parseColor("#333333"))
+        btnAttack.isEnabled = false; btnAttack.setTextColor(Color.parseColor("#dddddd"))
+        btnDefense.isEnabled = false; btnDefense.setTextColor(Color.parseColor("#dddddd"))
+        btnCounter.isEnabled = false; btnCounter.setTextColor(Color.parseColor("#dddddd"))
 
         // 상대방 주사위 이미지 안 보이게 설정
         imgOpponentDiceAttack.setImageResource(R.drawable.hide)
@@ -498,7 +498,7 @@ class InGameActivity : AppCompatActivity() {
 
         // Set Result
         txtResult.text = "WINNER"
-        txtScore.text = curPlayerHealth.toString()
+        txtScore.text = "원래점수 (+$curPlayerHealth)"
 
         // Apply Score - firebase
 
@@ -511,7 +511,7 @@ class InGameActivity : AppCompatActivity() {
 
         // Set Result
         txtResult.text = "DEFEAT"
-        txtScore.text = (-curOpponentHealth).toString()
+        txtScore.text = "원래점수 (-$curOpponentHealth)"
 
         // Apply Score - firebase
 

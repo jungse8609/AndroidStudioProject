@@ -80,10 +80,12 @@ class MatchingActivity : AppCompatActivity() {
     }
 
     fun makeGame(opponentId: String) {
-        roomName = opponentId + userId
-        var gameHp = 20
-        var opponentScore = 0.toLong()
-        lateinit var opponentNick: String
+        roomName = opponentId + "_" + userId + "_BattleRoom"
+        val gameHp = 20
+        var opponentScore = 0L
+        var opponentNick: String? = null
+
+        // Step 1: Fetch opponent details
         db.collection("users")
             .whereEqualTo("ID", opponentId)
             .get()
@@ -93,8 +95,22 @@ class MatchingActivity : AppCompatActivity() {
                         opponentScore = document["Score"] as Long
                         opponentNick = document["NickName"] as String
                     }
+                    // Step 2: Create room settings and proceed
+                    if (opponentNick != null) {
+                        createBattleRoom(opponentId, gameHp, opponentScore, opponentNick!!)
+                    } else {
+                        Toast.makeText(this, "Opponent nickname not found", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this, "Opponent not found", Toast.LENGTH_SHORT).show()
                 }
             }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to fetch opponent details", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun createBattleRoom(opponentId: String, gameHp: Int, opponentScore: Long, opponentNick: String) {
         val roomSetting = mapOf(
             "roomName" to roomName,
             "roundTime" to 0,
@@ -117,35 +133,43 @@ class MatchingActivity : AppCompatActivity() {
             opponentId + "Choose" to 0,
         )
         val srcId = mapOf("Opponent" to userId)
-        var opponentChk = 0.toLong()
         val opponentAccept = opponentId + "Accept"
+
         db.collection("BattleRooms").document(roomName).set(roomSetting)
             .addOnSuccessListener {
                 db.collection("BattleWait").document(opponentId).set(srcId)
                     .addOnSuccessListener {
-                        while(opponentChk==0.toLong()){
-                            db.collection("BattleRooms")
-                                .whereEqualTo("roomName", roomName)
-                                .get()
-                                .addOnSuccessListener { documents ->
-                                    if (documents != null && !documents.isEmpty) {
-                                        for (document in documents) {
-                                            opponentChk = document[opponentAccept] as Long
-                                        }
-                                    }
-                                }
-                        }
+                        // Step 3: Wait for opponent acceptance
+                        waitForOpponentAcceptance(roomName, opponentAccept)
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Failed to invite opponent", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to create battle room", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun waitForOpponentAcceptance(roomName: String, opponentAccept: String) {
+        db.collection("BattleRooms").document(roomName)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Toast.makeText(this, "Error waiting for opponent acceptance", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    val opponentChk = snapshot.getLong(opponentAccept) ?: 0L
+                    if (opponentChk == 1L) {
+                        // Step 4: Start the game
                         val intent = Intent(this, InGameActivity::class.java)
                         intent.putExtra("userId", userId)
                         intent.putExtra("roomName", roomName)
                         startActivity(intent)
                     }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "상대방 초대 실패", Toast.LENGTH_SHORT).show()
-                    }
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "결투장 진입 실패", Toast.LENGTH_SHORT).show()
+                }
             }
     }
+
 }

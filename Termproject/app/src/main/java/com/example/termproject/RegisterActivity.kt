@@ -5,13 +5,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import java.math.BigInteger
-import java.nio.charset.Charset
 import java.security.MessageDigest
 
 class RegisterActivity : AppCompatActivity() {
@@ -42,7 +38,10 @@ class RegisterActivity : AppCompatActivity() {
 
             if (nickname.isEmpty() || id.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "빈칸없이 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
-            } else {
+            } else if (nickname.length > 8) {
+                Toast.makeText(this, "닉네임을 8글자 이내로 입력해주세요.", Toast.LENGTH_SHORT).show()
+            }
+            else {
                 // Perform registration operation
                 writeFirebase(nickname, id, password)
             }

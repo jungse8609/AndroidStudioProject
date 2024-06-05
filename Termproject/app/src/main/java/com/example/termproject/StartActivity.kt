@@ -8,11 +8,12 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.termproject.databinding.ActivityStartBinding
+import com.google.firebase.firestore.FirebaseFirestore
 
 class StartActivity : AppCompatActivity() {
     // XML Variables
     lateinit var toggle: ActionBarDrawerToggle
-
+    lateinit var userId: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityStartBinding.inflate(layoutInflater)
@@ -20,7 +21,7 @@ class StartActivity : AppCompatActivity() {
 
         // Init XML
         val btnStart = binding.BtnStart
-        val userId = intent.getStringExtra("userId").toString()
+        userId = intent.getStringExtra("userId").toString()
         val userNick = intent.getStringExtra("userNick").toString()
         val userScore = intent.getLongExtra("userScore", -1)
         val myId = findViewById<TextView>(R.id.myID)
@@ -55,6 +56,15 @@ class StartActivity : AppCompatActivity() {
         builder.setMessage("종료하시겠습니까?")
             .setCancelable(false)
             .setPositiveButton("종료") { dialog, id ->
+                val db = FirebaseFirestore.getInstance()
+                db.collection("users")
+                    .whereEqualTo("ID", userId)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        for (document in documents) {
+                            document.reference.update("Status", 0)
+                        }
+                    }
                 super.onBackPressed()
             }
             .setNegativeButton("취소") { dialog, id ->

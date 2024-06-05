@@ -15,6 +15,9 @@
         android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".UserAdapter"
+            android:exported="false" />
+        <activity
             android:name=".MatchingActivity"
             android:exported="false" />
         <activity

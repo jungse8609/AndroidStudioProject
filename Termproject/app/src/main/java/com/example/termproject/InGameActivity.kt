@@ -202,9 +202,9 @@ class InGameActivity : AppCompatActivity() {
 
     // 던진 주사위 결과에 따른 ImageView 의 이미지 업데이트
     private fun onUpdateDiceImage() {
-        var attackValue = playerRolls?.first ?: 0
-        var defenseValue = playerRolls?.second ?: 0
-        var counterValue = playerRolls?.third ?: 0
+        var attackValue = playerRolls?.first ?: 1
+        var defenseValue = playerRolls?.second ?: 1
+        var counterValue = playerRolls?.third ?: 1
         imgDiceAttack.setImageResource(imgName[attackValue - 1])
         imgDiceDefense.setImageResource(imgName[defenseValue - 1])
         imgDiceCounter.setImageResource(imgName[counterValue - 1])
@@ -270,9 +270,9 @@ class InGameActivity : AppCompatActivity() {
         result = getResult()
 
         // Set Player Result
-        var attackValue = playerRolls?.first ?: 0
-        var defenseValue = playerRolls?.second ?: 0
-        var counterValue = playerRolls?.third ?: 0
+        var attackValue = playerRolls?.first ?: 1
+        var defenseValue = playerRolls?.second ?: 1
+        var counterValue = playerRolls?.third ?: 1
         when (playerType) {
             DiceType.ATTACK -> imgDiceAttack.setImageResource(imgName[attackValue - 1])
             DiceType.DEFENSE -> imgDiceDefense.setImageResource(imgName[defenseValue - 1])
@@ -280,9 +280,9 @@ class InGameActivity : AppCompatActivity() {
         }
 
         // Set Opponent Result
-        var opAttackValue = opponentRolls?.first ?: 0
-        var opDefenseValue = opponentRolls?.second ?: 0
-        var opCounterValue = opponentRolls?.third ?: 0
+        var opAttackValue = opponentRolls?.first ?: 1
+        var opDefenseValue = opponentRolls?.second ?: 1
+        var opCounterValue = opponentRolls?.third ?: 1
         imgOpponentDiceAttack.setImageResource(imgName[opAttackValue - 1])
         imgOpponentDiceDefense.setImageResource(imgName[opDefenseValue - 1])
         imgOpponentDiceCounter.setImageResource(imgName[opCounterValue - 1])
@@ -406,9 +406,9 @@ class InGameActivity : AppCompatActivity() {
         curOpponentHealth = curOpponentHealth.clamp(0, opponentHealth)
 
         // Update Opponent Dice Image
-        var attackValue = opponentRolls?.first ?: 0
-        var defenseValue = opponentRolls?.second ?: 0
-        var counterValue = opponentRolls?.third ?: 0
+        var attackValue = opponentRolls?.first ?: 1
+        var defenseValue = opponentRolls?.second ?: 1
+        var counterValue = opponentRolls?.third ?: 1
         imgOpponentDiceAttack.setImageResource(imgName[attackValue - 1])
         imgOpponentDiceDefense.setImageResource(imgName[defenseValue - 1])
         imgOpponentDiceCounter.setImageResource(imgName[counterValue - 1])

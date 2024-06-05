@@ -4,6 +4,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.termproject.databinding.MatchingRecyclerViewBinding
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MatchingActivity : AppCompatActivity() {
@@ -11,34 +15,40 @@ class MatchingActivity : AppCompatActivity() {
     private lateinit var userId : String
 
     data class User(
+        val id: String = "",
         val nick: String = "",
         val score: Long = 0,
         val status: String = ""
     )
 
+    private val userList = mutableListOf<User>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_matching)
+        var binding = MatchingRecyclerViewBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        userId = intent.getStringExtra("userId").toString()
-        //Toast.makeText(this, "$userId", Toast.LENGTH_SHORT).show()
+        // Init Variables
         db = FirebaseFirestore.getInstance()
+        userId = intent.getStringExtra("userId").toString()
+
+        // Read Users Informations From Firebase
         db.collection("users")
             .get()
             .addOnSuccessListener { documents ->
                 if (documents != null && !documents.isEmpty) {
-                    val userList = mutableListOf<User>()
                     for (document in documents) {
                         val dbUser = document.data
+                        val id = dbUser["ID"] as String
                         val nick = dbUser["NickName"] as String
                         val score = dbUser["Score"] as Long
                         val status = dbUser["Status"] as Long
                         lateinit var user: User
                         if (status == 1.toLong()){
-                            user = User(nick, score, "online")
+                            user = User(id, nick, score, "online")
                         }
                         else{
-                            user = User(nick, score, "offline")
+                            user = User(id, nick, score, "offline")
                         }
 
                         userList.add(user)
@@ -46,14 +56,22 @@ class MatchingActivity : AppCompatActivity() {
                     // score에 따라 내림차순 정렬
                     userList.sortByDescending { it.score }
 
-                    // 확인용 Toast 메시지
-                    userList.forEach { user ->
-                        Toast.makeText(this, "${user}", Toast.LENGTH_SHORT).show()
-                    }
+                    // UserList를 Recycler View 에 띄워줘
+                    binding.matchingRecyclingView.layoutManager = LinearLayoutManager(this)
+                    binding.matchingRecyclingView.adapter = UserAdapter(userList)
+                    binding.matchingRecyclingView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
                 }
             }
             .addOnFailureListener {
                 Toast.makeText(this, "DB 연결 실패", Toast.LENGTH_SHORT).show()
             }
     }
+    /*
+    override fun onItemClick(position: Int) {
+        // 클릭된 항목의 인덱스를 통해 해당 항목의 데이터를 가져오는 코드
+        val clickedUser = userList[position]
+        val clickedUserId = clickedUser.id // 이것이 해당 항목의 ID입니다.
+        Toast.makeText(this, "Clicked item ID: $clickedUserId", Toast.LENGTH_SHORT).show()
+    }
+    */
 }

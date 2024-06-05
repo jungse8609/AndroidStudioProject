@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -193,11 +194,11 @@ class MatchingActivity : AppCompatActivity() {
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                    val opponentId = snapshot.getString(userId)
+                    val opponentId = snapshot.getString("Opponent")
+
                     val roomName = userId + "_" + opponentId + "_BattleRoom"
 
                     // 팝업 띄우기
-
 
                     db.collection("BattleRooms")
                         .document(roomName)
@@ -209,6 +210,7 @@ class MatchingActivity : AppCompatActivity() {
                                 intent.putExtra("userId", userId)
                                 intent.putExtra("opponentId", opponentId)
                                 intent.putExtra("roomName", roomName)
+
                                 startActivity(intent)
                             }
                         }

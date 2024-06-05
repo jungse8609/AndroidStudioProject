@@ -182,7 +182,7 @@ class InGameActivity : AppCompatActivity() {
         }
 
         btnGoLobby.setOnClickListener {
-            var intent = Intent(this, MainMenuActivity::class.java)
+            var intent = Intent(this, StartActivity::class.java)
             startActivity(intent)
         }
     }
@@ -380,8 +380,6 @@ class InGameActivity : AppCompatActivity() {
                 else if (playerCounterValue < opponentCounterValue)
                     playerResult = opponentCounterValue * (-1)
             }
-
-
         }
 
         return Pair(playerResult, opponentResult)

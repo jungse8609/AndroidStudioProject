@@ -68,8 +68,15 @@ class LoginActivity : AppCompatActivity() {
                         val encryptedPW = md5(pws)
                         if (pw != null && encryptedPW==pw){
                             Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this, MainMenuActivity::class.java)
-                            intent.putExtra("userID", ids)
+                            document.reference.update("Status", 1)
+//                                .addOnSuccessListener {
+//                                    Toast.makeText(this, "상태 업데이트 성공", Toast.LENGTH_SHORT).show()
+//                                }
+//                                .addOnFailureListener { e ->
+//                                    Toast.makeText(this, "상태 업데이트 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+//                                }
+                            val intent = Intent(this, StartActivity::class.java)
+                            intent.putExtra("userId", ids)
                             startActivity(intent)
                             finish()
                         }

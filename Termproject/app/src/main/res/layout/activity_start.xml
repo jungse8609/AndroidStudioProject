@@ -4,26 +4,32 @@
     android:layout_height="match_parent"
     android:id="@+id/drawer_layout">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@color/black"/>
+
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="16dp"
-            android:scrollbars="vertical" />
+            android:layout_height="50dp"/>
 
         <Button
-            android:id="@+id/button_open_drawer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Open Drawer"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="16dp" />
-    </RelativeLayout>
+            android:id="@+id/BtnStart"
+            android:layout_width="250dp"
+            android:layout_height="80dp"
+            android:background="#00ff0000"
+            android:text="게임 시작"
+            android:textSize="50sp"
+            android:fontFamily="@font/neodgm"/>
+
+
+    </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"

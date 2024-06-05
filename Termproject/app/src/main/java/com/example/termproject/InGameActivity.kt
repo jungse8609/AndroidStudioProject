@@ -77,8 +77,8 @@ class InGameActivity : AppCompatActivity() {
     // User Nickname and Score
     private lateinit var playerNick : String
     private lateinit var OpponentNick : String
-    private var playerScore : Int = 0
-    private var opponentScore : Int = 0
+    private var playerScore : Long = 0
+    private var opponentScore : Long = 0
 
     // dice roll result tuple(int, int, int)
     private var playerRolls: Triple<Int, Int, Int>? = null
@@ -86,10 +86,10 @@ class InGameActivity : AppCompatActivity() {
     private var playerType: DiceType = DiceType.ATTACK
     private var opponentType: DiceType = DiceType.ATTACK
     // Health
-    private var playerHealth : Int = 10
-    private var opponentHealth : Int = 10
-    private var curPlayerHealth : Int = 10
-    private var curOpponentHealth : Int = 10
+    private var playerHealth : Long = 10
+    private var opponentHealth : Long = 10
+    private var curPlayerHealth : Long = 10
+    private var curOpponentHealth : Long = 10
 
     private var roundTimer: CountDownTimer? = null
     private val roundTimeLimit: Long = 15000 // 15 seconds
@@ -159,11 +159,11 @@ class InGameActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     playerNick = document.getString(playerId + "Nick") ?: "null"
-                    playerScore = document.getLong(playerId + "Score")!!.toInt()
-                    playerHealth = document.getLong(playerId + "HP")!!.toInt()
+                    playerScore = document.getLong(playerId + "Score") ?: 0
+                    playerHealth = document.getLong(playerId + "HP") ?: 0
                     OpponentNick = document.getString(opponentId + "Nick") ?: "null"
-                    opponentScore = document.getLong(opponentId + "Score")!!.toInt()
-                    opponentHealth = document.getLong(opponentId + "HP")!!.toInt()
+                    opponentScore = document.getLong(opponentId + "Score") ?: 0
+                    opponentHealth = document.getLong(opponentId + "HP") ?: 0
                 }
             }
 
@@ -530,6 +530,14 @@ class InGameActivity : AppCompatActivity() {
         }
     }
 
+    fun Long.clamp(min: Long, max: Long): Long {
+        return when {
+            this < min -> min
+            this > max -> max
+            else -> this
+        }
+    }
+
     // 다음 턴으로 진행하는 함수입니다.
     private fun proceedToNextTurn() {
         // 타이머 취소
@@ -723,7 +731,7 @@ class InGameActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { document ->
                 if (document != null) {
-                    document.reference.update("Score", (playerScore - curOpponentHealth).clamp(0, Int.MAX_VALUE))
+                    document.reference.update("Score", (playerScore - curOpponentHealth).clamp(0, Long.MAX_VALUE))
                 }
             }
 

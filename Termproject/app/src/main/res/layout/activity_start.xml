@@ -2,8 +2,9 @@
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/drawer_layout">
+    android:id="@+id/drawer">
 
+    <!-- Main content layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -27,18 +28,87 @@
             android:text="게임 시작"
             android:textSize="50sp"
             android:fontFamily="@font/neodgm"/>
-
-
     </LinearLayout>
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
+    <!-- Drawer content layout -->
+    <LinearLayout
+        android:layout_width="300dp"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true">
+        android:background="@color/white"
+        android:padding="16dp">
 
-        <!-- Menu items can be added here if needed -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="start">
+            <TextView
+                android:id="@+id/mypageText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="50dp"
+                android:gravity="center"
+                android:text="마이페이지" />
+        </LinearLayout>
 
-    </com.google.android.material.navigation.NavigationView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="start">
+            <TextView
+                android:id="@+id/myNickText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30dp"
+                android:text="닉네임: " />
+            <TextView
+                android:id="@+id/myNick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30dp"
+                android:text=""/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="start">
+            <TextView
+                android:id="@+id/myIDText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30dp"
+                android:text="아이디: "/>
+            <TextView
+                android:id="@+id/myID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30dp"
+                android:text=""/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="start">
+            <TextView
+                android:id="@+id/myScoreText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30dp"
+                android:text="점수: "/>
+            <TextView
+                android:id="@+id/myScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30dp"
+                android:text=""/>
+        </LinearLayout>
+    </LinearLayout>
+
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -56,9 +56,16 @@ class MatchingActivity : AppCompatActivity() {
                     // score에 따라 내림차순 정렬
                     userList.sortByDescending { it.score }
 
+                    val onItemClick: (String) -> Unit = { text ->
+                        Toast.makeText(this, "Clicked: $text", Toast.LENGTH_SHORT).show()
+                    }
+
+                    binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick)
+
+
                     // UserList를 Recycler View 에 띄워줘
                     binding.matchingRecyclingView.layoutManager = LinearLayoutManager(this)
-                    binding.matchingRecyclingView.adapter = UserAdapter(userList)
+                    binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick)
                     binding.matchingRecyclingView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
                 }
             }
@@ -66,12 +73,5 @@ class MatchingActivity : AppCompatActivity() {
                 Toast.makeText(this, "DB 연결 실패", Toast.LENGTH_SHORT).show()
             }
     }
-    /*
-    override fun onItemClick(position: Int) {
-        // 클릭된 항목의 인덱스를 통해 해당 항목의 데이터를 가져오는 코드
-        val clickedUser = userList[position]
-        val clickedUserId = clickedUser.id // 이것이 해당 항목의 ID입니다.
-        Toast.makeText(this, "Clicked item ID: $clickedUserId", Toast.LENGTH_SHORT).show()
-    }
-    */
+
 }

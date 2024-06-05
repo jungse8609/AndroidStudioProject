@@ -5,14 +5,31 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.termproject.databinding.ItemUserBinding
 
-class UserAdapter(private val userList: List<MatchingActivity.User>) :
+class UserAdapter(private val userList: List<MatchingActivity.User>, private val onItemClick: (String) -> Unit) :
     RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
-    class UserViewHolder(private val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class UserViewHolder(private val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
+        /*init {
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val item = userList[position]
+                    onItemClick(item.nick)
+                }
+            }
+        }*/
+
         fun bind(user: MatchingActivity.User) {
             binding.ItemNickname.text = user.nick
             binding.ItemScore.text = user.score.toString()
             binding.ItemStatus.text = user.status
+            binding.ItemFight.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val item = userList[position]
+                    onItemClick(item.nick)
+                }
+            }
         }
     }
 

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">termproject</string>
+    <string name="drawer_opened">마이페이지</string>
+    <string name="drawer_closed">마이페이지</string>
 </resources>

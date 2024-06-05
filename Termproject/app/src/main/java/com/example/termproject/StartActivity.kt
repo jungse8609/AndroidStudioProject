@@ -2,36 +2,50 @@ package com.example.termproject
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
+import android.view.MenuItem
 import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
+import com.example.termproject.databinding.ActivityStartBinding
 
 class StartActivity : AppCompatActivity() {
     // XML Variables
-    private lateinit var btnStart: Button
-
-    private lateinit var userId : String
+    lateinit var toggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_start)
+        val binding = ActivityStartBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Init XML
-        btnStart = findViewById(R.id.BtnStart)
+        val btnStart = binding.BtnStart
+        val userId = intent.getStringExtra("userId").toString()
+        val userNick = intent.getStringExtra("userNick").toString()
+        val userScore = intent.getLongExtra("userScore", -1)
+        val myId = findViewById<TextView>(R.id.myID)
+        val myNick = findViewById<TextView>(R.id.myNick)
+        val myScore = findViewById<TextView>(R.id.myScore)
+
+        myId.setText(userId)
+        myNick.setText(userNick)
+        myScore.setText(userScore.toString())
+
+        toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_opened, R.string.drawer_closed)
+        binding.drawer.addDrawerListener(toggle)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toggle.syncState()
 
         btnStart.setOnClickListener {
-            userId = intent.getStringExtra("userId").toString()
-            //Toast.makeText(this, "$userId", Toast.LENGTH_SHORT).show()
-
             val intent = Intent(this, MatchingActivity::class.java)
             intent.putExtra("userId", userId)
             startActivity(intent)
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (toggle.onOptionsItemSelected(item)) {
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

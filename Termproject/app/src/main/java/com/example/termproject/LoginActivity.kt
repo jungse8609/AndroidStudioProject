@@ -6,10 +6,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import java.math.BigInteger
 import java.security.MessageDigest
 
@@ -76,7 +74,11 @@ class LoginActivity : AppCompatActivity() {
 //                                    Toast.makeText(this, "상태 업데이트 실패: ${e.message}", Toast.LENGTH_SHORT).show()
 //                                }
                             val intent = Intent(this, StartActivity::class.java)
+                            val userNick = user["NickName"] as String
+                            val userScore = user["Score"] as Long
                             intent.putExtra("userId", ids)
+                            intent.putExtra("userNick", userNick)
+                            intent.putExtra("userScore", userScore)
                             startActivity(intent)
                             finish()
                         }

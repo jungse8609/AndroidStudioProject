@@ -12,14 +12,20 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.random.Random
 
 // Enum 클래스 정의
-enum class DiceType {
-    ATTACK,
-    DEFENSE,
-    COUNTER
+enum class DiceType(val value: Int) {
+    ATTACK(0),
+    DEFENSE(1),
+    COUNTER(2);
+
+    companion object {
+        fun fromInt(value: Int) = values().firstOrNull { it.value == value } ?: 0
+    }
 }
 
 class InGameActivity : AppCompatActivity() {
@@ -61,6 +67,18 @@ class InGameActivity : AppCompatActivity() {
     private lateinit var txtScore : TextView
 
     private lateinit var layoutResult : LinearLayout
+
+    private lateinit var db: FirebaseFirestore
+
+    // User Id
+    private lateinit var playerId : String
+    private lateinit var opponentId : String
+    private lateinit var roomName : String
+    // User Nickname and Score
+    private lateinit var playerNick : String
+    private lateinit var OpponentNick : String
+    private var playerScore : Int = 0
+    private var opponentScore : Int = 0
 
     // dice roll result tuple(int, int, int)
     private var playerRolls: Triple<Int, Int, Int>? = null
@@ -128,9 +146,27 @@ class InGameActivity : AppCompatActivity() {
 
         layoutResult = findViewById(R.id.LayoutResult)
 
-        // Hp Section
-        playerHealth = 10 // Opponent's Max Health Read from firebase
-        opponentHealth = 10 // Opponent's Max Health Read from firebase
+        // Firebase 에서 read 해와야함 Hp Section
+        db = FirebaseFirestore.getInstance()
+
+        playerId = intent.getStringExtra("userId").toString()
+        opponentId = intent.getStringExtra("opponentId").toString()
+        roomName = intent.getStringExtra("roomName").toString()
+
+        db.collection("BattleRooms")
+            .document(roomName)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    playerNick = document.getString(playerId + "Nick") ?: "null"
+                    playerScore = document.getLong(playerId + "Score")!!.toInt()
+                    playerHealth = document.getLong(playerId + "HP")!!.toInt()
+                    OpponentNick = document.getString(opponentId + "Nick") ?: "null"
+                    opponentScore = document.getLong(opponentId + "Score")!!.toInt()
+                    opponentHealth = document.getLong(opponentId + "HP")!!.toInt()
+                }
+            }
+
         curPlayerHealth= playerHealth
         curOpponentHealth = opponentHealth
         imgCurrentHp.layoutParams.width = imgHpBackground.layoutParams.width
@@ -160,6 +196,18 @@ class InGameActivity : AppCompatActivity() {
         btnAttack.setOnClickListener {
             if (!isWaiting && rollDiceOnce) {
                 playerType = DiceType.ATTACK
+
+                // firebase에 주사위 type write
+                db.collection("BattleRooms")
+                    .document(roomName)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            document.reference.update(playerId + "Choose", DiceType.ATTACK)
+                            document.reference.update(playerId + "Round", 1)
+                        }
+                    }
+
                 imgDiceAttackBackground.setBackgroundColor(Color.GREEN)
                 waitForOppoenent()
             }
@@ -168,6 +216,18 @@ class InGameActivity : AppCompatActivity() {
         btnDefense.setOnClickListener {
             if (!isWaiting && rollDiceOnce) {
                 playerType = DiceType.DEFENSE
+
+                // firebase에 주사위 type write
+                db.collection("BattleRooms")
+                    .document(roomName)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            document.reference.update(playerId + "Choose", DiceType.DEFENSE)
+                            document.reference.update(playerId + "Round", 1)
+                        }
+                    }
+
                 imgDiceDefenseBackground.setBackgroundColor(Color.GREEN)
                 waitForOppoenent()
             }
@@ -176,14 +236,25 @@ class InGameActivity : AppCompatActivity() {
         btnCounter.setOnClickListener {
             if (!isWaiting && rollDiceOnce) {
                 playerType = DiceType.COUNTER
+
+                // firebase에 주사위 type write
+                db.collection("BattleRooms")
+                    .document(roomName)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            document.reference.update(playerId + "Choose", DiceType.COUNTER)
+                            document.reference.update(playerId + "Round", 1)
+                        }
+                    }
+
                 imgDiceCounterBackground.setBackgroundColor(Color.GREEN)
                 waitForOppoenent()
             }
         }
 
         btnGoLobby.setOnClickListener {
-            var intent = Intent(this, StartActivity::class.java)
-            startActivity(intent)
+            finish()
         }
     }
 
@@ -192,6 +263,19 @@ class InGameActivity : AppCompatActivity() {
         val attackRoll = rollDice()
         val defenseRoll = rollDice()
         val counterRoll = rollDice()
+
+        // firebase에 주사위 값 write
+        db.collection("BattleRooms")
+            .document(roomName)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    document.reference.update(playerId + "Attack", attackRoll)
+                    document.reference.update(playerId + "Defense", attackRoll)
+                    document.reference.update(playerId + "Counter", attackRoll)
+                }
+            }
+
         return Triple(attackRoll, defenseRoll, counterRoll)
     }
 
@@ -216,6 +300,17 @@ class InGameActivity : AppCompatActivity() {
             exitGame()
             return
         }
+
+        // 선택 여부 초기화
+        db.collection("BattleRooms")
+            .document(roomName)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    document.reference.update(playerId + "Round", 0)
+                    document.reference.update(opponentId + "Round", 0)
+                }
+            }
 
         // Control 제어 State 들 초기화
         rollDiceOnce = false;
@@ -255,61 +350,103 @@ class InGameActivity : AppCompatActivity() {
         isWaiting = true
 
         // 간단한 구현으로, 실제 게임에서는 네트워크 대기 로직이 들어가야 함
-        opponentRolls = rollDices()
-        opponentType = DiceType.ATTACK
+        var opponentAttack : Int = 0
+        var opponentDefense : Int = 0
+        var opponentCounter : Int = 0
+        var opponentChoose : Int = 0
 
-        // round timer 종료 후 게임 결과 프로세스로 넘어간다
-        roundTimer?.cancel()
-        showResult()
+        db.collection("BattleRooms").document(roomName)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Toast.makeText(this, "Error waiting for opponent acceptance", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    // 상대방의 round = true 인지 확인
+                    val opponentRound = snapshot.getLong("opponentRound") ?: 0L
+                    if (opponentRound == 1L) {
+                        opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
+                        opponentDefense = snapshot.getLong(opponentId + "Defense")!!.toInt()
+                        opponentCounter = snapshot.getLong(opponentId + "Counter")!!.toInt()
+                        opponentChoose = snapshot.getLong(opponentId + "Choose")!!.toInt()
+                        opponentRolls = rollDices()
+                        when (opponentChoose) {
+                            0 -> opponentType = DiceType.ATTACK
+                            1 -> opponentType = DiceType.DEFENSE
+                            2 -> opponentType = DiceType.COUNTER
+                        }
+
+                        // round timer 종료 후 게임 결과 프로세스로 넘어간다
+                        roundTimer?.cancel()
+                        showResult()
+                    }
+                }
+            }
     }
 
     private lateinit var result : Pair<Int, Int>
 
     private fun showResult() {
-        // Calculate Result
-        result = getResult()
+        // 여기서 상대방의 선택이 끝나거나 타이머가 종료할 때까지 기다려야해
+        db.collection("BattleRooms").document(roomName)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Toast.makeText(this, "Error waiting for opponent acceptance", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
 
-        // Set Player Result
-        var attackValue = playerRolls?.first ?: 1
-        var defenseValue = playerRolls?.second ?: 1
-        var counterValue = playerRolls?.third ?: 1
-        when (playerType) {
-            DiceType.ATTACK -> imgDiceAttack.setImageResource(imgName[attackValue - 1])
-            DiceType.DEFENSE -> imgDiceDefense.setImageResource(imgName[defenseValue - 1])
-            DiceType.COUNTER -> imgDiceCounter.setImageResource(imgName[counterValue - 1])
-        }
+                if (snapshot != null && snapshot.exists()) {
+                    // 상대방의 round = true 인지 확인
+                    val opponentRound = snapshot.getLong("opponentRound") ?: 0L
+                    if (opponentRound == 1L) {
+                        // Calculate Result
+                        result = getResult()
 
-        // Set Opponent Result
-        var opAttackValue = opponentRolls?.first ?: 1
-        var opDefenseValue = opponentRolls?.second ?: 1
-        var opCounterValue = opponentRolls?.third ?: 1
-        imgOpponentDiceAttack.setImageResource(imgName[opAttackValue - 1])
-        imgOpponentDiceDefense.setImageResource(imgName[opDefenseValue - 1])
-        imgOpponentDiceCounter.setImageResource(imgName[opCounterValue - 1])
-        when (opponentType) {
-            DiceType.ATTACK -> imgOpponentDiceAttackBackground.setBackgroundColor(Color.RED)
-            DiceType.DEFENSE -> imgOpponentDiceDefenseBackground.setBackgroundColor(Color.RED)
-            DiceType.COUNTER -> imgOpponentDiceCounterBackground.setBackgroundColor(Color.RED)
-        }
+                        // Set Player Result
+                        var attackValue = playerRolls?.first ?: 1
+                        var defenseValue = playerRolls?.second ?: 1
+                        var counterValue = playerRolls?.third ?: 1
+                        when (playerType) {
+                            DiceType.ATTACK -> imgDiceAttack.setImageResource(imgName[attackValue - 1])
+                            DiceType.DEFENSE -> imgDiceDefense.setImageResource(imgName[defenseValue - 1])
+                            DiceType.COUNTER -> imgDiceCounter.setImageResource(imgName[counterValue - 1])
+                        }
 
-        // Update Result
-        when (playerType) {
-            DiceType.ATTACK -> imgPlayerResult.setImageResource(imgName[attackValue - 1])
-            DiceType.DEFENSE -> imgPlayerResult.setImageResource(imgName[defenseValue - 1])
-            DiceType.COUNTER -> imgPlayerResult.setImageResource(imgName[counterValue - 1])
-        }
+                        // Set Opponent Result
+                        var opAttackValue = opponentRolls?.first ?: 1
+                        var opDefenseValue = opponentRolls?.second ?: 1
+                        var opCounterValue = opponentRolls?.third ?: 1
+                        imgOpponentDiceAttack.setImageResource(imgName[opAttackValue - 1])
+                        imgOpponentDiceDefense.setImageResource(imgName[opDefenseValue - 1])
+                        imgOpponentDiceCounter.setImageResource(imgName[opCounterValue - 1])
+                        when (opponentType) {
+                            DiceType.ATTACK -> imgOpponentDiceAttackBackground.setBackgroundColor(Color.RED)
+                            DiceType.DEFENSE -> imgOpponentDiceDefenseBackground.setBackgroundColor(Color.RED)
+                            DiceType.COUNTER -> imgOpponentDiceCounterBackground.setBackgroundColor(Color.RED)
+                        }
 
-        when (opponentType) {
-            DiceType.ATTACK -> imgOppoenentResult.setImageResource(imgName[opAttackValue - 1])
-            DiceType.DEFENSE -> imgOppoenentResult.setImageResource(imgName[opDefenseValue - 1])
-            DiceType.COUNTER -> imgOppoenentResult.setImageResource(imgName[opCounterValue - 1])
-        }
+                        // Update Result
+                        when (playerType) {
+                            DiceType.ATTACK -> imgPlayerResult.setImageResource(imgName[attackValue - 1])
+                            DiceType.DEFENSE -> imgPlayerResult.setImageResource(imgName[defenseValue - 1])
+                            DiceType.COUNTER -> imgPlayerResult.setImageResource(imgName[counterValue - 1])
+                        }
 
-        txtPlayerResult.text = result.first.toString()
-        txtOpponentResult.text = result.second.toString()
+                        when (opponentType) {
+                            DiceType.ATTACK -> imgOppoenentResult.setImageResource(imgName[opAttackValue - 1])
+                            DiceType.DEFENSE -> imgOppoenentResult.setImageResource(imgName[opDefenseValue - 1])
+                            DiceType.COUNTER -> imgOppoenentResult.setImageResource(imgName[opCounterValue - 1])
+                        }
 
-        // Finished() -> proceedToNextTurn
-        startResultTimer()
+                        txtPlayerResult.text = result.first.toString()
+                        txtOpponentResult.text = result.second.toString()
+
+                        // Finished() -> proceedToNextTurn
+                        startResultTimer()
+                    }
+                }
+            }
     }
 
     private fun getResult() : Pair<Int, Int> {
@@ -405,6 +542,17 @@ class InGameActivity : AppCompatActivity() {
         curPlayerHealth = curPlayerHealth.clamp(0, playerHealth)
         curOpponentHealth = curOpponentHealth.clamp(0, opponentHealth)
 
+        // firebase에 update 된 HP를 write
+        db.collection("BattleRooms")
+            .document(roomName)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    document.reference.update(playerId + "HP", curPlayerHealth)
+                    document.reference.update(opponentId + "HP", curOpponentHealth)
+                }
+            }
+
         // Update Opponent Dice Image
         var attackValue = opponentRolls?.first ?: 1
         var defenseValue = opponentRolls?.second ?: 1
@@ -463,6 +611,54 @@ class InGameActivity : AppCompatActivity() {
                 // Don't Selected Any Dice
                 if (!isWaiting) {
                     playerRolls = rollDices()
+                    var randomChoose = Random.nextInt(0, 2) // 1부터 6까지의 랜덤 숫자를 반환합니다
+                    when (randomChoose) {
+                        0 -> playerType = DiceType.ATTACK
+                        1 -> playerType = DiceType.DEFENSE
+                        2 -> playerType = DiceType.COUNTER
+                    }
+                    db.collection("BattleRooms")
+                        .document(roomName)
+                        .get()
+                        .addOnSuccessListener { document ->
+                            if (document != null) {
+                                document.reference.update(playerId + "Choose", randomChoose)
+                                document.reference.update(playerId + "Round", 1)
+                            }
+                        }
+
+                    var opponentAttack : Int = 0
+                    var opponentDefense : Int = 0
+                    var opponentCounter : Int = 0
+                    var opponentChoose : Int = 0
+
+                    db.collection("BattleRooms").document(roomName)
+                        .addSnapshotListener { snapshot, e ->
+                            if (e != null) {
+                                return@addSnapshotListener
+                            }
+
+                            if (snapshot != null && snapshot.exists()) {
+                                // 상대방의 round = true 인지 확인
+                                val opponentRound = snapshot.getLong("opponentRound") ?: 0L
+                                if (opponentRound == 1L) {
+                                    opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
+                                    opponentDefense = snapshot.getLong(opponentId + "Defense")!!.toInt()
+                                    opponentCounter = snapshot.getLong(opponentId + "Counter")!!.toInt()
+                                    opponentChoose = snapshot.getLong(opponentId + "Choose")!!.toInt()
+                                    opponentRolls = rollDices()
+                                    when (opponentChoose) {
+                                        0 -> opponentType = DiceType.ATTACK
+                                        1 -> opponentType = DiceType.DEFENSE
+                                        2 -> opponentType = DiceType.COUNTER
+                                    }
+
+                                    // round timer 종료 후 게임 결과 프로세스로 넘어간다
+                                    roundTimer?.cancel()
+                                    showResult()
+                                }
+                            }
+                        }
                 }
                 showResult()
             }
@@ -508,8 +704,30 @@ class InGameActivity : AppCompatActivity() {
         Log.d("LogTemp", "########### Loser... ###########")
 
         // Set Result
+        var playerScore : Int = 0
+
+        db.collection("BattleRooms")
+            .document(roomName)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    playerScore = document.getLong(playerId + "Score")!!.toInt()
+                }
+            }
+
         txtResult.text = "DEFEAT"
-        txtScore.text = "원래점수 (-$curOpponentHealth)"
+        txtScore.text = "$playerScore (-$curOpponentHealth)"
+
+        db.collection("users")
+            .document(playerId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    document.reference.update("Score", (playerScore - curOpponentHealth).clamp(0, Int.MAX_VALUE))
+                }
+            }
+
+        curOpponentHealth.clamp(0, opponentHealth)
 
         // Apply Score - firebase
 
@@ -517,8 +735,6 @@ class InGameActivity : AppCompatActivity() {
     }
 
     private fun showResultPopup() {
-        // layoutResult 의 width를 300dp 로 바꿔야함
-
         layoutResult.post {
             val layoutParams = FrameLayout.LayoutParams(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),

@@ -39,7 +39,6 @@ class MatchingActivity : AppCompatActivity() {
         userId = intent.getStringExtra("userId").toString()
         userNick = intent.getStringExtra("userNick").toString()
 
-        // Start Timer Waiting Opponent's Chanllenge
         waitForOpponentChallenge()
 
         // Read Users Informations From Firebase
@@ -126,17 +125,19 @@ class MatchingActivity : AppCompatActivity() {
             userId + "Score" to userScore,
             userId + "Nick" to userNick,
             userId + "Attack" to 0,
-            userId + "Shield" to 0,
+            userId + "Defense" to 0,
             userId + "Counter" to 0,
             userId + "Choose" to 0,
+            userId + "Round" to 0,
             opponentId + "Accept" to 0,
             opponentId + "HP" to gameHp,
             opponentId + "Score" to opponentScore,
             opponentId + "Nick" to opponentNick,
             opponentId + "Attack" to 0,
-            opponentId + "Shield" to 0,
+            opponentId + "Defense" to 0,
             opponentId + "Counter" to 0,
             opponentId + "Choose" to 0,
+            opponentId + "Round" to 0,
         )
         val srcId = mapOf("Opponent" to userId)
         val opponentAccept = opponentId + "Accept"
@@ -146,7 +147,7 @@ class MatchingActivity : AppCompatActivity() {
                 db.collection("BattleWait").document(opponentId).set(srcId)
                     .addOnSuccessListener {
                         // Step 3: Wait for opponent acceptance
-                        waitForOpponentAcceptance(roomName, opponentAccept)
+                        waitForOpponentAcceptance(roomName, opponentAccept, opponentId)
                     }
                     .addOnFailureListener {
                         Toast.makeText(this, "Failed to invite opponent", Toast.LENGTH_SHORT).show()
@@ -157,7 +158,7 @@ class MatchingActivity : AppCompatActivity() {
             }
     }
 
-    private fun waitForOpponentAcceptance(roomName: String, opponentAccept: String) {
+    private fun waitForOpponentAcceptance(roomName: String, opponentAccept: String, opponentId: String) {
         db.collection("BattleRooms").document(roomName)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
@@ -171,6 +172,7 @@ class MatchingActivity : AppCompatActivity() {
                         // Step 4: Start the game
                         val intent = Intent(this, InGameActivity::class.java)
                         intent.putExtra("userId", userId)
+                        intent.putExtra("opponentId", opponentId)
                         intent.putExtra("roomName", roomName)
                         startActivity(intent)
                     }
@@ -191,20 +193,21 @@ class MatchingActivity : AppCompatActivity() {
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                    val ChallengeId = snapshot.getString(userId)
-                    val ChallengeRoom = userId + "_" + ChallengeId + "_BattleRoom"
+                    val opponentId = snapshot.getString(userId)
+                    val roomName = userId + "_" + opponentId + "_BattleRoom"
 
                     // 팝업 띄우기
 
 
                     db.collection("BattleRooms")
-                        .document(ChallengeRoom)
+                        .document(roomName)
                         .get()
                         .addOnSuccessListener { document ->
                             if (document != null) {
                                 document.reference.update(userId + "Accept", 1)
                                 val intent = Intent(this, InGameActivity::class.java)
                                 intent.putExtra("userId", userId)
+                                intent.putExtra("opponentId", opponentId)
                                 intent.putExtra("roomName", roomName)
                                 startActivity(intent)
                             }

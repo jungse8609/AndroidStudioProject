@@ -3,6 +3,7 @@ package com.example.termproject
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,12 +12,6 @@ import com.example.termproject.databinding.MatchingRecyclerViewBinding
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MatchingActivity : AppCompatActivity() {
-    private lateinit var db: FirebaseFirestore
-    private lateinit var userId: String
-    private lateinit var userNick: String
-    private var userScore = 0
-    private lateinit var roomName: String
-
     data class User(
         val id: String = "",
         val nick: String = "",
@@ -24,7 +19,15 @@ class MatchingActivity : AppCompatActivity() {
         val status: String = ""
     )
 
+    private lateinit var db: FirebaseFirestore
+    private lateinit var userId: String
+    private lateinit var userNick: String
+    private lateinit var roomName: String
+    private var userScore = 0
     private val userList = mutableListOf<User>()
+
+    private var waitTimer: CountDownTimer? = null
+    private val waitTimeLimit: Long = Long.MAX_VALUE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +38,9 @@ class MatchingActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         userId = intent.getStringExtra("userId").toString()
         userNick = intent.getStringExtra("userNick").toString()
+
+        // Start Timer Waiting Opponent's Chanllenge
+        waitChallenge()
 
         // Read Users Informations From Firebase
         db.collection("users")
@@ -147,5 +153,23 @@ class MatchingActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "결투장 진입 실패", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    // 상대방 수락 올 때까지 대기
+    private fun waitChallenge() {
+        waitTimer = object : CountDownTimer(waitTimeLimit, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                // 결투 신청 왔는지 확인하기
+
+                // 왔다면 timer 종료
+                if (false)
+                    waitTimer?.cancel()
+            }
+
+            override fun onFinish() {
+                // 결투 신청 올 때까지 계속 wait
+                waitChallenge()
+            }
+        }.start()
     }
 }

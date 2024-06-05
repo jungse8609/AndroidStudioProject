@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.termproject.databinding.ActivityStartBinding
 
@@ -26,9 +27,9 @@ class StartActivity : AppCompatActivity() {
         val myNick = findViewById<TextView>(R.id.myNick)
         val myScore = findViewById<TextView>(R.id.myScore)
 
-        myId.setText(userId)
-        myNick.setText(userNick)
-        myScore.setText(userScore.toString())
+        myId.text = userId
+        myNick.text = userNick
+        myScore.text = userScore.toString()
 
         toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_opened, R.string.drawer_closed)
         binding.drawer.addDrawerListener(toggle)
@@ -47,5 +48,19 @@ class StartActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("종료하시겠습니까?")
+            .setCancelable(false)
+            .setPositiveButton("종료") { dialog, id ->
+                super.onBackPressed()
+            }
+            .setNegativeButton("취소") { dialog, id ->
+                dialog.dismiss()
+            }
+        val alert = builder.create()
+        alert.show()
     }
 }

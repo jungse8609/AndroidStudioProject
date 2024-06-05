@@ -40,6 +40,8 @@ class StartActivity : AppCompatActivity() {
         btnStart.setOnClickListener {
             val intent = Intent(this, MatchingActivity::class.java)
             intent.putExtra("userId", userId)
+            intent.putExtra("userNick", userNick)
+            intent.putExtra("userScore", userScore)
             startActivity(intent)
         }
     }

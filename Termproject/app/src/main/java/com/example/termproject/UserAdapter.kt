@@ -27,7 +27,7 @@ class UserAdapter(private val userList: List<MatchingActivity.User>, private val
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val item = userList[position]
-                    onItemClick(item.nick)
+                    onItemClick(item.id)
                 }
             }
         }

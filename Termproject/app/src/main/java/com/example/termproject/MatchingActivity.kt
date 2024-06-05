@@ -12,7 +12,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class MatchingActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
-    private lateinit var userId : String
+    private lateinit var userId: String
+    private lateinit var userNick: String
+    private var userScore = 0
+    private lateinit var roomName: String
 
     data class User(
         val id: String = "",
@@ -31,6 +34,7 @@ class MatchingActivity : AppCompatActivity() {
         // Init Variables
         db = FirebaseFirestore.getInstance()
         userId = intent.getStringExtra("userId").toString()
+        userNick = intent.getStringExtra("userNick").toString()
 
         // Read Users Informations From Firebase
         db.collection("users")
@@ -57,7 +61,8 @@ class MatchingActivity : AppCompatActivity() {
                     userList.sortByDescending { it.score }
 
                     val onItemClick: (String) -> Unit = { text ->
-                        Toast.makeText(this, "Clicked: $text", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this, "Clicked: $text", Toast.LENGTH_SHORT).show()
+                        makeGame(text)
                     }
 
                     binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick)
@@ -74,4 +79,73 @@ class MatchingActivity : AppCompatActivity() {
             }
     }
 
+    fun makeGame(opponentId: String) {
+        roomName = opponentId + userId
+        var gameHp = 20
+        var opponentScore = 0.toLong()
+        lateinit var opponentNick: String
+        db.collection("users")
+            .whereEqualTo("ID", opponentId)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents != null && !documents.isEmpty) {
+                    for (document in documents) {
+                        opponentScore = document["Score"] as Long
+                        opponentNick = document["NickName"] as String
+                    }
+                }
+            }
+        val roomSetting = mapOf(
+            "roomName" to roomName,
+            "roundTime" to 0,
+            "resultTime" to 0,
+            userId + "Accept" to 1,
+            userId + "HP" to gameHp,
+            userId + "Score" to userScore,
+            userId + "Nick" to userNick,
+            userId + "Attack" to 0,
+            userId + "Shield" to 0,
+            userId + "Counter" to 0,
+            userId + "Choose" to 0,
+            opponentId + "Accept" to 0,
+            opponentId + "HP" to gameHp,
+            opponentId + "Score" to opponentScore,
+            opponentId + "Nick" to opponentNick,
+            opponentId + "Attack" to 0,
+            opponentId + "Shield" to 0,
+            opponentId + "Counter" to 0,
+            opponentId + "Choose" to 0,
+        )
+        val srcId = mapOf("Opponent" to userId)
+        var opponentChk = 0.toLong()
+        val opponentAccept = opponentId + "Accept"
+        db.collection("BattleRooms").document(roomName).set(roomSetting)
+            .addOnSuccessListener {
+                db.collection("BattleWait").document(opponentId).set(srcId)
+                    .addOnSuccessListener {
+                        while(opponentChk==0.toLong()){
+                            db.collection("BattleRooms")
+                                .whereEqualTo("roomName", roomName)
+                                .get()
+                                .addOnSuccessListener { documents ->
+                                    if (documents != null && !documents.isEmpty) {
+                                        for (document in documents) {
+                                            opponentChk = document[opponentAccept] as Long
+                                        }
+                                    }
+                                }
+                        }
+                        val intent = Intent(this, InGameActivity::class.java)
+                        intent.putExtra("userId", userId)
+                        intent.putExtra("roomName", roomName)
+                        startActivity(intent)
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "상대방 초대 실패", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "결투장 진입 실패", Toast.LENGTH_SHORT).show()
+            }
+    }
 }

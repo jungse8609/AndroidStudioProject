@@ -40,7 +40,7 @@ class MatchingActivity : AppCompatActivity() {
         userNick = intent.getStringExtra("userNick").toString()
 
         // Start Timer Waiting Opponent's Chanllenge
-        waitChallenge()
+        waitForOpponentChallenge()
 
         // Read Users Informations From Firebase
         db.collection("users")
@@ -178,11 +178,48 @@ class MatchingActivity : AppCompatActivity() {
             }
     }
 
+    private fun waitForOpponentChallenge() {
+        db.collection("BattleWait").document(userId)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Toast.makeText(
+                        this,
+                        "Error waiting for opponent acceptance",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    val ChallengeId = snapshot.getString(userId)
+                    val ChallengeRoom = userId + "_" + ChallengeId + "_BattleRoom"
+
+                    // 팝업 띄우기
+
+
+                    db.collection("BattleRooms")
+                        .document(ChallengeRoom)
+                        .get()
+                        .addOnSuccessListener { document ->
+                            if (document != null) {
+                                document.reference.update(userId + "Accept", 1)
+                                val intent = Intent(this, InGameActivity::class.java)
+                                intent.putExtra("userId", userId)
+                                intent.putExtra("roomName", roomName)
+                                startActivity(intent)
+                            }
+                        }
+                }
+            }
+    }
+
+
     // 상대방 수락 올 때까지 대기
     private fun waitChallenge() {
         waitTimer = object : CountDownTimer(waitTimeLimit, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 // 결투 신청 왔는지 확인하기
+
 
                 // 왔다면 timer 종료
                 if (false)

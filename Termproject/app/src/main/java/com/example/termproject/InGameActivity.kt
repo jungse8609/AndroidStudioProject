@@ -182,7 +182,7 @@ class InGameActivity : AppCompatActivity() {
         }
 
         btnGoLobby.setOnClickListener {
-            var intent = Intent(this, LobbyActivity::class.java)
+            var intent = Intent(this, MainMenuActivity::class.java)
             startActivity(intent)
         }
     }

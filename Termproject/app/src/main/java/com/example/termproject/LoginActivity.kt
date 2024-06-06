@@ -76,9 +76,11 @@ class LoginActivity : AppCompatActivity() {
                             val intent = Intent(this, StartActivity::class.java)
                             val userNick = user["NickName"] as String
                             val userScore = user["Score"] as Long
+                            val userImg = user["ProfileImage"] as Long
                             intent.putExtra("userId", ids)
                             intent.putExtra("userNick", userNick)
                             intent.putExtra("userScore", userScore)
+                            intent.putExtra("profileImage", userImg.toInt())
                             startActivity(intent)
                             finish()
                         }

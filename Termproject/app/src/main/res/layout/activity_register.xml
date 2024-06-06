@@ -37,6 +37,20 @@
         android:padding="12dp"
         android:layout_marginBottom="16dp"/>
 
+    <!-- Profile Picture Selection -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Profile Picture"
+        android:layout_marginBottom="8dp"
+        android:padding="12dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginBottom="16dp"/>
+
     <!-- Horizontal LinearLayout for Back and Complete buttons -->
     <LinearLayout
         android:layout_width="match_parent"

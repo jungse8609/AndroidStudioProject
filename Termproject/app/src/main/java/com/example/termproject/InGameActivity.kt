@@ -171,9 +171,23 @@ class InGameActivity : AppCompatActivity() {
 
                     curPlayerHealth= playerHealth
                     curOpponentHealth = opponentHealth
-                    imgCurrentHp.layoutParams.width = imgHpBackground.layoutParams.width
-                    imgOpponentCurrentHp.layoutParams.width = imgOpponentHpBackground.layoutParams.width
 
+                    // Update Hp Bar
+                    imgHpBackground.post {
+                        val backgroundWidth = imgHpBackground.width
+                        val curWidth = (backgroundWidth * (curPlayerHealth.toFloat() / playerHealth)).toInt()
+                        val layoutParams = imgCurrentHp.layoutParams
+                        layoutParams.width = curWidth
+                        imgCurrentHp.layoutParams = layoutParams
+                    }
+
+                    imgOpponentHpBackground.post {
+                        val backgroundWidth = imgOpponentHpBackground.width
+                        val curWidth = (backgroundWidth * (curOpponentHealth.toFloat() / opponentHealth)).toInt()
+                        val layoutParams = imgOpponentCurrentHp.layoutParams
+                        layoutParams.width = curWidth
+                        imgOpponentCurrentHp.layoutParams = layoutParams
+                    }
                     txtHpBar.text = "$curPlayerHealth/$playerHealth"
                     txtOpponentHpBar.text = "$curOpponentHealth/$opponentHealth"
 
@@ -181,8 +195,6 @@ class InGameActivity : AppCompatActivity() {
                     gameplay();
                 }
             }
-
-
 
         btnDice.setOnClickListener {
             if (!rollDiceOnce) {
@@ -268,8 +280,6 @@ class InGameActivity : AppCompatActivity() {
                             waitForOppoenent()
                         }
                     }
-
-
             }
         }
 

@@ -60,7 +60,7 @@ class StartActivity : AppCompatActivity() {
         }
 
         btnStart.setOnClickListener {
-            val intent = Intent(this, MatchingActivity::class.java)
+            val intent = Intent(this, MatchingRecyclingView::class.java)
             intent.putExtra("userId", userId)
             intent.putExtra("userNick", userNick)
             intent.putExtra("userScore", userScore)

@@ -8,17 +8,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.termproject.databinding.MatchingRecyclerViewBinding
+import com.example.termproject.databinding.MatchingRecyclingViewBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Timer
 import java.util.TimerTask
 
-class MatchingActivity : AppCompatActivity() {
+class MatchingRecyclingView : AppCompatActivity() {
     data class User(
+        var profile: Long = 0,
         val id: String = "",
         val nick: String = "",
         val score: Long = 0,
-        val status: String = ""
+        val status: Long = 0
     )
 
     private lateinit var db: FirebaseFirestore
@@ -33,7 +34,7 @@ class MatchingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var binding = MatchingRecyclerViewBinding.inflate(layoutInflater)
+        var binding = MatchingRecyclingViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // Init Variables
@@ -52,14 +53,15 @@ class MatchingActivity : AppCompatActivity() {
                         val dbUser = document.data
                         val id = dbUser["ID"] as String
                         val nick = dbUser["NickName"] as String
+                        var profile = dbUser["ProfileImage"] as Long
                         val score = dbUser["Score"] as Long
                         val status = dbUser["Status"] as Long
                         lateinit var user: User
-                        if (status == 1.toLong()){
-                            user = User(id, nick, score, "online")
+                        if (status == 1L){
+                            user = User(profile, id, nick, score, 1)
                         }
                         else{
-                            user = User(id, nick, score, "offline")
+                            user = User(profile, id, nick, score, 0)
                         }
 
                         userList.add(user)
@@ -175,18 +177,18 @@ class MatchingActivity : AppCompatActivity() {
                         db.collection("BattleWait").document(opponentId).delete()
                             .addOnSuccessListener {
                                 runOnUiThread {
-                                    Toast.makeText(this@MatchingActivity, "Room deleted due to timeout", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@MatchingRecyclingView, "Room deleted due to timeout", Toast.LENGTH_SHORT).show()
                                 }
                             }
                             .addOnFailureListener { e ->
                                 runOnUiThread {
-                                    Toast.makeText(this@MatchingActivity, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
                                 }
                             }
                     }
                     .addOnFailureListener { e ->
                         runOnUiThread {
-                            Toast.makeText(this@MatchingActivity, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
                         }
                     }
             }
@@ -228,12 +230,12 @@ class MatchingActivity : AppCompatActivity() {
                         db.collection("BattleRooms").document(roomName).delete()
                             .addOnSuccessListener {
                                 runOnUiThread {
-                                    Toast.makeText(this@MatchingActivity, "상대방이 거절했습니다", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@MatchingRecyclingView, "상대방이 거절했습니다", Toast.LENGTH_SHORT).show()
                                 }
                             }
                             .addOnFailureListener { e ->
                                 runOnUiThread {
-                                    Toast.makeText(this@MatchingActivity, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
                                 }
                             }
                     }
@@ -289,7 +291,7 @@ class MatchingActivity : AppCompatActivity() {
                                 db.collection("BattleWait").document(userId).delete()
                                     .addOnSuccessListener {
                                         runOnUiThread {
-                                            Toast.makeText(this@MatchingActivity, "거절했습니다", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(this@MatchingRecyclingView, "거절했습니다", Toast.LENGTH_SHORT).show()
                                             db.collection("BattleRooms")
                                                 .document(roomName)
                                                 .get()
@@ -302,7 +304,7 @@ class MatchingActivity : AppCompatActivity() {
                                     }
                                     .addOnFailureListener { e ->
                                         runOnUiThread {
-                                            Toast.makeText(this@MatchingActivity, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
                                         }
                                     }
                             }

@@ -12,10 +12,35 @@
         android:orientation="horizontal"
         android:layout_gravity="center"
         android:gravity="center"
-        android:background="#333333">
+        android:background="#dddddd">
 
         <TextView
-            android:id="@+id/ItemNickname"
+            android:id="@+id/ItemRank"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="1"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:fontFamily="@font/neodgm"
+            android:paddingTop="18dp"/>
+
+        <ImageView
+            android:id="@+id/ItemProfile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/profile1"
+            android:background="@drawable/button_white_border"
+            android:padding="2dp"/>
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/ItemNick"
             android:layout_width="150dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
@@ -26,6 +51,10 @@
             android:textAlignment="center"
             android:fontFamily="@font/neodgm"
             android:paddingTop="12dp"/>
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
 
         <TextView
             android:id="@+id/ItemScore"
@@ -40,18 +69,19 @@
             android:textSize="18sp"
             android:paddingTop="12dp"/>
 
-        <TextView
-            android:id="@+id/ItemStatus"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="Offline"
-            android:textSize="18sp"
-            android:textColor="#555555"
-            android:textAlignment="center"
-            android:fontFamily="@font/neodgm"
-            android:paddingTop="12dp"/>
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+
+        <ImageView
+            android:id="@+id/ItemConnect"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/grey_dot"/>
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
 
         <TextView
             android:id="@+id/ItemFight"
@@ -61,7 +91,7 @@
             android:gravity="center"
             android:text="결투"
             android:textSize="18sp"
-            android:textColor="#ffffff"
+            android:textColor="#555555"
             android:textAlignment="center"
             android:fontFamily="@font/neodgm"
             android:paddingTop="12dp"/>

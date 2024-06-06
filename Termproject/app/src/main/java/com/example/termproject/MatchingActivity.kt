@@ -7,7 +7,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.termproject.databinding.MatchingRecyclerViewBinding
@@ -305,7 +304,7 @@ class MatchingActivity : AppCompatActivity() {
                                         runOnUiThread {
                                             Toast.makeText(this@MatchingActivity, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
                                         }
-                                            }
+                                    }
                             }
                         }
                         dialog.show(fragmentManager, "AcceptDeclineDialog")
@@ -313,5 +312,6 @@ class MatchingActivity : AppCompatActivity() {
                 }
             }
     }
+
 
 }

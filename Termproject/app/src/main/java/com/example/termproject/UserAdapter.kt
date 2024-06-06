@@ -5,24 +5,21 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.termproject.databinding.ItemUserBinding
 
-class UserAdapter(private val userList: List<MatchingActivity.User>, private val onItemClick: (String) -> Unit) :
+class UserAdapter(private val userList: List<MatchingRecyclingView.User>, private val onItemClick: (String) -> Unit) :
     RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
-    inner class UserViewHolder(private val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
-        /*init {
-            itemView.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val item = userList[position]
-                    onItemClick(item.nick)
-                }
-            }
-        }*/
+    private val sortedUserList = userList.sortedByDescending { it.score }
 
-        fun bind(user: MatchingActivity.User) {
-            binding.ItemNickname.text = user.nick
+    inner class UserViewHolder(private val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(user: MatchingRecyclingView.User) {
+            binding.ItemRank.text = getRank(user).toString()
+            //binding.ItemProfile = user.profile
+            binding.ItemNick.text = user.nick
             binding.ItemScore.text = user.score.toString()
-            binding.ItemStatus.text = user.status
+            when (user.status) {
+                0L -> binding.ItemConnect.setImageResource(R.drawable.grey_dot)
+                1L -> binding.ItemConnect.setImageResource(R.drawable.green_dot)
+            }
             binding.ItemFight.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
@@ -31,6 +28,10 @@ class UserAdapter(private val userList: List<MatchingActivity.User>, private val
                 }
             }
         }
+    }
+
+    private fun getRank(user: MatchingRecyclingView.User) : Int {
+        return sortedUserList.indexOfFirst { it.id == user.id } + 1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {

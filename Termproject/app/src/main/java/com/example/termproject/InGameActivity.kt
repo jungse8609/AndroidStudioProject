@@ -350,6 +350,11 @@ class InGameActivity : AppCompatActivity() {
         imgOpponentDiceDefense.setImageResource(R.drawable.question_blue)
         imgOpponentDiceCounter.setImageResource(R.drawable.question_purple)
 
+        // 내 주사위 자리는 이미지를 제거하여 초기화
+        imgDiceAttack.setImageResource(0)
+        imgDiceDefense.setImageResource(0)
+        imgDiceCounter.setImageResource(0)
+
         // 주사위의 테두리 검은색으로 초기화
         imgDiceAttack.setBackgroundResource(R.drawable.button_white_border)
         imgDiceDefense.setBackgroundResource(R.drawable.button_white_border)

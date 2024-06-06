@@ -355,19 +355,19 @@ class InGameActivity : AppCompatActivity() {
 
     private var listenerWaitOpponent: ListenerRegistration? = null
 
-    // 상대방의 주사위 결과를 기다리는 함수 (여기서는 단순히 랜덤 값을 설정합니다)
+    // 상대방의 주사위 결과를 기다리는 함수
     private fun waitForOppoenent() {
         isWaiting = true
 
-        listenerWaitOpponent  = db.collection("BattleRooms").document(roomName)
+        listenerWaitOpponent?.remove()
+        listenerWaitOpponent = db.collection("BattleRooms").document(roomName)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    Toast.makeText(this, "Error waiting for opponent acceptance", Toast.LENGTH_SHORT).show()
                     return@addSnapshotListener
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                    // 상대방의 선택했는지 = true 인지 확인
+                    // 상대방의 round = true 인지 확인
                     val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
                     val playerRound = snapshot.getLong(playerId + "Round") ?: 0L
                     if (opponentRound == 1L && playerRound == 1L) {
@@ -377,7 +377,8 @@ class InGameActivity : AppCompatActivity() {
                         var opponentAttack : Long = snapshot.getLong(opponentId + "Attack") ?: 0L
                         var opponentDefense : Long = snapshot.getLong(opponentId + "Defense") ?: 0L
                         var opponentCounter : Long = snapshot.getLong(opponentId + "Counter") ?: 0L
-                        var opponentChoose : Long = snapshot.getLong(opponentId + "Choose") ?: 0L
+                        var opponentChoose = snapshot.getLong(opponentId + "Choose")
+
                         opponentRolls = Triple(opponentAttack, opponentDefense, opponentCounter)
                         when (opponentChoose) {
                             0L -> opponentType = DiceType.ATTACK
@@ -387,6 +388,7 @@ class InGameActivity : AppCompatActivity() {
 
                         // round timer 종료 후 게임 결과 프로세스로 넘어간다
                         roundTimer?.cancel()
+
                         showResult()
                     }
                 }
@@ -638,8 +640,6 @@ class InGameActivity : AppCompatActivity() {
         }.start()
     }
 
-    private var listenerStartRound: ListenerRegistration? = null
-
     // 라운드 타이머 시작 함수
     private fun startRoundTimer() {
         roundTimer = object : CountDownTimer(roundTimeLimit, 1000) {
@@ -668,74 +668,11 @@ class InGameActivity : AppCompatActivity() {
                             }
                         }
 
-                    listenerStartRound = db.collection("BattleRooms").document(roomName)
-                        .addSnapshotListener { snapshot, e ->
-                            if (e != null) {
-                                return@addSnapshotListener
-                            }
-
-                            if (snapshot != null && snapshot.exists()) {
-                                // 상대방의 round = true 인지 확인
-                                val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
-                                val playerRound = snapshot.getLong(playerId + "Round") ?: 0L
-                                if (opponentRound == 1L && playerRound == 1L) {
-                                    // 리스너 제거
-                                    listenerStartRound?.remove()
-
-                                    var opponentAttack : Long = snapshot.getLong(opponentId + "Attack") ?: 0
-                                    var opponentDefense : Long = snapshot.getLong(opponentId + "Defense") ?: 0
-                                    var opponentCounter : Long = snapshot.getLong(opponentId + "Counter") ?: 0
-                                    var opponentChoose : Long = snapshot.getLong(opponentId + "Choose") ?: 0
-
-                                    opponentRolls = Triple(opponentAttack, opponentDefense, opponentCounter)
-                                    when (opponentChoose) {
-                                        0L -> opponentType = DiceType.ATTACK
-                                        1L -> opponentType = DiceType.DEFENSE
-                                        2L -> opponentType = DiceType.COUNTER
-                                    }
-
-                                    // round timer 종료 후 게임 결과 프로세스로 넘어간다
-                                    roundTimer?.cancel()
-                                    showResult()
-                                }
-                            }
-                        }
+                    waitForOppoenent()
                 }
                 // 본인은 선택했지만 상대방이 선택을 못한채 타이머가 끝남
                 else {
-                    listenerStartRound = db.collection("BattleRooms").document(roomName)
-                        .addSnapshotListener { snapshot, e ->
-                            if (e != null) {
-                                return@addSnapshotListener
-                            }
-
-                            if (snapshot != null && snapshot.exists()) {
-                                // 상대방의 round = true 인지 확인
-                                val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
-                                val playerRound = snapshot.getLong(playerId + "Round") ?: 0L
-                                if (opponentRound == 1L && playerRound == 1L) {
-                                    // 리스너 제거
-                                    listenerStartRound?.remove()
-
-                                    var opponentAttack : Long = snapshot.getLong(opponentId + "Attack") ?: 0L
-                                    var opponentDefense : Long = snapshot.getLong(opponentId + "Defense") ?: 0L
-                                    var opponentCounter : Long = snapshot.getLong(opponentId + "Counter") ?: 0L
-                                    var opponentChoose = snapshot.getLong(opponentId + "Choose")
-
-                                    opponentRolls = Triple(opponentAttack, opponentDefense, opponentCounter)
-                                    when (opponentChoose) {
-                                        0L -> opponentType = DiceType.ATTACK
-                                        1L -> opponentType = DiceType.DEFENSE
-                                        2L -> opponentType = DiceType.COUNTER
-                                    }
-
-                                    // round timer 종료 후 게임 결과 프로세스로 넘어간다
-                                    roundTimer?.cancel()
-
-                                    showResult()
-                                }
-                            }
-                        }
+                    waitForOppoenent()
                 }
             }
         }.start()

@@ -653,6 +653,8 @@ class InGameActivity : AppCompatActivity() {
                     var opponentCounter : Int = 0
                     var opponentChoose : Int = 0
 
+                    var flag = false
+
                     db.collection("BattleRooms").document(roomName)
                         .addSnapshotListener { snapshot, e ->
                             if (e != null) {
@@ -662,7 +664,9 @@ class InGameActivity : AppCompatActivity() {
                             if (snapshot != null && snapshot.exists()) {
                                 // 상대방의 round = true 인지 확인
                                 val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
-                                if (opponentRound == 1L) {
+                                if (opponentRound == 1L && !flag) {
+
+                                    flag = true
 
                                     opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
                                     opponentDefense = snapshot.getLong(opponentId + "Defense")!!.toInt()
@@ -690,6 +694,8 @@ class InGameActivity : AppCompatActivity() {
                     var opponentCounter : Int = 0
                     var opponentChoose : Int = 0
 
+                    var flag = false
+
                     db.collection("BattleRooms").document(roomName)
                         .addSnapshotListener { snapshot, e ->
                             if (e != null) {
@@ -699,7 +705,9 @@ class InGameActivity : AppCompatActivity() {
                             if (snapshot != null && snapshot.exists()) {
                                 // 상대방의 round = true 인지 확인
                                 val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
-                                if (opponentRound == 1L) {
+                                if (opponentRound == 1L && !flag) {
+
+                                    flag = true
 
                                     opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
                                     opponentDefense = snapshot.getLong(opponentId + "Defense")!!.toInt()

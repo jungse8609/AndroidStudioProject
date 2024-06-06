@@ -437,7 +437,7 @@ class InGameActivity : AppCompatActivity() {
         else
             txtPlayerResult.text = result.first.toString()
 
-        if (result.first >= 0)
+        if (result.second >= 0)
             txtOpponentResult.text = "+" + result.second.toString()
         else
             txtOpponentResult.text = result.second.toString()
@@ -763,10 +763,10 @@ class InGameActivity : AppCompatActivity() {
         }
         else if (curPlayerHealth <= 0) {
             resultScore = (playerScore - curOpponentHealth).clamp(0, Long.MAX_VALUE)
-            showResultPopup("DEFEAT" , "$playerScore -> $resultScore)", resultScore)
+            showResultPopup("DEFEAT" , "$playerScore -> $resultScore", resultScore)
         }
         else {
-            resultScore = (playerScore + curOpponentHealth).clamp(0, Long.MAX_VALUE)
+            resultScore = (playerScore + curPlayerHealth).clamp(0, Long.MAX_VALUE)
             showResultPopup("WIN" , "$playerScore -> $resultScore", resultScore)
         }
 
@@ -794,7 +794,7 @@ class InGameActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     document.reference.update("Score", score)
-                    Log.d("LogTemp", "score")
+                    Log.d("LogTemp", score.toString())
                 }
                 else
                     Log.d("LogTemp", "점수계산안됨")

@@ -5,6 +5,6 @@
 
     <!-- 초록색 테두리 -->
     <stroke
-        android:width="10dp"
-        android:color="#cc0000"/>
+        android:width="50dp"
+        android:color="#550000"/>
 </shape>

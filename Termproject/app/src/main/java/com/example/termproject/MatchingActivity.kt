@@ -271,7 +271,7 @@ class MatchingActivity : AppCompatActivity() {
                         val dialog = AcceptDeclineDialogFragment(opponentId) { accepted ->
                             if (accepted) {
                                 hasAccepted = true
-                                
+
                                 db.collection("BattleRooms")
                                     .document(roomName)
                                     .get()

@@ -139,10 +139,10 @@ class MatchingRecyclingView : AppCompatActivity() {
 
             // 결투 버튼 클릭 이벤트
             val onItemClick: (String) -> Unit = { text ->
-                //makeGame(text)
+                makeGame(text)
 
                 // 상대방 수락 대기 팝업창 띄워야함
-                showChallengePopup(text)
+                //showChallengePopup(text)
             }
 
             userList.clear()

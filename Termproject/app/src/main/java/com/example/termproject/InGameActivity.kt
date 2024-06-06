@@ -77,7 +77,7 @@ class InGameActivity : AppCompatActivity() {
     private lateinit var acceptId: String
     // User Nickname and Score
     private lateinit var playerNick : String
-    private lateinit var OpponentNick : String
+    private lateinit var opponentNick : String
     private var playerScore : Long = 0
     private var opponentScore : Long = 0
     // dice roll result tuple(int, int, int)
@@ -169,7 +169,7 @@ class InGameActivity : AppCompatActivity() {
                     playerScore = document.getLong(playerId + "Score") ?: 0
                     playerHealth = document.getLong(playerId + "HP") ?: 0
 
-                    OpponentNick = document.getString(opponentId + "Nick") ?: "null"
+                    opponentNick = document.getString(opponentId + "Nick") ?: "null"
                     opponentScore = document.getLong(opponentId + "Score") ?: 0
                     opponentHealth = document.getLong(opponentId + "HP") ?: 0
 
@@ -197,6 +197,9 @@ class InGameActivity : AppCompatActivity() {
 
                     txtPlayerType.text = ""
                     txtOpponentType.text = ""
+
+                    txtPlayerNick.text = playerNick
+                    txtOpponentNick.text = opponentNick
 
                     // ### Round Play while someone died
                     gameplay();

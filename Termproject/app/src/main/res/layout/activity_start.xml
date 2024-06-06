@@ -9,24 +9,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:src="@color/black"/>
+        android:gravity="center"
+        android:background="@drawable/startimg"> <!-- 배경화면 이미지 설정 -->
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="50dp"/>
+            android:layout_height="600dp"/>
 
         <Button
             android:id="@+id/BtnStart"
             android:layout_width="250dp"
             android:layout_height="80dp"
-            android:background="#00ff0000"
+            android:background="#00000000"
             android:text="게임 시작"
             android:textSize="50sp"
+            android:textColor="@color/white"
             android:fontFamily="@font/neodgm"/>
     </LinearLayout>
 
@@ -36,7 +33,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_gravity="start"
-        android:background="@color/white"
+        android:background="@color/black"
         android:padding="16dp">
 
         <LinearLayout
@@ -48,6 +45,7 @@
                 android:id="@+id/mypageText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:textSize="50dp"
                 android:gravity="center"
                 android:text="마이페이지" />
@@ -62,6 +60,7 @@
                 android:id="@+id/profileImage"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
+                android:gravity="center"
                 android:padding="8dp"/>
         </LinearLayout>
 
@@ -74,12 +73,14 @@
                 android:id="@+id/myNickText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:textSize="30dp"
                 android:text="닉네임: " />
             <TextView
                 android:id="@+id/myNick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:textSize="30dp"
                 android:text=""/>
         </LinearLayout>
@@ -93,12 +94,14 @@
                 android:id="@+id/myIDText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:textSize="30dp"
                 android:text="아이디: "/>
             <TextView
                 android:id="@+id/myID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:textSize="30dp"
                 android:text=""/>
         </LinearLayout>
@@ -112,12 +115,14 @@
                 android:id="@+id/myScoreText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:textSize="30dp"
                 android:text="점수: "/>
             <TextView
                 android:id="@+id/myScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:textSize="30dp"
                 android:text=""/>
         </LinearLayout>
@@ -133,8 +138,10 @@
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#000000"
             android:text="로그아웃"
-            android:textSize="18sp"
+            android:textSize="24sp"
+            android:textColor="@color/white"
             android:layout_marginTop="16dp"
             android:padding="12dp"/>
     </LinearLayout>

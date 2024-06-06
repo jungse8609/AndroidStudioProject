@@ -262,10 +262,24 @@ class MatchingActivity : AppCompatActivity() {
                                     }
                             } else {
                                 // 거절한 경우 처리
-                                db.collection("BattleWait").document(userId)
-                                    .update("status", "declined")
+                                db.collection("BattleRooms").document(roomName).delete()
                                     .addOnSuccessListener {
-                                        Toast.makeText(this, "Challenge declined", Toast.LENGTH_SHORT).show()
+                                        db.collection("BattleWait").document(userId).delete()
+                                            .addOnSuccessListener {
+                                                runOnUiThread {
+                                                    Toast.makeText(this@MatchingActivity, "상대방이 거절함", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                            .addOnFailureListener { e ->
+                                                runOnUiThread {
+                                                    Toast.makeText(this@MatchingActivity, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                    }
+                                    .addOnFailureListener { e ->
+                                        runOnUiThread {
+                                            Toast.makeText(this@MatchingActivity, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
+                                        }
                                     }
                             }
                         }

@@ -122,6 +122,15 @@ class StartActivity : AppCompatActivity() {
             .update("Status", 0)
             .addOnSuccessListener {
                 startActivity(Intent(this, LoginActivity::class.java))
+                val db = FirebaseFirestore.getInstance()
+                db.collection("users")
+                    .whereEqualTo("ID", userId)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        for (document in documents) {
+                            document.reference.update("Status", 0)
+                        }
+                    }
                 finish()
             }
             .addOnFailureListener {
@@ -134,5 +143,27 @@ class StartActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+    override fun onBackPressed() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("종료하시겠습니까?")
+            .setCancelable(false)
+            .setPositiveButton("종료") { dialog, id ->
+                val db = FirebaseFirestore.getInstance()
+                db.collection("users")
+                    .whereEqualTo("ID", userId)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        for (document in documents) {
+                            document.reference.update("Status", 0)
+                        }
+                    }
+                super.onBackPressed()
+            }
+            .setNegativeButton("취소") { dialog, id ->
+                dialog.dismiss()
+            }
+        val alert = builder.create()
+        alert.show()
     }
 }

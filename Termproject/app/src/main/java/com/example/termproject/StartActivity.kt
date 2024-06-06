@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,15 @@ class StartActivity : AppCompatActivity() {
     lateinit var toggle: ActionBarDrawerToggle
     lateinit var userId: String
     lateinit var profileImageView: ImageView
+    private val profileImages = arrayOf(
+        R.drawable.profile1,
+        R.drawable.profile2,
+        R.drawable.profile3,
+        R.drawable.profile4,
+        R.drawable.profile5,
+        R.drawable.profile6,
+        R.drawable.profile7
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +54,10 @@ class StartActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toggle.syncState()
 
+        profileImageView.setOnClickListener {
+            showProfileImageDialog()
+        }
+
         btnStart.setOnClickListener {
             val intent = Intent(this, MatchingActivity::class.java)
             intent.putExtra("userId", userId)
@@ -51,6 +65,50 @@ class StartActivity : AppCompatActivity() {
             intent.putExtra("userScore", userScore)
             startActivity(intent)
         }
+    }
+
+    private fun showProfileImageDialog() {
+        val builder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.dialog_profile_images, null)
+        builder.setView(dialogLayout)
+        builder.setTitle("프로필 사진 선택")
+
+        val imageViews = arrayOf(
+            dialogLayout.findViewById<ImageView>(R.id.image1),
+            dialogLayout.findViewById<ImageView>(R.id.image2),
+            dialogLayout.findViewById<ImageView>(R.id.image3),
+            dialogLayout.findViewById<ImageView>(R.id.image4),
+            dialogLayout.findViewById<ImageView>(R.id.image5),
+            dialogLayout.findViewById<ImageView>(R.id.image6),
+            dialogLayout.findViewById<ImageView>(R.id.image7)
+        )
+
+        val dialog = builder.create()
+
+        imageViews.forEachIndexed { index, imageView ->
+            imageView.setImageResource(profileImages[index])
+            imageView.setOnClickListener {
+                val selectedImage = profileImages[index]
+                profileImageView.setImageResource(selectedImage)
+                updateProfileImageInDatabase(selectedImage)
+                dialog.dismiss() // Close the dialog when an image is selected
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun updateProfileImageInDatabase(selectedImage: Int) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("users").document(userId)
+            .update("ProfileImage", selectedImage)
+            .addOnSuccessListener {
+                Toast.makeText(this, "프로필 사진이 변경되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "프로필 사진 변경 실패", Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

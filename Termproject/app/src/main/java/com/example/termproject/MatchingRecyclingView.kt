@@ -3,15 +3,24 @@ package com.example.termproject
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.termproject.databinding.ItemUserBinding
 import com.example.termproject.databinding.MatchingRecyclingViewBinding
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Timer
 import java.util.TimerTask
+import java.util.zip.Inflater
 
 class MatchingRecyclingView : AppCompatActivity() {
     data class User(
@@ -32,10 +41,17 @@ class MatchingRecyclingView : AppCompatActivity() {
     private lateinit var waitTimer: CountDownTimer
     private val waitTimeLimit: Long = 10000 // 10 seconds wait time
 
+    private lateinit var binding : MatchingRecyclingViewBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var binding = MatchingRecyclingViewBinding.inflate(layoutInflater)
+        binding = MatchingRecyclingViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Backspace Button on App Bar
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+        }
 
         // Init Variables
         db = FirebaseFirestore.getInstance()
@@ -69,7 +85,6 @@ class MatchingRecyclingView : AppCompatActivity() {
                     // score에 따라 내림차순 정렬
                     userList.sortByDescending { it.score }
 
-
                     // 결투 버튼 클릭 이벤트
                     val onItemClick: (String) -> Unit = { text ->
                         //makeGame(text)
@@ -78,18 +93,67 @@ class MatchingRecyclingView : AppCompatActivity() {
                         showChallengePopup(text)
                     }
 
-                    binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick)
-
-
                     // UserList를 Recycler View 에 띄워줘
                     binding.matchingRecyclingView.layoutManager = LinearLayoutManager(this)
                     binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick)
                     binding.matchingRecyclingView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+
+                    monitoring()
                 }
             }
             .addOnFailureListener {
                 Toast.makeText(this, "DB 연결 실패", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    fun monitoring() {
+        // Firestore에서 사용자 상태를 실시간으로 모니터링하는 코루틴 실행
+        db.collection("users").addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w("LogTemp", "Listen failed", e)
+                return@addSnapshotListener
+            }
+
+            // Firestore에서 받아온 데이터를 userList에 추가
+            val updatedUserList = mutableListOf<User>()
+            for (document in snapshot!!.documents) {
+                val dbUser = document.data
+                val id = dbUser?.get("ID") as String
+                val nick = dbUser["NickName"] as String
+                var profile = dbUser["ProfileImage"] as Long
+                val score = dbUser["Score"] as Long
+                val status = dbUser["Status"] as Long
+                lateinit var user: User
+                if (status == 1L){
+                    user = User(profile, id, nick, score, 1)
+                }
+                else{
+                    user = User(profile, id, nick, score, 0)
+                }
+
+                updatedUserList.add(user)
+            }
+            // score에 따라 내림차순 정렬
+            updatedUserList.sortByDescending { it.score }
+
+
+            // 결투 버튼 클릭 이벤트
+            val onItemClick: (String) -> Unit = { text ->
+                //makeGame(text)
+
+                // 상대방 수락 대기 팝업창 띄워야함
+                showChallengePopup(text)
+            }
+
+            userList.clear()
+            userList.addAll(updatedUserList)
+
+            // UserList를 Recycler View 에 띄워줘
+            binding.matchingRecyclingView.layoutManager = LinearLayoutManager(this)
+            binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick)
+            binding.matchingRecyclingView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+
+        }
     }
 
     fun makeGame(opponentId: String) {
@@ -330,5 +394,15 @@ class MatchingRecyclingView : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

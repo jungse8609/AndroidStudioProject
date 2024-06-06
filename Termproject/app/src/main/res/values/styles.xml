@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textColorHint">#111111</item>
+        <item name="android:fontFamily">@font/neodgm</item>
+        <item name="android:layout_height">10dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+</resources>

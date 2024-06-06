@@ -199,6 +199,8 @@ class MatchingActivity : AppCompatActivity() {
 
         // 수락 대기 팝업창 띄워
 
+        var hasGameStarted = false;
+
         db.collection("BattleRooms").document(roomName)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
@@ -206,10 +208,12 @@ class MatchingActivity : AppCompatActivity() {
                     return@addSnapshotListener
                 }
 
-                if (snapshot != null && snapshot.exists()) {
+                if (snapshot != null && snapshot.exists() && !hasGameStarted) {
                     val opponentChk = snapshot.getLong(opponentAccept) ?: 0L
                     // 상대가 수락한 경우
                     if (opponentChk == 1L) {
+                        hasGameStarted = true // 플래그 설정
+
                         // Cancel the timer if opponent accepted
                         timer.cancel()
 
@@ -244,6 +248,8 @@ class MatchingActivity : AppCompatActivity() {
 
     private fun waitForOpponentChallenge() {
         val fragmentManager: FragmentManager = supportFragmentManager
+
+        var hasAccepted = false
         db.collection("BattleWait").document(userId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
@@ -255,7 +261,7 @@ class MatchingActivity : AppCompatActivity() {
                     return@addSnapshotListener
                 }
 
-                if (snapshot != null && snapshot.exists()) {
+                if (snapshot != null && snapshot.exists() && !hasAccepted) {
                     val opponentId = snapshot.getString("Opponent")
 
                     if (opponentId != null) {
@@ -264,6 +270,8 @@ class MatchingActivity : AppCompatActivity() {
                         // 팝업 띄우기
                         val dialog = AcceptDeclineDialogFragment(opponentId) { accepted ->
                             if (accepted) {
+                                hasAccepted = true
+                                
                                 db.collection("BattleRooms")
                                     .document(roomName)
                                     .get()
@@ -281,24 +289,24 @@ class MatchingActivity : AppCompatActivity() {
                                     }
                             } else {
                                 // 거절한 경우 처리
-                                        db.collection("BattleWait").document(userId).delete()
-                                            .addOnSuccessListener {
-                                                runOnUiThread {
-                                                    Toast.makeText(this@MatchingActivity, "거절했습니다", Toast.LENGTH_SHORT).show()
-                                                    db.collection("BattleRooms")
-                                                        .document(roomName)
-                                                        .get()
-                                                        .addOnSuccessListener { document ->
-                                                            if (document != null) {
-                                                                document.reference.update(userId + "Accept", -1)
-                                                            }
-                                                        }
+                                db.collection("BattleWait").document(userId).delete()
+                                    .addOnSuccessListener {
+                                        runOnUiThread {
+                                            Toast.makeText(this@MatchingActivity, "거절했습니다", Toast.LENGTH_SHORT).show()
+                                            db.collection("BattleRooms")
+                                                .document(roomName)
+                                                .get()
+                                                .addOnSuccessListener { document ->
+                                                    if (document != null) {
+                                                        document.reference.update(userId + "Accept", -1)
+                                                    }
                                                 }
-                                            }
-                                            .addOnFailureListener { e ->
-                                                runOnUiThread {
-                                                    Toast.makeText(this@MatchingActivity, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
-                                                }
+                                        }
+                                    }
+                                    .addOnFailureListener { e ->
+                                        runOnUiThread {
+                                            Toast.makeText(this@MatchingActivity, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
+                                        }
                                             }
                             }
                         }

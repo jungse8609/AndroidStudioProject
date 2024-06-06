@@ -365,7 +365,7 @@ class InGameActivity : AppCompatActivity() {
                     // 상대방의 선택했는지 = true 인지 확인
                     val opponentRound = snapshot.getLong("opponentRound") ?: 0L
                     val playerRound = snapshot.getLong("playerRound") ?: 0L
-                    if (opponentRound == 1L) {
+                    if (opponentRound == 1L && playerRound == 1L) {
                         flag = true
 
                         opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
@@ -380,7 +380,9 @@ class InGameActivity : AppCompatActivity() {
                         }
 
                         // round timer 종료 후 게임 결과 프로세스로 넘어간다
+                        Log.d("LogTemp", "라운드 타이머 종료?? " + roundTimer.toString())
                         roundTimer?.cancel()
+                        Log.d("LogTemp", "라운드 타이머 종료!! " + roundTimer.toString())
                         showResult()
                     }
                 }
@@ -430,8 +432,17 @@ class InGameActivity : AppCompatActivity() {
             DiceType.COUNTER -> imgOppoenentResult.setImageResource(imgName[opCounterValue - 1])
         }
 
-        txtPlayerResult.text = result.first.toString()
-        txtOpponentResult.text = result.second.toString()
+        if (result.first >= 0)
+            txtPlayerResult.text = "+" + result.first.toString()
+        else
+            txtPlayerResult.text = result.first.toString()
+
+        if (result.first >= 0)
+            txtOpponentResult.text = "+" + result.second.toString()
+        else
+            txtPlayerResult.text = result.first.toString()
+
+
 
         // Finished() -> proceedToNextTurn
         startResultTimer()
@@ -492,11 +503,11 @@ class InGameActivity : AppCompatActivity() {
                 else if (opponentAttackValue < playerCounterValue)
                     opponentResult = (opponentAttackValue + playerCounterValue) * (-1)
                 else
-                    opponentResult = opponentAttackValue * (-1)
+                    playerResult = opponentAttackValue * (-1)
             }
             // 카운터 vs 방어 : 방어가 회복
             playerType == DiceType.COUNTER && opponentType == DiceType.DEFENSE -> {
-                opponentResult = opponentDefenseValue
+                opponentResult = playerCounterValue
             }
             // 카운터 vs 카운터 : 더 큰 쪽이 데미지
             playerType == DiceType.COUNTER && opponentType == DiceType.COUNTER -> {
@@ -548,37 +559,37 @@ class InGameActivity : AppCompatActivity() {
                 if (document != null) {
                     document.reference.update(playerId + "HP", curPlayerHealth)
                     document.reference.update(opponentId + "HP", curOpponentHealth)
+
+                    // Update Opponent Dice Image
+                    var attackValue = opponentRolls?.first ?: 1
+                    var defenseValue = opponentRolls?.second ?: 1
+                    var counterValue = opponentRolls?.third ?: 1
+                    imgOpponentDiceAttack.setImageResource(imgName[attackValue - 1])
+                    imgOpponentDiceDefense.setImageResource(imgName[defenseValue - 1])
+                    imgOpponentDiceCounter.setImageResource(imgName[counterValue - 1])
+
+                    // Update Hp Bar
+                    imgHpBackground.post {
+                        val backgroundWidth = imgHpBackground.width
+                        val curWidth = (backgroundWidth * (curPlayerHealth.toFloat() / playerHealth)).toInt()
+                        val layoutParams = imgCurrentHp.layoutParams
+                        layoutParams.width = curWidth
+                        imgCurrentHp.layoutParams = layoutParams
+                    }
+
+                    imgOpponentHpBackground.post {
+                        val backgroundWidth = imgOpponentHpBackground.width
+                        val curWidth = (backgroundWidth * (curOpponentHealth.toFloat() / opponentHealth)).toInt()
+                        val layoutParams = imgOpponentCurrentHp.layoutParams
+                        layoutParams.width = curWidth
+                        imgOpponentCurrentHp.layoutParams = layoutParams
+                    }
+                    txtHpBar.text = "$curPlayerHealth/$playerHealth"
+                    txtOpponentHpBar.text = "$curOpponentHealth/$opponentHealth"
+
+                    gameplay()
                 }
             }
-
-        // Update Opponent Dice Image
-        var attackValue = opponentRolls?.first ?: 1
-        var defenseValue = opponentRolls?.second ?: 1
-        var counterValue = opponentRolls?.third ?: 1
-        imgOpponentDiceAttack.setImageResource(imgName[attackValue - 1])
-        imgOpponentDiceDefense.setImageResource(imgName[defenseValue - 1])
-        imgOpponentDiceCounter.setImageResource(imgName[counterValue - 1])
-
-        // Update Hp Bar
-        imgHpBackground.post {
-            val backgroundWidth = imgHpBackground.width
-            val curWidth = (backgroundWidth * (curPlayerHealth.toFloat() / playerHealth)).toInt()
-            val layoutParams = imgCurrentHp.layoutParams
-            layoutParams.width = curWidth
-            imgCurrentHp.layoutParams = layoutParams
-        }
-
-        imgOpponentHpBackground.post {
-            val backgroundWidth = imgOpponentHpBackground.width
-            val curWidth = (backgroundWidth * (curOpponentHealth.toFloat() / opponentHealth)).toInt()
-            val layoutParams = imgOpponentCurrentHp.layoutParams
-            layoutParams.width = curWidth
-            imgOpponentCurrentHp.layoutParams = layoutParams
-        }
-        txtHpBar.text = "$curPlayerHealth/$playerHealth"
-        txtOpponentHpBar.text = "$curOpponentHealth/$opponentHealth"
-
-        gameplay()
     }
 
     private fun dpToPx(dp: Int, context: Context): Int {
@@ -729,16 +740,15 @@ class InGameActivity : AppCompatActivity() {
                                         2 -> opponentType = DiceType.COUNTER
                                     }
 
-                                    Log.d("LogTemp", opponentRolls.toString())
-
                                     // round timer 종료 후 게임 결과 프로세스로 넘어간다
                                     roundTimer?.cancel()
+
+                                    Log.d("LogTemp", playerRolls.toString() + " " + opponentRolls.toString())
                                     showResult()
                                 }
                             }
                         }
                 }
-
             }
         }.start()
     }
@@ -746,14 +756,14 @@ class InGameActivity : AppCompatActivity() {
     private fun exitGame() {
         // 무승부
         if (curPlayerHealth <= 0 && curOpponentHealth <= 0)
-            showResultPopup("DRAW" , "$playerScore (+0)")
+            showResultPopup("DRAW" , "$playerScore (+0)", playerScore)
         else if (curPlayerHealth <= 0)
-            showResultPopup("DEFEAT" , "$playerScore (-$curOpponentHealth)")
+            showResultPopup("DEFEAT" , "$playerScore (-$curOpponentHealth)", (playerScore - curOpponentHealth).clamp(0, Long.MAX_VALUE))
         else
-            showResultPopup("WIN" , "$playerScore (+$curOpponentHealth)")
+            showResultPopup("WIN" , "$playerScore (+$curPlayerHealth)", (playerScore + curOpponentHealth).clamp(0, Long.MAX_VALUE))
     }
 
-    private fun showResultPopup(result: String, score: String) {
+    private fun showResultPopup(result: String, scoreStr: String, score: Long) {
         // Set Result
         var playerScore : Long = 0
 
@@ -767,14 +777,14 @@ class InGameActivity : AppCompatActivity() {
             }
 
         txtResult.text = result
-        txtScore.text = score
+        txtScore.text = scoreStr
 
         db.collection("users")
             .document(playerId)
             .get()
             .addOnSuccessListener { document ->
                 if (document != null) {
-                    document.reference.update("Score", (playerScore - curOpponentHealth).clamp(0, Long.MAX_VALUE))
+                    document.reference.update("Score", score)
                 }
             }
 

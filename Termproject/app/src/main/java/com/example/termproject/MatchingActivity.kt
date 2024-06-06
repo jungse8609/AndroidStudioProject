@@ -3,8 +3,11 @@ package com.example.termproject
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.termproject.databinding.MatchingRecyclerViewBinding
@@ -66,9 +69,12 @@ class MatchingActivity : AppCompatActivity() {
                     // score에 따라 내림차순 정렬
                     userList.sortByDescending { it.score }
 
+
+                    // 결투 버튼 클릭 이벤트
                     val onItemClick: (String) -> Unit = { text ->
-                        //Toast.makeText(this, "Clicked: $text", Toast.LENGTH_SHORT).show()
                         makeGame(text)
+
+                        // 상대방 수락 대기 팝업창 띄워야함
                     }
 
                     binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick)
@@ -121,6 +127,7 @@ class MatchingActivity : AppCompatActivity() {
             "roomName" to roomName,
             "roundTime" to 0,
             "roundTimerId" to userId,
+            "acceptId" to opponentId,
             "resultTime" to 0,
             userId + "Accept" to 1,
             userId + "HP" to gameHp,
@@ -167,9 +174,17 @@ class MatchingActivity : AppCompatActivity() {
             override fun run() {
                 db.collection("BattleRooms").document(roomName).delete()
                     .addOnSuccessListener {
-                        runOnUiThread {
-                            Toast.makeText(this@MatchingActivity, "Room deleted due to timeout", Toast.LENGTH_SHORT).show()
-                        }
+                        db.collection("BattleWait").document(opponentId).delete()
+                            .addOnSuccessListener {
+                                runOnUiThread {
+                                    Toast.makeText(this@MatchingActivity, "Room deleted due to timeout", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                runOnUiThread {
+                                    Toast.makeText(this@MatchingActivity, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                     }
                     .addOnFailureListener { e ->
                         runOnUiThread {
@@ -179,8 +194,10 @@ class MatchingActivity : AppCompatActivity() {
             }
         }
 
-        // Schedule the timer to delete the room after 10 seconds
+        // Schedule the timer to delete the room after 3 seconds
         timer.schedule(timerTask, 10000)
+
+        // 수락 대기 팝업창 띄워
 
         db.collection("BattleRooms").document(roomName)
             .addSnapshotListener { snapshot, e ->
@@ -200,14 +217,15 @@ class MatchingActivity : AppCompatActivity() {
                         intent.putExtra("userId", userId)
                         intent.putExtra("opponentId", opponentId)
                         intent.putExtra("roomName", roomName)
+
                         startActivity(intent)
                     }
                 }
             }
     }
 
-
     private fun waitForOpponentChallenge() {
+        val fragmentManager: FragmentManager = supportFragmentManager
         db.collection("BattleWait").document(userId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
@@ -222,47 +240,39 @@ class MatchingActivity : AppCompatActivity() {
                 if (snapshot != null && snapshot.exists()) {
                     val opponentId = snapshot.getString("Opponent")
 
-                    val roomName = userId + "_" + opponentId + "_BattleRoom"
+                    if (opponentId != null) {
+                        val roomName = userId + "_" + opponentId + "_BattleRoom"
 
-                    Log.d("LogTemp", roomName)
+                        // 팝업 띄우기
+                        val dialog = AcceptDeclineDialogFragment(opponentId) { accepted ->
+                            if (accepted) {
+                                db.collection("BattleRooms")
+                                    .document(roomName)
+                                    .get()
+                                    .addOnSuccessListener { document ->
+                                        if (document != null) {
+                                            document.reference.update(userId + "Accept", 1)
+                                            val intent = Intent(this, InGameActivity::class.java)
+                                            intent.putExtra("userId", userId)
+                                            intent.putExtra("opponentId", opponentId)
+                                            intent.putExtra("roomName", roomName)
 
-                    // 팝업 띄우기
-
-                    db.collection("BattleRooms")
-                        .document(roomName)
-                        .get()
-                        .addOnSuccessListener { document ->
-                            if (document != null) {
-                                document.reference.update(userId + "Accept", 1)
-                                val intent = Intent(this, InGameActivity::class.java)
-                                intent.putExtra("userId", userId)
-                                intent.putExtra("opponentId", opponentId)
-                                intent.putExtra("roomName", roomName)
-
-                                startActivity(intent)
+                                            startActivity(intent)
+                                        }
+                                    }
+                            } else {
+                                // 거절한 경우 처리
+                                db.collection("BattleWait").document(userId)
+                                    .update("status", "declined")
+                                    .addOnSuccessListener {
+                                        Toast.makeText(this, "Challenge declined", Toast.LENGTH_SHORT).show()
+                                    }
                             }
                         }
+                        dialog.show(fragmentManager, "AcceptDeclineDialog")
+                    }
                 }
             }
     }
 
-
-    // 상대방 수락 올 때까지 대기
-    private fun waitChallenge() {
-        waitTimer = object : CountDownTimer(waitTimeLimit, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // 결투 신청 왔는지 확인하기
-
-
-                // 왔다면 timer 종료
-                if (false)
-                    waitTimer?.cancel()
-            }
-
-            override fun onFinish() {
-                // 결투 신청 올 때까지 계속 wait
-                waitChallenge()
-            }
-        }.start()
-    }
 }

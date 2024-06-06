@@ -75,6 +75,7 @@ class InGameActivity : AppCompatActivity() {
     private lateinit var opponentId : String
     private lateinit var roomName : String
     private lateinit var roundTimerId : String
+    private lateinit var acceptId: String
     // User Nickname and Score
     private lateinit var playerNick : String
     private lateinit var OpponentNick : String
@@ -159,12 +160,15 @@ class InGameActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     roundTimerId = document.getString("roundTimerId") ?: "null"
+                    acceptId = document.getString("acceptId") ?: "null"
                     playerNick = document.getString(playerId + "Nick") ?: "null"
                     playerScore = document.getLong(playerId + "Score") ?: 0
                     playerHealth = document.getLong(playerId + "HP") ?: 0
                     OpponentNick = document.getString(opponentId + "Nick") ?: "null"
                     opponentScore = document.getLong(opponentId + "Score") ?: 0
                     opponentHealth = document.getLong(opponentId + "HP") ?: 0
+
+
                 }
             }
 
@@ -309,7 +313,6 @@ class InGameActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     document.reference.update(playerId + "Round", 0)
-                    document.reference.update(opponentId + "Round", 0)
                 }
             }
 
@@ -343,8 +346,7 @@ class InGameActivity : AppCompatActivity() {
         txtOpponentResult.text = "-"
 
         // 라운드 타이머 실행
-        if (playerId == roundTimerId)
-            startRoundTimer()
+        startRoundTimer()
     }
 
     // 상대방의 주사위 결과를 기다리는 함수 (여기서는 단순히 랜덤 값을 설정합니다)
@@ -615,16 +617,6 @@ class InGameActivity : AppCompatActivity() {
         roundTimer = object : CountDownTimer(roundTimeLimit, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 txtRoundTimer.text = "${millisUntilFinished / 1000}"
-
-                // Update firebase
-                db.collection("BattleRooms")
-                    .document(roomName)
-                    .get()
-                    .addOnSuccessListener { document ->
-                        if (document != null) {
-                            document.reference.update("roundTime", millisUntilFinished)
-                        }
-                    }
             }
 
             override fun onFinish() {
@@ -637,6 +629,7 @@ class InGameActivity : AppCompatActivity() {
                         1 -> playerType = DiceType.DEFENSE
                         2 -> playerType = DiceType.COUNTER
                     }
+
                     db.collection("BattleRooms")
                         .document(roomName)
                         .get()
@@ -660,7 +653,7 @@ class InGameActivity : AppCompatActivity() {
 
                             if (snapshot != null && snapshot.exists()) {
                                 // 상대방의 round = true 인지 확인
-                                val opponentRound = snapshot.getLong("opponentRound") ?: 0L
+                                val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
                                 if (opponentRound == 1L) {
                                     opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
                                     opponentDefense = snapshot.getLong(opponentId + "Defense")!!.toInt()
@@ -688,41 +681,14 @@ class InGameActivity : AppCompatActivity() {
     private fun exitGame() {
         // 무승부
         if (curPlayerHealth <= 0 && curOpponentHealth <= 0)
-            draw();
+            showResultPopup("DRAW" , "$playerScore (+0)")
         else if (curPlayerHealth <= 0)
-            defeat()
+            showResultPopup("DEFEAT" , "$playerScore (-$curOpponentHealth)")
         else
-            win();
+            showResultPopup("WIN" , "$playerScore (+$curOpponentHealth)")
     }
 
-    private fun draw() {
-        Log.d("LogTemp", "########### Draw!! ###########")
-
-        // Set Result Popup
-        txtResult.text = "DRAW"
-        txtScore.text = "0"
-
-        // Apply Score - firebase
-
-        showResultPopup()
-    }
-
-    private fun win() {
-        Log.d("LogTemp", "########### Winner!! ###########")
-
-        // Set Result
-        txtResult.text = "WINNER"
-        txtScore.text = "원래점수 (+$curPlayerHealth)"
-
-        // Apply Score - firebase
-
-
-        showResultPopup()
-    }
-
-    private fun defeat() {
-        Log.d("LogTemp", "########### Loser... ###########")
-
+    private fun showResultPopup(result: String, score: String) {
         // Set Result
         var playerScore : Int = 0
 
@@ -735,8 +701,8 @@ class InGameActivity : AppCompatActivity() {
                 }
             }
 
-        txtResult.text = "DEFEAT"
-        txtScore.text = "$playerScore (-$curOpponentHealth)"
+        txtResult.text = result
+        txtScore.text = score
 
         db.collection("users")
             .document(playerId)
@@ -747,14 +713,28 @@ class InGameActivity : AppCompatActivity() {
                 }
             }
 
-        curOpponentHealth.clamp(0, opponentHealth)
+        db.collection("BattleRooms").document(roomName).delete()
+            .addOnSuccessListener {
+                db.collection("BattleWait").document(acceptId).delete()
+                    .addOnSuccessListener {
+                        runOnUiThread {
+                            Toast.makeText(this@InGameActivity, "Complete out of battle room", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        runOnUiThread {
+                            Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            }
+            .addOnFailureListener { e ->
+                runOnUiThread {
+                    Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
+                }
+            }
 
-        // Apply Score - firebase
 
-        showResultPopup()
-    }
-
-    private fun showResultPopup() {
+        // Popup 창 띄우기
         layoutResult.post {
             val layoutParams = FrameLayout.LayoutParams(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),

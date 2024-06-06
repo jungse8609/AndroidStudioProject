@@ -2,4 +2,6 @@
     <string name="app_name">termproject</string>
     <string name="drawer_opened">마이페이지</string>
     <string name="drawer_closed">마이페이지</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

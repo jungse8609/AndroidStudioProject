@@ -3,7 +3,6 @@ package com.example.termproject
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
@@ -279,7 +278,10 @@ class MatchingActivity : AppCompatActivity() {
                                             intent.putExtra("opponentId", opponentId)
                                             intent.putExtra("roomName", roomName)
 
-                                            startActivity(intent)
+                                            db.collection("BattleWait").document(userId).delete()
+                                                .addOnSuccessListener {
+                                                    startActivity(intent)
+                                                }
                                         }
                                     }
                             } else {

@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
-        android:layout_margin="20dp"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:background="#333333">
 
         <TextView
@@ -23,7 +24,8 @@
             android:textSize="18sp"
             android:textColor="#555555"
             android:textAlignment="center"
-            android:fontFamily="@font/neodgm"/>
+            android:fontFamily="@font/neodgm"
+            android:paddingTop="12dp"/>
 
         <TextView
             android:id="@+id/ItemScore"
@@ -35,7 +37,8 @@
             android:text="9999"
             android:textAlignment="center"
             android:textColor="#555555"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:paddingTop="12dp"/>
 
         <TextView
             android:id="@+id/ItemStatus"
@@ -43,11 +46,12 @@
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="접속중"
+            android:text="Offline"
             android:textSize="18sp"
             android:textColor="#555555"
             android:textAlignment="center"
-            android:fontFamily="@font/neodgm"/>
+            android:fontFamily="@font/neodgm"
+            android:paddingTop="12dp"/>
 
         <TextView
             android:id="@+id/ItemFight"
@@ -59,7 +63,8 @@
             android:textSize="18sp"
             android:textColor="#ffffff"
             android:textAlignment="center"
-            android:fontFamily="@font/neodgm"/>
+            android:fontFamily="@font/neodgm"
+            android:paddingTop="12dp"/>
     </LinearLayout>
 
 

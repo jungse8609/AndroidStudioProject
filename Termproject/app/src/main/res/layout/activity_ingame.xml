@@ -49,7 +49,7 @@
                         android:layout_height="match_parent"/>
 
                     <FrameLayout
-                        android:layout_width="250dp"
+                        android:layout_width="150dp"
                         android:layout_height="30dp">
 
                         <ImageView
@@ -78,6 +78,39 @@
                             android:padding="5dp"/>
 
                     </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="120dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/TxtOpponentNick"
+                            android:layout_width="60dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="닉네임은\n여덟글자"
+                            android:textSize="10sp"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/neodgm"
+                            android:padding="10dp"/>
+
+                        <Space
+                            android:layout_width="5dp"
+                            android:layout_height="match_parent"/>
+
+                        <ImageView
+                            android:id="@+id/ImgOpponentProfile"
+                            android:layout_width="40dp"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/profile1"
+                            android:background="@drawable/hp_bar_background_shape"
+                            android:padding="1dp"/>
+
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -428,8 +461,44 @@
                     android:gravity="center"
                     android:orientation="horizontal">
 
+                    <LinearLayout
+                        android:layout_width="120dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/ImgPlayerProfile"
+                            android:layout_width="40dp"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/profile1"
+                            android:background="@drawable/hp_bar_background_shape"
+                            android:padding="1dp"/>
+
+                        <Space
+                            android:layout_width="5dp"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:id="@+id/TxtPlayerNick"
+                            android:layout_width="60dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="닉네임은\n여덟글자"
+                            android:textSize="10sp"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/neodgm"
+                            android:padding="10dp"/>
+
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="5dp"
+                        android:layout_height="match_parent"/>
+
                     <FrameLayout
-                        android:layout_width="250dp"
+                        android:layout_width="150dp"
                         android:layout_height="30dp">
 
                         <ImageView

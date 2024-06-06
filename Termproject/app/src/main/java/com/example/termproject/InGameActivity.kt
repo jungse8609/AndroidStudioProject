@@ -44,6 +44,8 @@ class InGameActivity : AppCompatActivity() {
 
     private lateinit var imgOpponentResult : ImageView
     private lateinit var imgPlayerResult : ImageView
+    private lateinit var imgPlayerProfile : ImageView
+    private lateinit var imgOpponentProfile : ImageView
 
     private lateinit var btnDice : Button
     private lateinit var btnAttack : Button
@@ -60,6 +62,8 @@ class InGameActivity : AppCompatActivity() {
     private lateinit var txtScore : TextView
     private lateinit var txtPlayerType : TextView
     private lateinit var txtOpponentType : TextView
+    private lateinit var txtPlayerNick : TextView
+    private lateinit var txtOpponentNick : TextView
 
     private lateinit var layoutResult : LinearLayout
 
@@ -122,6 +126,9 @@ class InGameActivity : AppCompatActivity() {
         imgOpponentHpBackground = findViewById(R.id.ImgOpponentHpBackround)
         imgOpponentCurrentHp = findViewById(R.id.ImgOpponentCurrentHp)
 
+        imgPlayerProfile = findViewById(R.id.ImgPlayerProfile)
+        imgOpponentProfile = findViewById(R.id.ImgOpponentProfile)
+
         btnDice = findViewById(R.id.BtnDiceRoll)
         btnAttack = findViewById(R.id.BtnAttack)
         btnDefense = findViewById(R.id.BtnDefense)
@@ -137,6 +144,8 @@ class InGameActivity : AppCompatActivity() {
         txtOpponentHpBar = findViewById(R.id.TxtOpponentHpBar)
         txtResult = findViewById(R.id.TxtResult)
         txtScore = findViewById(R.id.TxtScore)
+        txtPlayerNick = findViewById(R.id.TxtPlayerNick)
+        txtOpponentNick = findViewById(R.id.TxtOpponentNick)
 
         layoutResult = findViewById(R.id.LayoutResult)
 

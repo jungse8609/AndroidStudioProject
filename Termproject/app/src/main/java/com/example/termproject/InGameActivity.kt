@@ -86,10 +86,10 @@ class InGameActivity : AppCompatActivity() {
     private var playerType: DiceType = DiceType.ATTACK
     private var opponentType: DiceType = DiceType.ATTACK
     // Health
-    private var playerHealth : Long = 10
-    private var opponentHealth : Long = 10
-    private var curPlayerHealth : Long = 10
-    private var curOpponentHealth : Long = 10
+    private var playerHealth : Long = 20
+    private var opponentHealth : Long = 20
+    private var curPlayerHealth : Long = 20
+    private var curOpponentHealth : Long = 20
 
     private var roundTimer: CountDownTimer? = null
     private val roundTimeLimit: Long = 15000 // 15 seconds
@@ -440,7 +440,7 @@ class InGameActivity : AppCompatActivity() {
         if (result.first >= 0)
             txtOpponentResult.text = "+" + result.second.toString()
         else
-            txtPlayerResult.text = result.first.toString()
+            txtPlayerResult.text = result.second.toString()
 
 
 
@@ -754,13 +754,22 @@ class InGameActivity : AppCompatActivity() {
     }
 
     private fun exitGame() {
+        var resultScore : Long
+
         // 무승부
-        if (curPlayerHealth <= 0 && curOpponentHealth <= 0)
-            showResultPopup("DRAW" , "$playerScore (+0)", playerScore)
-        else if (curPlayerHealth <= 0)
-            showResultPopup("DEFEAT" , "$playerScore (-$curOpponentHealth)", (playerScore - curOpponentHealth).clamp(0, Long.MAX_VALUE))
-        else
-            showResultPopup("WIN" , "$playerScore (+$curPlayerHealth)", (playerScore + curOpponentHealth).clamp(0, Long.MAX_VALUE))
+        if (curPlayerHealth <= 0 && curOpponentHealth <= 0) {
+            resultScore = playerScore
+            showResultPopup("DRAW" , "$playerScore -> $resultScore", resultScore)
+        }
+        else if (curPlayerHealth <= 0) {
+            resultScore = (playerScore - curOpponentHealth).clamp(0, Long.MAX_VALUE)
+            showResultPopup("DEFEAT" , "$playerScore -> $resultScore)", resultScore)
+        }
+        else {
+            resultScore = (playerScore + curOpponentHealth).clamp(0, Long.MAX_VALUE)
+            showResultPopup("WIN" , "$playerScore -> $resultScore", resultScore)
+        }
+
     }
 
     private fun showResultPopup(result: String, scoreStr: String, score: Long) {
@@ -785,7 +794,10 @@ class InGameActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     document.reference.update("Score", score)
+                    Log.d("LogTemp", "score")
                 }
+                else
+                    Log.d("LogTemp", "점수계산안됨")
             }
 
         db.collection("BattleRooms").document(roomName).delete()

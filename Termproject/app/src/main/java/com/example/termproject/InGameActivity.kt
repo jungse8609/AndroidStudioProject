@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.util.TypedValue
 import android.widget.Button
 import android.widget.FrameLayout
@@ -752,5 +751,9 @@ class InGameActivity : AppCompatActivity() {
             layoutResult.layoutParams.width = layoutParams.width
             layoutResult.layoutParams.height = layoutParams.height
         }
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
 }

@@ -38,7 +38,9 @@
                         android:text="999"
                         android:textAlignment="center"
                         android:textSize="40sp"
-                        android:visibility="visible" />
+                        android:textStyle="bold"
+                        android:visibility="visible"
+                        android:padding="3dp"/>
 
                     <Space
                         android:layout_width="16dp"
@@ -52,13 +54,13 @@
                             android:id="@+id/ImgOpponentHpBackround"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="#333333"/>
+                            android:background="@drawable/hp_bar_background_shape"/>
 
                         <ImageView
                             android:id="@+id/ImgOpponentCurrentHp"
                             android:layout_width="100dp"
                             android:layout_height="match_parent"
-                            android:background="#FF0000"/>
+                            android:background="@drawable/hp_bar_value_shape"/>
 
                         <TextView
                             android:id="@+id/TxtOpponentHpBar"
@@ -69,7 +71,9 @@
                             android:textSize="20sp"
                             android:textAlignment="center"
                             android:textColor="@color/white"
-                            android:fontFamily="@font/neodgm"/>
+                            android:textStyle="bold"
+                            android:fontFamily="@font/neodgm"
+                            android:padding="5dp"/>
 
                     </FrameLayout>
 
@@ -90,18 +94,13 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:id="@+id/ImgOpponentDiceAttackBackground"
-                            android:layout_width="52dp"
-                            android:layout_height="52dp"
-                            android:background="#333333"/>
-
-                        <ImageView
                             android:id="@+id/ImgOpponentDiceAttack"
-                            android:layout_width="45dp"
-                            android:layout_height="45dp"
+                            android:layout_width="55dp"
+                            android:layout_height="55dp"
                             android:layout_gravity="center"
                             android:src="@drawable/hide"
-                            android:background="@null"/>
+                            android:background="@drawable/button_black_border"
+                            android:padding="5dp"/>
 
                     </FrameLayout>
 
@@ -112,20 +111,15 @@
                     <FrameLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/ImgOpponentDiceDefenseBackground"
-                            android:layout_width="52dp"
-                            android:layout_height="52dp"
-                            android:background="#333333"/>
 
                         <ImageView
                             android:id="@+id/ImgOpponentDiceDefense"
-                            android:layout_width="45dp"
-                            android:layout_height="45dp"
+                            android:layout_width="55dp"
+                            android:layout_height="55dp"
                             android:layout_gravity="center"
                             android:src="@drawable/hide"
-                            android:background="@null"/>
+                            android:background="@drawable/button_red_border"
+                            android:padding="5dp"/>
 
                     </FrameLayout>
 
@@ -138,17 +132,13 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:id="@+id/ImgOpponentDiceCounterBackground"
-                            android:layout_width="52dp"
-                            android:layout_height="52dp"
-                            android:background="#333333"/>
-
-                        <ImageView
                             android:id="@+id/ImgOpponentDiceCounter"
-                            android:layout_width="45dp"
-                            android:layout_height="45dp"
+                            android:layout_width="55dp"
+                            android:layout_height="55dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/hide"/>
+                            android:src="@drawable/hide"
+                            android:background="@drawable/button_black_border"
+                            android:padding="5dp"/>
 
                     </FrameLayout>
 
@@ -198,7 +188,8 @@
                         android:text="+ 100"
                         android:textColor="#555555"
                         android:textAlignment="center"
-                        android:textSize="50sp" />
+                        android:textSize="50sp"
+                        android:textStyle="bold"/>
 
                 </LinearLayout>
 
@@ -252,7 +243,8 @@
                         android:text="+ 100"
                         android:textColor="#555555"
                         android:textAlignment="center"
-                        android:textSize="50sp" />
+                        android:textSize="50sp"
+                        android:textStyle="bold"/>
 
                 </LinearLayout>
 
@@ -276,18 +268,13 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:id="@+id/ImgDiceAttackBackground"
-                            android:layout_width="52dp"
-                            android:layout_height="52dp"
-                            android:background="#333333"/>
-
-                        <ImageView
                             android:id="@+id/ImgDiceAttack"
-                            android:layout_width="45dp"
-                            android:layout_height="45dp"
+                            android:layout_width="55dp"
+                            android:layout_height="55dp"
                             android:layout_gravity="center"
                             android:src="@drawable/one"
-                            android:background="@null"/>
+                            android:background="@drawable/button_green_border"
+                            android:padding="5dp"/>
 
                     </FrameLayout>
 
@@ -300,18 +287,13 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:id="@+id/ImgDiceDefenseBackground"
-                            android:layout_width="52dp"
-                            android:layout_height="52dp"
-                            android:background="#333333"/>
-
-                        <ImageView
                             android:id="@+id/ImgDiceDefense"
-                            android:layout_width="45dp"
-                            android:layout_height="45dp"
+                            android:layout_width="55dp"
+                            android:layout_height="55dp"
                             android:layout_gravity="center"
                             android:src="@drawable/two"
-                            android:background="@null"/>
+                            android:background="@drawable/button_black_border"
+                            android:padding="5dp"/>
 
                     </FrameLayout>
 
@@ -324,17 +306,13 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:id="@+id/ImgDiceCounterBackground"
-                            android:layout_width="52dp"
-                            android:layout_height="52dp"
-                            android:background="#333333"/>
-
-                        <ImageView
                             android:id="@+id/ImgDiceCounter"
-                            android:layout_width="45dp"
-                            android:layout_height="45dp"
+                            android:layout_width="55dp"
+                            android:layout_height="55dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/three"/>
+                            android:src="@drawable/one"
+                            android:background="@drawable/button_black_border"
+                            android:padding="5dp"/>
 
                     </FrameLayout>
 
@@ -354,12 +332,15 @@
                         android:id="@+id/BtnAttack"
                         android:layout_width="110dp"
                         android:layout_height="40dp"
+                        android:layout_gravity="center"
                         android:enabled="true"
-                        android:background="#00ff0000"
+                        android:background="@drawable/button_yellow_border"
                         android:text="공격"
                         android:textSize="20sp"
                         android:textColor="#b80080"
-                        android:fontFamily="@font/neodgm"/>
+                        android:textStyle="bold"
+                        android:fontFamily="@font/neodgm"
+                        android:padding="10dp"/>
 
                     <Space
                         android:layout_width="16dp"
@@ -370,11 +351,13 @@
                         android:layout_width="110dp"
                         android:layout_height="40dp"
                         android:enabled="true"
-                        android:background="#00ff0000"
+                        android:background="@drawable/button_yellow_border"
                         android:text="방어"
                         android:textSize="20sp"
                         android:textColor="#00008b"
-                        android:fontFamily="@font/neodgm"/>
+                        android:textStyle="bold"
+                        android:fontFamily="@font/neodgm"
+                        android:padding="10dp"/>
 
                     <Space
                         android:layout_width="16dp"
@@ -385,11 +368,13 @@
                         android:layout_width="110dp"
                         android:layout_height="40dp"
                         android:enabled="true"
-                        android:background="#00ff0000"
+                        android:background="@drawable/button_yellow_border"
                         android:text="카운터"
                         android:textSize="20sp"
                         android:textColor="#9011d3"
-                        android:fontFamily="@font/neodgm"/>
+                        android:textStyle="bold"
+                        android:fontFamily="@font/neodgm"
+                        android:padding="10dp"/>
 
                 </LinearLayout>
 
@@ -412,13 +397,13 @@
                             android:id="@+id/ImgHpBackround"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="#333333"/>
+                            android:background="@drawable/hp_bar_background_shape"/>
 
                         <ImageView
                             android:id="@+id/ImgCurrentHp"
                             android:layout_width="100dp"
                             android:layout_height="match_parent"
-                            android:background="#FF0000"/>
+                            android:background="@drawable/hp_bar_value_shape"/>
 
                         <TextView
                             android:id="@+id/TxtHpBar"
@@ -429,7 +414,9 @@
                             android:textSize="20sp"
                             android:textAlignment="center"
                             android:textColor="@color/white"
-                            android:fontFamily="@font/neodgm"/>
+                            android:textStyle="bold"
+                            android:fontFamily="@font/neodgm"
+                            android:padding="5dp"/>
 
                     </FrameLayout>
 
@@ -442,11 +429,13 @@
                         android:layout_width="110dp"
                         android:layout_height="40dp"
                         android:enabled="true"
-                        android:background="#00ff0000"
+                        android:background="@drawable/button_yellow_border"
                         android:text="주사위"
                         android:textSize="20sp"
                         android:textColor="#333333"
-                        android:fontFamily="@font/neodgm"/>
+                        android:textStyle="bold"
+                        android:fontFamily="@font/neodgm"
+                        android:padding="10dp"/>
 
                 </LinearLayout>
 

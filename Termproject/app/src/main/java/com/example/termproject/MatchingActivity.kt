@@ -222,8 +222,6 @@ class MatchingActivity : AppCompatActivity() {
                         intent.putExtra("opponentId", opponentId)
                         intent.putExtra("roomName", roomName)
 
-                        Log.d("LogTemp", "게임 시작")
-
                         startActivity(intent)
                     }
                     // 상대가 거절한 경우

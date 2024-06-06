@@ -677,7 +677,8 @@ class InGameActivity : AppCompatActivity() {
                             if (snapshot != null && snapshot.exists()) {
                                 // 상대방의 round = true 인지 확인
                                 val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
-                                if (opponentRound == 1L) {
+                                val playerRound = snapshot.getLong(playerId + "Round") ?: 0L
+                                if (opponentRound == 1L && playerRound == 1L) {
                                     // 리스너 제거
                                     listenerStartRound?.remove()
 
@@ -693,8 +694,6 @@ class InGameActivity : AppCompatActivity() {
                                         2L -> opponentType = DiceType.COUNTER
                                     }
 
-                                    Log.d("LogTemp", opponentRolls.toString())
-
                                     // round timer 종료 후 게임 결과 프로세스로 넘어간다
                                     roundTimer?.cancel()
                                     showResult()
@@ -702,8 +701,8 @@ class InGameActivity : AppCompatActivity() {
                             }
                         }
                 }
+                // 본인은 선택했지만 상대방이 선택을 못한채 타이머가 끝남
                 else {
-
                     listenerStartRound = db.collection("BattleRooms").document(roomName)
                         .addSnapshotListener { snapshot, e ->
                             if (e != null) {
@@ -713,7 +712,8 @@ class InGameActivity : AppCompatActivity() {
                             if (snapshot != null && snapshot.exists()) {
                                 // 상대방의 round = true 인지 확인
                                 val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
-                                if (opponentRound == 1L) {
+                                val playerRound = snapshot.getLong(playerId + "Round") ?: 0L
+                                if (opponentRound == 1L && playerRound == 1L) {
                                     // 리스너 제거
                                     listenerStartRound?.remove()
 
@@ -732,7 +732,6 @@ class InGameActivity : AppCompatActivity() {
                                     // round timer 종료 후 게임 결과 프로세스로 넘어간다
                                     roundTimer?.cancel()
 
-                                    Log.d("LogTemp", playerRolls.toString() + " " + opponentRolls.toString())
                                     showResult()
                                 }
                             }
@@ -783,10 +782,7 @@ class InGameActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     document.reference.update("Score", score)
-                    Log.d("LogTemp", score.toString())
                 }
-                else
-                    Log.d("LogTemp", "점수계산안됨")
             }
 
         db.collection("BattleRooms").document(roomName).delete()

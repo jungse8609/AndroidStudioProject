@@ -374,9 +374,9 @@ class InGameActivity : AppCompatActivity() {
                         // 리스너 제거
                         listenerWaitOpponent?.remove()
 
-                        var opponentAttack : Long = snapshot.getLong(opponentId + "Attack") ?: 0L
-                        var opponentDefense : Long = snapshot.getLong(opponentId + "Defense") ?: 0L
-                        var opponentCounter : Long = snapshot.getLong(opponentId + "Counter") ?: 0L
+                        var opponentAttack : Long = snapshot.getLong(opponentId + "Attack") ?: 1L
+                        var opponentDefense : Long = snapshot.getLong(opponentId + "Defense") ?: 1L
+                        var opponentCounter : Long = snapshot.getLong(opponentId + "Counter") ?: 1L
                         var opponentChoose = snapshot.getLong(opponentId + "Choose")
 
                         opponentRolls = Triple(opponentAttack, opponentDefense, opponentCounter)
@@ -389,6 +389,8 @@ class InGameActivity : AppCompatActivity() {
                         // round timer 종료 후 게임 결과 프로세스로 넘어간다
                         roundTimer?.cancel()
 
+                        Log.d("LogTemp", "RoundTimer End")
+
                         showResult()
                     }
                 }
@@ -398,9 +400,10 @@ class InGameActivity : AppCompatActivity() {
     private lateinit var result : Pair<Long, Long>
 
     private fun showResult() {
-        // 여기서 상대방의 선택이 끝나거나 타이머가 종료할 때까지 기다려야해
         // Calculate Result
         result = getResult()
+
+        Log.d("LogTemp", "showResult()의 result 결과 : " + result.toString())
 
         // Set Player Result
         var attackValue = playerRolls?.first ?: 1
@@ -413,9 +416,9 @@ class InGameActivity : AppCompatActivity() {
         }
 
         // Set Opponent Result
-        var opAttackValue = opponentRolls?.first ?: 1
-        var opDefenseValue = opponentRolls?.second ?: 1
-        var opCounterValue = opponentRolls?.third ?: 1
+        var opAttackValue : Long = opponentRolls?.first ?: 1
+        var opDefenseValue : Long = opponentRolls?.second ?: 1
+        var opCounterValue : Long = opponentRolls?.third ?: 1
         imgOpponentDiceAttack.setImageResource(imgName[opAttackValue.toInt() - 1])
         imgOpponentDiceDefense.setImageResource(imgName[opDefenseValue.toInt() - 1])
         imgOpponentDiceCounter.setImageResource(imgName[opCounterValue.toInt() - 1])
@@ -448,9 +451,8 @@ class InGameActivity : AppCompatActivity() {
         else
             txtOpponentResult.text = result.second.toString()
 
+        Log.d("LogTemp", "showResult() 끝남")
 
-
-        // Finished() -> proceedToNextTurn
         startResultTimer()
     }
 
@@ -598,6 +600,8 @@ class InGameActivity : AppCompatActivity() {
 
     // 결과창 타이머 시작 함수
     private fun startResultTimer() {
+        Log.d("LogTemp", "StartResultTimer")
+
         resultTimer = object : CountDownTimer(resultTimeLimit, 1000) {
             override fun onTick(millisUntilFinished: Long) {
 
@@ -663,6 +667,10 @@ class InGameActivity : AppCompatActivity() {
                         .get()
                         .addOnSuccessListener { document ->
                             if (document != null) {
+                                document.reference.update(playerId + "Attack", playerRolls!!.first)
+                                document.reference.update(playerId + "Defense", playerRolls!!.second)
+                                document.reference.update(playerId + "Counter", playerRolls!!.third)
+
                                 document.reference.update(playerId + "Choose", randomChoose)
                                 document.reference.update(playerId + "Round", 1)
                             }

@@ -40,12 +40,10 @@ class StartActivity : AppCompatActivity() {
         val userScore = intent.getLongExtra("userScore", -1)
         val profileImage = intent.getIntExtra("profileImage", R.drawable.profile1)
 
-        val myId = findViewById<TextView>(R.id.myID)
         val myNick = findViewById<TextView>(R.id.myNick)
         val myScore = findViewById<TextView>(R.id.myScore)
         profileImageView = findViewById(R.id.profileImage)
 
-        myId.text = userId
         myNick.text = userNick
         myScore.text = userScore.toString()
         profileImageView.setImageResource(profileImage)

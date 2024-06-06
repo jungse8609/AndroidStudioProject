@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlin.random.Random
 
 // Enum 클래스 정의
@@ -95,7 +96,7 @@ class InGameActivity : AppCompatActivity() {
     private val roundTimeLimit: Long = 15000 // 15 seconds
 
     private var resultTimer: CountDownTimer? = null
-    private val resultTimeLimit: Long = 5000 //3500 // 3.5 seconds
+    private val resultTimeLimit: Long = 3500 //3500 // 3.5 seconds
 
     // Flow Control Boolean
     private var isWaiting: Boolean = false // 상대방이 고를 때까지 기다리는 중인가
@@ -352,6 +353,8 @@ class InGameActivity : AppCompatActivity() {
         startRoundTimer()
     }
 
+    private var listenerRegistration: ListenerRegistration? = null
+
     // 상대방의 주사위 결과를 기다리는 함수 (여기서는 단순히 랜덤 값을 설정합니다)
     private fun waitForOppoenent() {
         isWaiting = true
@@ -364,7 +367,7 @@ class InGameActivity : AppCompatActivity() {
 
         var flag = false
 
-        db.collection("BattleRooms").document(roomName)
+        listenerRegistration = db.collection("BattleRooms").document(roomName)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     Toast.makeText(this, "Error waiting for opponent acceptance", Toast.LENGTH_SHORT).show()
@@ -389,10 +392,11 @@ class InGameActivity : AppCompatActivity() {
                             2 -> opponentType = DiceType.COUNTER
                         }
 
+                        // 리스너 제거
+                        listenerRegistration?.remove()
+
                         // round timer 종료 후 게임 결과 프로세스로 넘어간다
-                        Log.d("LogTemp", "라운드 타이머 종료?? " + roundTimer.toString())
                         roundTimer?.cancel()
-                        Log.d("LogTemp", "라운드 타이머 종료!! " + roundTimer.toString())
                         showResult()
                     }
                 }

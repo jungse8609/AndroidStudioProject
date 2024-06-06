@@ -376,8 +376,8 @@ class InGameActivity : AppCompatActivity() {
 
                 if (snapshot != null && snapshot.exists() && !flag) {
                     // 상대방의 선택했는지 = true 인지 확인
-                    val opponentRound = snapshot.getLong("opponentRound") ?: 0L
-                    val playerRound = snapshot.getLong("playerRound") ?: 0L
+                    val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
+                    val playerRound = snapshot.getLong(playerId + "Round") ?: 0L
                     if (opponentRound == 1L && playerRound == 1L) {
                         flag = true
 
@@ -392,12 +392,12 @@ class InGameActivity : AppCompatActivity() {
                             2 -> opponentType = DiceType.COUNTER
                         }
 
-                        // 리스너 제거
-                        listenerRegistration?.remove()
-
                         // round timer 종료 후 게임 결과 프로세스로 넘어간다
                         roundTimer?.cancel()
                         showResult()
+
+                        // 리스너 제거
+                        listenerRegistration?.remove()
                     }
                 }
             }

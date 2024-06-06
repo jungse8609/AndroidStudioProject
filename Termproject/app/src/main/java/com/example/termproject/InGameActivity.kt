@@ -74,12 +74,12 @@ class InGameActivity : AppCompatActivity() {
     private lateinit var playerId : String
     private lateinit var opponentId : String
     private lateinit var roomName : String
+    private lateinit var roundTimerId : String
     // User Nickname and Score
     private lateinit var playerNick : String
     private lateinit var OpponentNick : String
     private var playerScore : Long = 0
     private var opponentScore : Long = 0
-
     // dice roll result tuple(int, int, int)
     private var playerRolls: Triple<Int, Int, Int>? = null
     private var opponentRolls: Triple<Int, Int, Int>? = null
@@ -158,6 +158,7 @@ class InGameActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { document ->
                 if (document != null) {
+                    roundTimerId = document.getString("roundTimerId") ?: "null"
                     playerNick = document.getString(playerId + "Nick") ?: "null"
                     playerScore = document.getLong(playerId + "Score") ?: 0
                     playerHealth = document.getLong(playerId + "HP") ?: 0
@@ -203,7 +204,7 @@ class InGameActivity : AppCompatActivity() {
                     .get()
                     .addOnSuccessListener { document ->
                         if (document != null) {
-                            document.reference.update(playerId + "Choose", DiceType.ATTACK)
+                            document.reference.update(playerId + "Choose", 0)
                             document.reference.update(playerId + "Round", 1)
                         }
                     }
@@ -223,7 +224,7 @@ class InGameActivity : AppCompatActivity() {
                     .get()
                     .addOnSuccessListener { document ->
                         if (document != null) {
-                            document.reference.update(playerId + "Choose", DiceType.DEFENSE)
+                            document.reference.update(playerId + "Choose", 1)
                             document.reference.update(playerId + "Round", 1)
                         }
                     }
@@ -243,7 +244,7 @@ class InGameActivity : AppCompatActivity() {
                     .get()
                     .addOnSuccessListener { document ->
                         if (document != null) {
-                            document.reference.update(playerId + "Choose", DiceType.COUNTER)
+                            document.reference.update(playerId + "Choose", 2)
                             document.reference.update(playerId + "Round", 1)
                         }
                     }
@@ -341,8 +342,9 @@ class InGameActivity : AppCompatActivity() {
         txtPlayerResult.text = "-"
         txtOpponentResult.text = "-"
 
-        // 라운드 타이머 재실행
-        startRoundTimer()
+        // 라운드 타이머 실행
+        if (playerId == roundTimerId)
+            startRoundTimer()
     }
 
     // 상대방의 주사위 결과를 기다리는 함수 (여기서는 단순히 랜덤 값을 설정합니다)
@@ -613,6 +615,16 @@ class InGameActivity : AppCompatActivity() {
         roundTimer = object : CountDownTimer(roundTimeLimit, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 txtRoundTimer.text = "${millisUntilFinished / 1000}"
+
+                // Update firebase
+                db.collection("BattleRooms")
+                    .document(roomName)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            document.reference.update("roundTime", millisUntilFinished)
+                        }
+                    }
             }
 
             override fun onFinish() {

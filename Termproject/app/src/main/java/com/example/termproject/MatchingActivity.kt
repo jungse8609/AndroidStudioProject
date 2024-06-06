@@ -120,6 +120,7 @@ class MatchingActivity : AppCompatActivity() {
         val roomSetting = mapOf(
             "roomName" to roomName,
             "roundTime" to 0,
+            "roundTimerId" to userId,
             "resultTime" to 0,
             userId + "Accept" to 1,
             userId + "HP" to gameHp,
@@ -222,6 +223,8 @@ class MatchingActivity : AppCompatActivity() {
                     val opponentId = snapshot.getString("Opponent")
 
                     val roomName = userId + "_" + opponentId + "_BattleRoom"
+
+                    Log.d("LogTemp", roomName)
 
                     // 팝업 띄우기
 

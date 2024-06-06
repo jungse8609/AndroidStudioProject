@@ -198,16 +198,16 @@ class InGameActivity : AppCompatActivity() {
                             document.reference.update(playerId + "Attack", playerRolls!!.first)
                             document.reference.update(playerId + "Defense", playerRolls!!.second)
                             document.reference.update(playerId + "Counter", playerRolls!!.third)
+
+                            // 버튼 interactive 설정
+                            btnDice.isEnabled = false; btnDice.setTextColor(Color.parseColor("#dddddd"))
+                            btnAttack.isEnabled = true; btnAttack.setTextColor(Color.parseColor("#b80080"))
+                            btnDefense.isEnabled = true; btnDefense.setTextColor(Color.parseColor("#00008b"))
+                            btnCounter.isEnabled = true; btnCounter.setTextColor(Color.parseColor("#9011d3"))
+
+                            onUpdateDiceImage()
                         }
                     }
-
-                // 버튼 interactive 설정
-                btnDice.isEnabled = false; btnDice.setTextColor(Color.parseColor("#dddddd"))
-                btnAttack.isEnabled = true; btnAttack.setTextColor(Color.parseColor("#b80080"))
-                btnDefense.isEnabled = true; btnDefense.setTextColor(Color.parseColor("#00008b"))
-                btnCounter.isEnabled = true; btnCounter.setTextColor(Color.parseColor("#9011d3"))
-
-                onUpdateDiceImage()
             }
         }
 
@@ -223,11 +223,11 @@ class InGameActivity : AppCompatActivity() {
                         if (document != null) {
                             document.reference.update(playerId + "Choose", 0)
                             document.reference.update(playerId + "Round", 1)
+
+                            imgDiceAttackBackground.setBackgroundColor(Color.GREEN)
+                            waitForOppoenent()
                         }
                     }
-
-                imgDiceAttackBackground.setBackgroundColor(Color.GREEN)
-                waitForOppoenent()
             }
         }
 
@@ -243,11 +243,11 @@ class InGameActivity : AppCompatActivity() {
                         if (document != null) {
                             document.reference.update(playerId + "Choose", 1)
                             document.reference.update(playerId + "Round", 1)
+
+                            imgDiceDefenseBackground.setBackgroundColor(Color.GREEN)
+                            waitForOppoenent()
                         }
                     }
-
-                imgDiceDefenseBackground.setBackgroundColor(Color.GREEN)
-                waitForOppoenent()
             }
         }
 
@@ -263,11 +263,13 @@ class InGameActivity : AppCompatActivity() {
                         if (document != null) {
                             document.reference.update(playerId + "Choose", 2)
                             document.reference.update(playerId + "Round", 1)
+
+                            imgDiceCounterBackground.setBackgroundColor(Color.GREEN)
+                            waitForOppoenent()
                         }
                     }
 
-                imgDiceCounterBackground.setBackgroundColor(Color.GREEN)
-                waitForOppoenent()
+
             }
         }
 

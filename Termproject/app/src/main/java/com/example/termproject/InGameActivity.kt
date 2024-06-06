@@ -93,7 +93,7 @@ class InGameActivity : AppCompatActivity() {
     private var curOpponentHealth : Long = 10
 
     private var roundTimer: CountDownTimer? = null
-    private val roundTimeLimit: Long = 15000 // 15 seconds
+    private val roundTimeLimit: Long = 5000 // 15 seconds
 
     private var resultTimer: CountDownTimer? = null
     private val resultTimeLimit: Long = 1000 //3500 // 3.5 seconds
@@ -167,8 +167,6 @@ class InGameActivity : AppCompatActivity() {
                     OpponentNick = document.getString(opponentId + "Nick") ?: "null"
                     opponentScore = document.getLong(opponentId + "Score") ?: 0
                     opponentHealth = document.getLong(opponentId + "HP") ?: 0
-
-
                 }
             }
 
@@ -306,16 +304,6 @@ class InGameActivity : AppCompatActivity() {
             return
         }
 
-        // 선택 여부 초기화
-        db.collection("BattleRooms")
-            .document(roomName)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    document.reference.update(playerId + "Round", 0)
-                }
-            }
-
         // Control 제어 State 들 초기화
         rollDiceOnce = false;
         isWaiting = false;
@@ -367,7 +355,7 @@ class InGameActivity : AppCompatActivity() {
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                    // 상대방의 round = true 인지 확인
+                    // 상대방의 선택했는지 = true 인지 확인
                     val opponentRound = snapshot.getLong("opponentRound") ?: 0L
                     if (opponentRound == 1L) {
                         opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
@@ -393,64 +381,50 @@ class InGameActivity : AppCompatActivity() {
 
     private fun showResult() {
         // 여기서 상대방의 선택이 끝나거나 타이머가 종료할 때까지 기다려야해
-        db.collection("BattleRooms").document(roomName)
-            .addSnapshotListener { snapshot, e ->
-                if (e != null) {
-                    Toast.makeText(this, "Error waiting for opponent acceptance", Toast.LENGTH_SHORT).show()
-                    return@addSnapshotListener
-                }
+        // Calculate Result
+        result = getResult()
 
-                if (snapshot != null && snapshot.exists()) {
-                    // 상대방의 round = true 인지 확인
-                    val opponentRound = snapshot.getLong("opponentRound") ?: 0L
-                    if (opponentRound == 1L) {
-                        // Calculate Result
-                        result = getResult()
+        // Set Player Result
+        var attackValue = playerRolls?.first ?: 1
+        var defenseValue = playerRolls?.second ?: 1
+        var counterValue = playerRolls?.third ?: 1
+        when (playerType) {
+            DiceType.ATTACK -> imgDiceAttack.setImageResource(imgName[attackValue - 1])
+            DiceType.DEFENSE -> imgDiceDefense.setImageResource(imgName[defenseValue - 1])
+            DiceType.COUNTER -> imgDiceCounter.setImageResource(imgName[counterValue - 1])
+        }
 
-                        // Set Player Result
-                        var attackValue = playerRolls?.first ?: 1
-                        var defenseValue = playerRolls?.second ?: 1
-                        var counterValue = playerRolls?.third ?: 1
-                        when (playerType) {
-                            DiceType.ATTACK -> imgDiceAttack.setImageResource(imgName[attackValue - 1])
-                            DiceType.DEFENSE -> imgDiceDefense.setImageResource(imgName[defenseValue - 1])
-                            DiceType.COUNTER -> imgDiceCounter.setImageResource(imgName[counterValue - 1])
-                        }
+        // Set Opponent Result
+        var opAttackValue = opponentRolls?.first ?: 1
+        var opDefenseValue = opponentRolls?.second ?: 1
+        var opCounterValue = opponentRolls?.third ?: 1
+        imgOpponentDiceAttack.setImageResource(imgName[opAttackValue - 1])
+        imgOpponentDiceDefense.setImageResource(imgName[opDefenseValue - 1])
+        imgOpponentDiceCounter.setImageResource(imgName[opCounterValue - 1])
+        when (opponentType) {
+            DiceType.ATTACK -> imgOpponentDiceAttackBackground.setBackgroundColor(Color.RED)
+            DiceType.DEFENSE -> imgOpponentDiceDefenseBackground.setBackgroundColor(Color.RED)
+            DiceType.COUNTER -> imgOpponentDiceCounterBackground.setBackgroundColor(Color.RED)
+        }
 
-                        // Set Opponent Result
-                        var opAttackValue = opponentRolls?.first ?: 1
-                        var opDefenseValue = opponentRolls?.second ?: 1
-                        var opCounterValue = opponentRolls?.third ?: 1
-                        imgOpponentDiceAttack.setImageResource(imgName[opAttackValue - 1])
-                        imgOpponentDiceDefense.setImageResource(imgName[opDefenseValue - 1])
-                        imgOpponentDiceCounter.setImageResource(imgName[opCounterValue - 1])
-                        when (opponentType) {
-                            DiceType.ATTACK -> imgOpponentDiceAttackBackground.setBackgroundColor(Color.RED)
-                            DiceType.DEFENSE -> imgOpponentDiceDefenseBackground.setBackgroundColor(Color.RED)
-                            DiceType.COUNTER -> imgOpponentDiceCounterBackground.setBackgroundColor(Color.RED)
-                        }
+        // Update Result
+        when (playerType) {
+            DiceType.ATTACK -> imgPlayerResult.setImageResource(imgName[attackValue - 1])
+            DiceType.DEFENSE -> imgPlayerResult.setImageResource(imgName[defenseValue - 1])
+            DiceType.COUNTER -> imgPlayerResult.setImageResource(imgName[counterValue - 1])
+        }
 
-                        // Update Result
-                        when (playerType) {
-                            DiceType.ATTACK -> imgPlayerResult.setImageResource(imgName[attackValue - 1])
-                            DiceType.DEFENSE -> imgPlayerResult.setImageResource(imgName[defenseValue - 1])
-                            DiceType.COUNTER -> imgPlayerResult.setImageResource(imgName[counterValue - 1])
-                        }
+        when (opponentType) {
+            DiceType.ATTACK -> imgOppoenentResult.setImageResource(imgName[opAttackValue - 1])
+            DiceType.DEFENSE -> imgOppoenentResult.setImageResource(imgName[opDefenseValue - 1])
+            DiceType.COUNTER -> imgOppoenentResult.setImageResource(imgName[opCounterValue - 1])
+        }
 
-                        when (opponentType) {
-                            DiceType.ATTACK -> imgOppoenentResult.setImageResource(imgName[opAttackValue - 1])
-                            DiceType.DEFENSE -> imgOppoenentResult.setImageResource(imgName[opDefenseValue - 1])
-                            DiceType.COUNTER -> imgOppoenentResult.setImageResource(imgName[opCounterValue - 1])
-                        }
+        txtPlayerResult.text = result.first.toString()
+        txtOpponentResult.text = result.second.toString()
 
-                        txtPlayerResult.text = result.first.toString()
-                        txtOpponentResult.text = result.second.toString()
-
-                        // Finished() -> proceedToNextTurn
-                        startResultTimer()
-                    }
-                }
-            }
+        // Finished() -> proceedToNextTurn
+        startResultTimer()
     }
 
     private fun getResult() : Pair<Int, Int> {
@@ -607,7 +581,33 @@ class InGameActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                proceedToNextTurn()
+                db.collection("BattleRooms")
+                    .document(roomName)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            document.reference.update(playerId + "Round", 0)
+                            document.reference.update(playerId + "Attack", 0)
+                            document.reference.update(playerId + "Defense", 0)
+                            document.reference.update(playerId + "Counter", 0)
+                        }
+                    }
+
+                db.collection("BattleRooms").document(roomName)
+                    .addSnapshotListener { snapshot, e ->
+                        if (e != null) {
+                            return@addSnapshotListener
+                        }
+
+                        if (snapshot != null && snapshot.exists()) {
+                            // 상대방의 round = true 인지 확인
+                            val opponentRound = snapshot.getLong(opponentId + "Round") ?: 1L
+                            val playerRound = snapshot.getLong(playerId + "Round") ?: 1L
+                            if (opponentRound + playerRound == 0L) {
+                                proceedToNextTurn()
+                            }
+                        }
+                    }
             }
         }.start()
     }
@@ -655,16 +655,19 @@ class InGameActivity : AppCompatActivity() {
                                 // 상대방의 round = true 인지 확인
                                 val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
                                 if (opponentRound == 1L) {
+
                                     opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
                                     opponentDefense = snapshot.getLong(opponentId + "Defense")!!.toInt()
                                     opponentCounter = snapshot.getLong(opponentId + "Counter")!!.toInt()
+                                    opponentRolls = Triple(opponentAttack, opponentDefense, opponentCounter)
                                     opponentChoose = snapshot.getLong(opponentId + "Choose")!!.toInt()
-                                    opponentRolls = rollDices()
                                     when (opponentChoose) {
                                         0 -> opponentType = DiceType.ATTACK
                                         1 -> opponentType = DiceType.DEFENSE
                                         2 -> opponentType = DiceType.COUNTER
                                     }
+
+                                    Log.d("LogTemp", opponentRolls.toString())
 
                                     // round timer 종료 후 게임 결과 프로세스로 넘어간다
                                     roundTimer?.cancel()
@@ -673,7 +676,44 @@ class InGameActivity : AppCompatActivity() {
                             }
                         }
                 }
-                showResult()
+                else {
+                    var opponentAttack : Int = 0
+                    var opponentDefense : Int = 0
+                    var opponentCounter : Int = 0
+                    var opponentChoose : Int = 0
+
+                    db.collection("BattleRooms").document(roomName)
+                        .addSnapshotListener { snapshot, e ->
+                            if (e != null) {
+                                return@addSnapshotListener
+                            }
+
+                            if (snapshot != null && snapshot.exists()) {
+                                // 상대방의 round = true 인지 확인
+                                val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
+                                if (opponentRound == 1L) {
+
+                                    opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
+                                    opponentDefense = snapshot.getLong(opponentId + "Defense")!!.toInt()
+                                    opponentCounter = snapshot.getLong(opponentId + "Counter")!!.toInt()
+                                    opponentRolls = Triple(opponentAttack, opponentDefense, opponentCounter)
+                                    opponentChoose = snapshot.getLong(opponentId + "Choose")!!.toInt()
+                                    when (opponentChoose) {
+                                        0 -> opponentType = DiceType.ATTACK
+                                        1 -> opponentType = DiceType.DEFENSE
+                                        2 -> opponentType = DiceType.COUNTER
+                                    }
+
+                                    Log.d("LogTemp", opponentRolls.toString())
+
+                                    // round timer 종료 후 게임 결과 프로세스로 넘어간다
+                                    roundTimer?.cancel()
+                                    showResult()
+                                }
+                            }
+                        }
+                }
+
             }
         }.start()
     }

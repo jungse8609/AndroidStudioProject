@@ -389,8 +389,6 @@ class InGameActivity : AppCompatActivity() {
                         // round timer 종료 후 게임 결과 프로세스로 넘어간다
                         roundTimer?.cancel()
 
-                        Log.d("LogTemp", "RoundTimer End")
-
                         showResult()
                     }
                 }
@@ -402,8 +400,6 @@ class InGameActivity : AppCompatActivity() {
     private fun showResult() {
         // Calculate Result
         result = getResult()
-
-        Log.d("LogTemp", "showResult()의 result 결과 : " + result.toString())
 
         // Set Player Result
         var attackValue = playerRolls?.first ?: 1
@@ -450,8 +446,6 @@ class InGameActivity : AppCompatActivity() {
             txtOpponentResult.text = "+" + result.second.toString()
         else
             txtOpponentResult.text = result.second.toString()
-
-        Log.d("LogTemp", "showResult() 끝남")
 
         startResultTimer()
     }
@@ -600,8 +594,6 @@ class InGameActivity : AppCompatActivity() {
 
     // 결과창 타이머 시작 함수
     private fun startResultTimer() {
-        Log.d("LogTemp", "StartResultTimer")
-
         resultTimer = object : CountDownTimer(resultTimeLimit, 1000) {
             override fun onTick(millisUntilFinished: Long) {
 

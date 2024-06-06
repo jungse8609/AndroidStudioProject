@@ -245,8 +245,8 @@ class InGameActivity : AppCompatActivity() {
 
                             imgDiceAttack.setBackgroundResource(R.drawable.button_green_border)
                             btnAttack .background = null
-                            btnDefense.setTextColor(Color.parseColor("#dddddd")); btnDefense.background = null
-                            btnCounter.setTextColor(Color.parseColor("#dddddd")); btnCounter.background = null
+                            btnDefense.setTextColor(Color.parseColor("#444444")); btnDefense.background = null
+                            btnCounter.setTextColor(Color.parseColor("#444444")); btnCounter.background = null
                             waitForOppoenent()
                         }
                     }
@@ -267,9 +267,9 @@ class InGameActivity : AppCompatActivity() {
                             document.reference.update(playerId + "Round", 1)
 
                             imgDiceDefense.setBackgroundResource(R.drawable.button_green_border)
-                            btnAttack .setTextColor(Color.parseColor("#dddddd")); btnDefense.background = null
+                            btnAttack .setTextColor(Color.parseColor("#444444")); btnAttack.background = null
                             btnDefense.background = null
-                            btnCounter.setTextColor(Color.parseColor("#dddddd")); btnCounter.background = null
+                            btnCounter.setTextColor(Color.parseColor("#444444")); btnCounter.background = null
                             waitForOppoenent()
                         }
                     }
@@ -290,8 +290,8 @@ class InGameActivity : AppCompatActivity() {
                             document.reference.update(playerId + "Round", 1)
 
                             imgDiceCounter.setBackgroundResource(R.drawable.button_green_border)
-                            btnAttack .setTextColor(Color.parseColor("#dddddd")); btnDefense.background = null
-                            btnDefense.setTextColor(Color.parseColor("#dddddd")); btnCounter.background = null
+                            btnAttack .setTextColor(Color.parseColor("#444444")); btnAttack.background = null
+                            btnDefense.setTextColor(Color.parseColor("#444444")); btnDefense.background = null
                             btnCounter.background = null
                             waitForOppoenent()
                         }
@@ -341,9 +341,9 @@ class InGameActivity : AppCompatActivity() {
 
         // 버튼 interactive 설정
         btnDice.isEnabled = true; btnDice.setTextColor(Color.parseColor("#333333")); btnDice.setBackgroundResource(R.drawable.button_yellow_border)
-        btnAttack.isEnabled = false; btnAttack.setTextColor(Color.parseColor("#dddddd"))  ;btnAttack.background = null
-        btnDefense.isEnabled = false; btnDefense.setTextColor(Color.parseColor("#dddddd"));btnDefense.background = null
-        btnCounter.isEnabled = false; btnCounter.setTextColor(Color.parseColor("#dddddd"));btnCounter.background = null
+        btnAttack.isEnabled = false; btnAttack.setTextColor(Color.parseColor("#444444"))  ;btnAttack.background = null
+        btnDefense.isEnabled = false; btnDefense.setTextColor(Color.parseColor("#444444"));btnDefense.background = null
+        btnCounter.isEnabled = false; btnCounter.setTextColor(Color.parseColor("#444444"));btnCounter.background = null
 
         // 상대방 주사위 이미지 안 보이게 설정
         imgOpponentDiceAttack.setImageResource(R.drawable.question_red)
@@ -442,9 +442,9 @@ class InGameActivity : AppCompatActivity() {
         imgOpponentDiceDefense.setImageResource(imgNameDefense[opDefenseValue.toInt() - 1])
         imgOpponentDiceCounter.setImageResource(imgNameCounter[opCounterValue.toInt() - 1])
         when (opponentType) {
-            DiceType.ATTACK -> imgOpponentDiceAttack.setBackgroundResource(R.drawable.button_red_border)
-            DiceType.DEFENSE -> imgOpponentDiceDefense.setBackgroundResource(R.drawable.button_red_border)
-            DiceType.COUNTER -> imgOpponentDiceCounter.setBackgroundResource(R.drawable.button_red_border)
+            DiceType.ATTACK -> imgOpponentDiceAttack.setBackgroundResource(R.drawable.button_green_border)
+            DiceType.DEFENSE -> imgOpponentDiceDefense.setBackgroundResource(R.drawable.button_green_border)
+            DiceType.COUNTER -> imgOpponentDiceCounter.setBackgroundResource(R.drawable.button_green_border)
         }
 
         // Update Result

@@ -135,7 +135,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/question_red"
                             android:background="@drawable/button_white_border"
-                            android:padding="7dp"/>
+                            android:padding="4dp"/>
 
                     </FrameLayout>
 
@@ -154,7 +154,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/question_blue"
                             android:background="@drawable/button_green_border"
-                            android:padding="7dp"/>
+                            android:padding="4dp"/>
 
                     </FrameLayout>
 
@@ -173,7 +173,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/question_purple"
                             android:background="@drawable/button_white_border"
-                            android:padding="7dp"/>
+                            android:padding="4dp"/>
 
                     </FrameLayout>
 
@@ -346,7 +346,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/one_red"
                             android:background="@drawable/button_green_border"
-                            android:padding="7dp"/>
+                            android:padding="4dp"/>
 
                     </FrameLayout>
 
@@ -365,7 +365,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/two_blue"
                             android:background="@drawable/button_white_border"
-                            android:padding="7dp"/>
+                            android:padding="4dp"/>
 
                     </FrameLayout>
 
@@ -384,7 +384,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/one_purple"
                             android:background="@drawable/button_white_border"
-                            android:padding="7dp"/>
+                            android:padding="4dp"/>
 
                     </FrameLayout>
 

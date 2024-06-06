@@ -186,6 +186,18 @@ class InGameActivity : AppCompatActivity() {
                 rollDiceOnce = true
                 playerRolls = rollDices()
 
+                // firebase에 주사위 값 write
+                db.collection("BattleRooms")
+                    .document(roomName)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            document.reference.update(playerId + "Attack", playerRolls!!.first)
+                            document.reference.update(playerId + "Defense", playerRolls!!.second)
+                            document.reference.update(playerId + "Counter", playerRolls!!.third)
+                        }
+                    }
+
                 // 버튼 interactive 설정
                 btnDice.isEnabled = false; btnDice.setTextColor(Color.parseColor("#dddddd"))
                 btnAttack.isEnabled = true; btnAttack.setTextColor(Color.parseColor("#b80080"))
@@ -266,18 +278,6 @@ class InGameActivity : AppCompatActivity() {
         val attackRoll = rollDice()
         val defenseRoll = rollDice()
         val counterRoll = rollDice()
-
-        // firebase에 주사위 값 write
-        db.collection("BattleRooms")
-            .document(roomName)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    document.reference.update(playerId + "Attack", attackRoll)
-                    document.reference.update(playerId + "Defense", attackRoll)
-                    document.reference.update(playerId + "Counter", attackRoll)
-                }
-            }
 
         return Triple(attackRoll, defenseRoll, counterRoll)
     }

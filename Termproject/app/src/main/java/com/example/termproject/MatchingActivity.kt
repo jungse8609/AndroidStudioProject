@@ -194,7 +194,7 @@ class MatchingActivity : AppCompatActivity() {
             }
         }
 
-        // Schedule the timer to delete the room after 3 seconds
+        // Schedule the timer to delete the room after 10 seconds
         timer.schedule(timerTask, 10000)
 
         // 수락 대기 팝업창 띄워
@@ -208,18 +208,23 @@ class MatchingActivity : AppCompatActivity() {
 
                 if (snapshot != null && snapshot.exists()) {
                     val opponentChk = snapshot.getLong(opponentAccept) ?: 0L
+                    // 상대가 수락한 경우
                     if (opponentChk == 1L) {
                         // Cancel the timer if opponent accepted
                         timer.cancel()
 
-                        // Step 4: Start the game
+                        // Start the game
                         val intent = Intent(this, InGameActivity::class.java)
                         intent.putExtra("userId", userId)
                         intent.putExtra("opponentId", opponentId)
                         intent.putExtra("roomName", roomName)
 
+                        Log.d("LogTemp", "게임 시작")
+
                         startActivity(intent)
+                        finish()
                     }
+                    // 상대가 거절한 경우
                     else if (opponentChk == -1L) {
                         db.collection("BattleRooms").document(roomName).delete()
                             .addOnSuccessListener {
@@ -271,6 +276,7 @@ class MatchingActivity : AppCompatActivity() {
                                             intent.putExtra("roomName", roomName)
 
                                             startActivity(intent)
+                                            finish()
                                         }
                                     }
                             } else {

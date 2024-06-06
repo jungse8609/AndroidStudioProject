@@ -352,6 +352,8 @@ class InGameActivity : AppCompatActivity() {
         var opponentCounter : Int = 0
         var opponentChoose : Int = 0
 
+        var flag = false
+
         db.collection("BattleRooms").document(roomName)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
@@ -359,11 +361,13 @@ class InGameActivity : AppCompatActivity() {
                     return@addSnapshotListener
                 }
 
-                if (snapshot != null && snapshot.exists()) {
+                if (snapshot != null && snapshot.exists() && !flag) {
                     // 상대방의 선택했는지 = true 인지 확인
                     val opponentRound = snapshot.getLong("opponentRound") ?: 0L
                     val playerRound = snapshot.getLong("playerRound") ?: 0L
                     if (opponentRound == 1L) {
+                        flag = true
+
                         opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
                         opponentDefense = snapshot.getLong(opponentId + "Defense")!!.toInt()
                         opponentCounter = snapshot.getLong(opponentId + "Counter")!!.toInt()
@@ -598,8 +602,11 @@ class InGameActivity : AppCompatActivity() {
                             document.reference.update(playerId + "Attack", 0)
                             document.reference.update(playerId + "Defense", 0)
                             document.reference.update(playerId + "Counter", 0)
+                            document.reference.update(playerId + "Choose", 0)
                         }
                     }
+
+                var flag = false
 
                 db.collection("BattleRooms").document(roomName)
                     .addSnapshotListener { snapshot, e ->
@@ -607,8 +614,11 @@ class InGameActivity : AppCompatActivity() {
                             return@addSnapshotListener
                         }
 
-                        if (snapshot != null && snapshot.exists()) {
+                        if (snapshot != null && snapshot.exists() && !flag) {
                             // 상대방의 round = true 인지 확인
+
+                            flag = true
+
                             val opponentRound = snapshot.getLong(opponentId + "Round") ?: 1L
                             val playerRound = snapshot.getLong(playerId + "Round") ?: 1L
                             if (opponentRound + playerRound == 0L) {
@@ -661,10 +671,10 @@ class InGameActivity : AppCompatActivity() {
                                 return@addSnapshotListener
                             }
 
-                            if (snapshot != null && snapshot.exists()) {
+                            if (snapshot != null && snapshot.exists() && !flag) {
                                 // 상대방의 round = true 인지 확인
                                 val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
-                                if (opponentRound == 1L && !flag) {
+                                if (opponentRound == 1L) {
 
                                     flag = true
 
@@ -702,10 +712,10 @@ class InGameActivity : AppCompatActivity() {
                                 return@addSnapshotListener
                             }
 
-                            if (snapshot != null && snapshot.exists()) {
+                            if (snapshot != null && snapshot.exists() && !flag) {
                                 // 상대방의 round = true 인지 확인
                                 val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
-                                if (opponentRound == 1L && !flag) {
+                                if (opponentRound == 1L) {
 
                                     flag = true
 

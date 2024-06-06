@@ -42,7 +42,7 @@ class InGameActivity : AppCompatActivity() {
     private lateinit var imgOpponentDiceDefense : ImageView
     private lateinit var imgOpponentDiceCounter : ImageView
 
-    private lateinit var imgOppoenentResult : ImageView
+    private lateinit var imgOpponentResult : ImageView
     private lateinit var imgPlayerResult : ImageView
 
     private lateinit var btnDice : Button
@@ -58,6 +58,8 @@ class InGameActivity : AppCompatActivity() {
     private lateinit var txtOpponentHpBar : TextView
     private lateinit var txtResult : TextView
     private lateinit var txtScore : TextView
+    private lateinit var txtPlayerType : TextView
+    private lateinit var txtOpponentType : TextView
 
     private lateinit var layoutResult : LinearLayout
 
@@ -95,7 +97,9 @@ class InGameActivity : AppCompatActivity() {
     private var isWaiting: Boolean = false // 상대방이 고를 때까지 기다리는 중인가
     private var rollDiceOnce: Boolean = false // 라운드에 주사위는 한 번만 굴릴 수 있다
 
-    private val imgName = listOf(R.drawable.one, R.drawable.two, R.drawable.three, R.drawable.four, R.drawable.five, R.drawable.six)
+    private val imgNameAttack = listOf(R.drawable.one_red, R.drawable.two_red, R.drawable.three_red, R.drawable.four_red, R.drawable.five_red, R.drawable.six_red)
+    private val imgNameDefense = listOf(R.drawable.one_blue, R.drawable.two_blue, R.drawable.three_blue, R.drawable.four_blue, R.drawable.five_blue, R.drawable.six_blue)
+    private val imgNameCounter = listOf(R.drawable.one_purple, R.drawable.two_purple, R.drawable.three_purple, R.drawable.four_purple, R.drawable.five_purple, R.drawable.six_purple)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,7 +114,7 @@ class InGameActivity : AppCompatActivity() {
         imgOpponentDiceDefense = findViewById(R.id.ImgOpponentDiceDefense)
         imgOpponentDiceCounter = findViewById(R.id.ImgOpponentDiceCounter)
 
-        imgOppoenentResult = findViewById(R.id.ImgOpponentResult)
+        imgOpponentResult = findViewById(R.id.ImgOpponentResult)
         imgPlayerResult = findViewById(R.id.ImgPlayerResult)
 
         imgHpBackground = findViewById(R.id.ImgHpBackround)
@@ -127,6 +131,8 @@ class InGameActivity : AppCompatActivity() {
         txtRoundTimer = findViewById(R.id.TxtRoundTimer)
         txtPlayerResult = findViewById(R.id.TxtPlayerResult)
         txtOpponentResult = findViewById(R.id.TxtOpponentResult)
+        txtPlayerType = findViewById(R.id.TxtPlayerType)
+        txtOpponentType = findViewById(R.id.TxtOpponentType)
         txtHpBar = findViewById(R.id.TxtHpBar)
         txtOpponentHpBar = findViewById(R.id.TxtOpponentHpBar)
         txtResult = findViewById(R.id.TxtResult)
@@ -141,6 +147,7 @@ class InGameActivity : AppCompatActivity() {
         opponentId = intent.getStringExtra("opponentId").toString()
         roomName = intent.getStringExtra("roomName").toString()
 
+        // Init Game Variables
         db.collection("BattleRooms")
             .document(roomName)
             .get()
@@ -178,6 +185,9 @@ class InGameActivity : AppCompatActivity() {
                     }
                     txtHpBar.text = "$curPlayerHealth/$playerHealth"
                     txtOpponentHpBar.text = "$curOpponentHealth/$opponentHealth"
+
+                    txtPlayerType.text = ""
+                    txtOpponentType.text = ""
 
                     // ### Round Play while someone died
                     gameplay();
@@ -304,9 +314,9 @@ class InGameActivity : AppCompatActivity() {
         var attackValue = playerRolls?.first ?: 1
         var defenseValue = playerRolls?.second ?: 1
         var counterValue = playerRolls?.third ?: 1
-        imgDiceAttack.setImageResource(imgName[attackValue.toInt() - 1])
-        imgDiceDefense.setImageResource(imgName[defenseValue.toInt() - 1])
-        imgDiceCounter.setImageResource(imgName[counterValue.toInt() - 1])
+        imgDiceAttack.setImageResource(imgNameAttack[attackValue.toInt() - 1])
+        imgDiceDefense.setImageResource(imgNameDefense[defenseValue.toInt() - 1])
+        imgDiceCounter.setImageResource(imgNameCounter[counterValue.toInt() - 1])
     }
 
     private fun gameplay() {
@@ -327,21 +337,29 @@ class InGameActivity : AppCompatActivity() {
         btnCounter.isEnabled = false; btnCounter.setTextColor(Color.parseColor("#dddddd"));btnCounter.background = null
 
         // 상대방 주사위 이미지 안 보이게 설정
-        imgOpponentDiceAttack.setImageResource(R.drawable.hide)
-        imgOpponentDiceDefense.setImageResource(R.drawable.hide)
-        imgOpponentDiceCounter.setImageResource(R.drawable.hide)
+        imgOpponentDiceAttack.setImageResource(R.drawable.question_red)
+        imgOpponentDiceDefense.setImageResource(R.drawable.question_blue)
+        imgOpponentDiceCounter.setImageResource(R.drawable.question_purple)
 
         // 주사위의 테두리 검은색으로 초기화
-        imgDiceAttack.setBackgroundResource(R.drawable.button_black_border)
-        imgDiceDefense.setBackgroundResource(R.drawable.button_black_border)
-        imgDiceCounter.setBackgroundResource(R.drawable.button_black_border)
-        imgOpponentDiceAttack.setBackgroundResource(R.drawable.button_black_border)
-        imgOpponentDiceDefense.setBackgroundResource(R.drawable.button_black_border)
-        imgOpponentDiceCounter.setBackgroundResource(R.drawable.button_black_border)
+        imgDiceAttack.setBackgroundResource(R.drawable.button_white_border)
+        imgDiceDefense.setBackgroundResource(R.drawable.button_white_border)
+        imgDiceCounter.setBackgroundResource(R.drawable.button_white_border)
+        imgOpponentDiceAttack.setBackgroundResource(R.drawable.button_white_border)
+        imgOpponentDiceDefense.setBackgroundResource(R.drawable.button_white_border)
+        imgOpponentDiceCounter.setBackgroundResource(R.drawable.button_white_border)
 
         // 결과 텍스트 초기화
-        imgPlayerResult.setImageResource(R.drawable.hide)
-        imgOppoenentResult.setImageResource(R.drawable.hide)
+        when (playerType) {
+            DiceType.ATTACK -> imgPlayerResult.setImageResource(R.drawable.question_red)
+            DiceType.DEFENSE -> imgPlayerResult.setImageResource(R.drawable.question_blue)
+            DiceType.COUNTER -> imgPlayerResult.setImageResource(R.drawable.question_purple)
+        }
+        when (opponentType) {
+            DiceType.ATTACK ->  imgOpponentResult.setImageResource(R.drawable.question_red)
+            DiceType.DEFENSE -> imgOpponentResult.setImageResource(R.drawable.question_blue)
+            DiceType.COUNTER -> imgOpponentResult.setImageResource(R.drawable.question_purple)
+        }
         txtPlayerResult.text = "-"
         txtOpponentResult.text = "-"
 
@@ -402,18 +420,18 @@ class InGameActivity : AppCompatActivity() {
         var defenseValue = playerRolls?.second ?: 1
         var counterValue = playerRolls?.third ?: 1
         when (playerType) {
-            DiceType.ATTACK -> imgDiceAttack.setImageResource(imgName[attackValue.toInt() - 1])
-            DiceType.DEFENSE -> imgDiceDefense.setImageResource(imgName[defenseValue.toInt() - 1])
-            DiceType.COUNTER -> imgDiceCounter.setImageResource(imgName[counterValue.toInt() - 1])
+            DiceType.ATTACK -> imgDiceAttack.setImageResource(imgNameAttack[attackValue.toInt() - 1])
+            DiceType.DEFENSE -> imgDiceDefense.setImageResource(imgNameDefense[defenseValue.toInt() - 1])
+            DiceType.COUNTER -> imgDiceCounter.setImageResource(imgNameCounter[counterValue.toInt() - 1])
         }
 
         // Set Opponent Result
         var opAttackValue : Long = opponentRolls?.first ?: 1
         var opDefenseValue : Long = opponentRolls?.second ?: 1
         var opCounterValue : Long = opponentRolls?.third ?: 1
-        imgOpponentDiceAttack.setImageResource(imgName[opAttackValue.toInt() - 1])
-        imgOpponentDiceDefense.setImageResource(imgName[opDefenseValue.toInt() - 1])
-        imgOpponentDiceCounter.setImageResource(imgName[opCounterValue.toInt() - 1])
+        imgOpponentDiceAttack.setImageResource(imgNameAttack[opAttackValue.toInt() - 1])
+        imgOpponentDiceDefense.setImageResource(imgNameDefense[opDefenseValue.toInt() - 1])
+        imgOpponentDiceCounter.setImageResource(imgNameCounter[opCounterValue.toInt() - 1])
         when (opponentType) {
             DiceType.ATTACK -> imgOpponentDiceAttack.setBackgroundResource(R.drawable.button_red_border)
             DiceType.DEFENSE -> imgOpponentDiceDefense.setBackgroundResource(R.drawable.button_red_border)
@@ -422,15 +440,18 @@ class InGameActivity : AppCompatActivity() {
 
         // Update Result
         when (playerType) {
-            DiceType.ATTACK -> imgPlayerResult.setImageResource(imgName[attackValue.toInt() - 1])
-            DiceType.DEFENSE -> imgPlayerResult.setImageResource(imgName[defenseValue.toInt() - 1])
-            DiceType.COUNTER -> imgPlayerResult.setImageResource(imgName[counterValue.toInt() - 1])
+            DiceType.ATTACK -> { imgPlayerResult.setImageResource(imgNameAttack[attackValue.toInt() - 1]); txtPlayerType.text = "공격" }
+            DiceType.DEFENSE -> { imgPlayerResult.setImageResource(imgNameDefense[defenseValue.toInt() - 1]); txtPlayerType.text = "방어" }
+            DiceType.COUNTER -> { imgPlayerResult.setImageResource(imgNameCounter[counterValue.toInt() - 1]); txtPlayerType.text = "카운터" }
         }
 
+
+
+
         when (opponentType) {
-            DiceType.ATTACK -> imgOppoenentResult.setImageResource(imgName[opAttackValue.toInt() - 1])
-            DiceType.DEFENSE -> imgOppoenentResult.setImageResource(imgName[opDefenseValue.toInt() - 1])
-            DiceType.COUNTER -> imgOppoenentResult.setImageResource(imgName[opCounterValue.toInt() - 1])
+            DiceType.ATTACK -> { imgOpponentResult.setImageResource(imgNameAttack[opAttackValue.toInt() - 1]); txtOpponentType.text = "공격" }
+            DiceType.DEFENSE -> { imgOpponentResult.setImageResource(imgNameDefense[opDefenseValue.toInt() - 1]); txtOpponentType.text = "방어" }
+            DiceType.COUNTER -> { imgOpponentResult.setImageResource(imgNameCounter[opCounterValue.toInt() - 1]); txtOpponentType.text = "카운터" }
         }
 
         if (result.first >= 0)
@@ -554,9 +575,9 @@ class InGameActivity : AppCompatActivity() {
                     var attackValue = opponentRolls?.first ?: 1
                     var defenseValue = opponentRolls?.second ?: 1
                     var counterValue = opponentRolls?.third ?: 1
-                    imgOpponentDiceAttack.setImageResource(imgName[attackValue.toInt() - 1])
-                    imgOpponentDiceDefense.setImageResource(imgName[defenseValue.toInt() - 1])
-                    imgOpponentDiceCounter.setImageResource(imgName[counterValue.toInt() - 1])
+                    imgOpponentDiceAttack.setImageResource(imgNameAttack[attackValue.toInt() - 1])
+                    imgOpponentDiceDefense.setImageResource(imgNameDefense[defenseValue.toInt() - 1])
+                    imgOpponentDiceCounter.setImageResource(imgNameCounter[counterValue.toInt() - 1])
 
                     // Update Hp Bar
                     imgHpBackground.post {

@@ -13,7 +13,7 @@ class UserAdapter(private val userList: List<MatchingRecyclingView.User>, privat
     inner class UserViewHolder(private val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(user: MatchingRecyclingView.User) {
             binding.ItemRank.text = getRank(user).toString()
-            //binding.ItemProfile = user.profile
+            binding.ItemProfile.setImageResource(user.profile.toInt())
             binding.ItemNick.text = user.nick
             binding.ItemScore.text = user.score.toString()
             when (user.status) {

@@ -440,7 +440,7 @@ class InGameActivity : AppCompatActivity() {
         if (result.first >= 0)
             txtOpponentResult.text = "+" + result.second.toString()
         else
-            txtPlayerResult.text = result.second.toString()
+            txtOpponentResult.text = result.second.toString()
 
 
 

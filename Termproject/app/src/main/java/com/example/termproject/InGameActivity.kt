@@ -476,31 +476,25 @@ class InGameActivity : AppCompatActivity() {
         when {
             // 공격 vs 공격 : 둘 다 데미지 입음
             playerType == DiceType.ATTACK && opponentType == DiceType.ATTACK -> {
-                playerResult = opponentAttackValue * (-1)
-                opponentResult = playerAttackValue * (-1)
+                playerResult = -opponentAttackValue
+                opponentResult = -playerAttackValue
             }
             // 공격 vs 방어 : 공격이 크면 데미지, 방어가 크면 회복
             playerType == DiceType.ATTACK && opponentType == DiceType.DEFENSE -> {
-                if (playerAttackValue > opponentDefenseValue)
-                    opponentResult = (playerAttackValue - opponentDefenseValue) * (-1)
-                else
-                    opponentResult = opponentDefenseValue - playerAttackValue
+                opponentResult = opponentDefenseValue - playerAttackValue
             }
             // 공격 vs 카운터
             playerType == DiceType.ATTACK && opponentType == DiceType.COUNTER -> {
                 if (playerAttackValue > opponentCounterValue)
-                    opponentResult = (playerAttackValue + opponentCounterValue) * (-1)
+                    opponentResult = -(playerAttackValue + opponentCounterValue)
                 else if (playerAttackValue < opponentCounterValue)
-                    playerResult = (playerAttackValue + opponentCounterValue) * (-1)
+                    playerResult = -(playerAttackValue + opponentCounterValue)
                 else
-                    opponentResult = playerAttackValue * (-1)
+                    opponentResult = -playerAttackValue
             }
             // 방어 vs 공격 : 상대의 공격이 크면 데미지, 방어가 크면 회복
             playerType == DiceType.DEFENSE && opponentType == DiceType.ATTACK -> {
-                if (opponentAttackValue > playerDefenseValue)
-                    playerResult = (opponentAttackValue - playerDefenseValue) * (-1)
-                else
-                    playerResult = playerDefenseValue - opponentAttackValue
+                playerResult = playerDefenseValue - opponentAttackValue
             }
             // 방어 vs 방어 : 아무 일도 없음
             playerType == DiceType.DEFENSE && opponentType == DiceType.DEFENSE -> {
@@ -513,11 +507,11 @@ class InGameActivity : AppCompatActivity() {
             // 카운터 vs 공격
             playerType == DiceType.COUNTER && opponentType == DiceType.ATTACK -> {
                 if (opponentAttackValue > playerCounterValue)
-                    playerResult = (opponentAttackValue + playerCounterValue) * (-1)
+                    playerResult = -(opponentAttackValue + playerCounterValue)
                 else if (opponentAttackValue < playerCounterValue)
-                    opponentResult = (opponentAttackValue + playerCounterValue) * (-1)
+                    opponentResult = -(opponentAttackValue + playerCounterValue)
                 else
-                    playerResult = opponentAttackValue * (-1)
+                    playerResult = -opponentAttackValue
             }
             // 카운터 vs 방어 : 방어가 회복
             playerType == DiceType.COUNTER && opponentType == DiceType.DEFENSE -> {
@@ -526,9 +520,9 @@ class InGameActivity : AppCompatActivity() {
             // 카운터 vs 카운터 : 더 큰 쪽이 데미지
             playerType == DiceType.COUNTER && opponentType == DiceType.COUNTER -> {
                 if (playerCounterValue > opponentCounterValue)
-                    opponentResult = playerCounterValue * (-1)
+                    opponentResult = -playerCounterValue
                 else if (playerCounterValue < opponentCounterValue)
-                    playerResult = opponentCounterValue * (-1)
+                    playerResult = -opponentCounterValue
             }
         }
 

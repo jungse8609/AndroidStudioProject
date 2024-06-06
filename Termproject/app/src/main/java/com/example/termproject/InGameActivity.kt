@@ -1,7 +1,6 @@
 package com.example.termproject
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -93,10 +92,10 @@ class InGameActivity : AppCompatActivity() {
     private var curOpponentHealth : Long = 10
 
     private var roundTimer: CountDownTimer? = null
-    private val roundTimeLimit: Long = 5000 // 15 seconds
+    private val roundTimeLimit: Long = 15000 // 15 seconds
 
     private var resultTimer: CountDownTimer? = null
-    private val resultTimeLimit: Long = 1000 //3500 // 3.5 seconds
+    private val resultTimeLimit: Long = 5000 //3500 // 3.5 seconds
 
     // Flow Control Boolean
     private var isWaiting: Boolean = false // 상대방이 고를 때까지 기다리는 중인가

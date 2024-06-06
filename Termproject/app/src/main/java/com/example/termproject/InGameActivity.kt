@@ -617,12 +617,11 @@ class InGameActivity : AppCompatActivity() {
                         if (snapshot != null && snapshot.exists() && !flag) {
                             // 상대방의 round = true 인지 확인
 
-                            flag = true
-
                             val opponentRound = snapshot.getLong(opponentId + "Round") ?: 1L
                             val playerRound = snapshot.getLong(playerId + "Round") ?: 1L
                             if (opponentRound + playerRound == 0L) {
                                 proceedToNextTurn()
+                                flag = true
                             }
                         }
                     }

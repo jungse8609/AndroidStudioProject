@@ -29,8 +29,8 @@ class MatchingRecyclingView : AppCompatActivity() {
     private var userScore = 0
     private val userList = mutableListOf<User>()
 
-    private var waitTimer: CountDownTimer? = null
-    private val waitTimeLimit: Long = Long.MAX_VALUE
+    private lateinit var waitTimer: CountDownTimer
+    private val waitTimeLimit: Long = 10000 // 10 seconds wait time
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,9 +72,10 @@ class MatchingRecyclingView : AppCompatActivity() {
 
                     // 결투 버튼 클릭 이벤트
                     val onItemClick: (String) -> Unit = { text ->
-                        makeGame(text)
+                        //makeGame(text)
 
                         // 상대방 수락 대기 팝업창 띄워야함
+                        showChallengePopup(text)
                     }
 
                     binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick)
@@ -120,6 +121,17 @@ class MatchingRecyclingView : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "Failed to fetch opponent details", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun showChallengePopup(opponentId: String) {
+        val dialog = ChallengeWaitDialogFragment(waitTimeLimit) { accepted ->
+            if (accepted) {
+                makeGame(opponentId)
+            } else {
+                Toast.makeText(this@MatchingRecyclingView, "상대가 거절했습니다", Toast.LENGTH_SHORT).show()
+            }
+        }
+        dialog.show(supportFragmentManager, "ChallengeWaitDialog")
     }
 
     private fun createBattleRoom(opponentId: String, gameHp: Int, opponentScore: Long, opponentNick: String) {

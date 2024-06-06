@@ -226,7 +226,6 @@ class MatchingActivity : AppCompatActivity() {
                         Log.d("LogTemp", "게임 시작")
 
                         startActivity(intent)
-                        finish()
                     }
                     // 상대가 거절한 경우
                     else if (opponentChk == -1L) {
@@ -284,7 +283,6 @@ class MatchingActivity : AppCompatActivity() {
                                             intent.putExtra("roomName", roomName)
 
                                             startActivity(intent)
-                                            finish()
                                         }
                                     }
                             } else {

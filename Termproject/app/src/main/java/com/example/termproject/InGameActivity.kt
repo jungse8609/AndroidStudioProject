@@ -168,19 +168,21 @@ class InGameActivity : AppCompatActivity() {
                     OpponentNick = document.getString(opponentId + "Nick") ?: "null"
                     opponentScore = document.getLong(opponentId + "Score") ?: 0
                     opponentHealth = document.getLong(opponentId + "HP") ?: 0
+
+                    curPlayerHealth= playerHealth
+                    curOpponentHealth = opponentHealth
+                    imgCurrentHp.layoutParams.width = imgHpBackground.layoutParams.width
+                    imgOpponentCurrentHp.layoutParams.width = imgOpponentHpBackground.layoutParams.width
+
+                    txtHpBar.text = "$curPlayerHealth/$playerHealth"
+                    txtOpponentHpBar.text = "$curOpponentHealth/$opponentHealth"
+
+                    // ### Round Play while someone died
+                    gameplay();
                 }
             }
 
-        curPlayerHealth= playerHealth
-        curOpponentHealth = opponentHealth
-        imgCurrentHp.layoutParams.width = imgHpBackground.layoutParams.width
-        imgOpponentCurrentHp.layoutParams.width = imgOpponentHpBackground.layoutParams.width
 
-        txtHpBar.text = "$curPlayerHealth/$playerHealth"
-        txtOpponentHpBar.text = "$curOpponentHealth/$opponentHealth"
-
-        // ### Round Play while someone died
-        gameplay();
 
         btnDice.setOnClickListener {
             if (!rollDiceOnce) {
@@ -529,6 +531,8 @@ class InGameActivity : AppCompatActivity() {
         curOpponentHealth += result.second
         curPlayerHealth = curPlayerHealth.clamp(0, playerHealth)
         curOpponentHealth = curOpponentHealth.clamp(0, opponentHealth)
+
+        Log.d("LogTemp", curPlayerHealth.toString() + " " + curOpponentHealth.toString())
 
         // firebase에 update 된 HP를 write
         db.collection("BattleRooms")

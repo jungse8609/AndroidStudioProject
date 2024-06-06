@@ -1,16 +1,16 @@
 package com.example.termproject
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.termproject.databinding.MatchingRecyclerViewBinding
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Timer
+import java.util.TimerTask
 
 class MatchingActivity : AppCompatActivity() {
     data class User(
@@ -160,6 +160,27 @@ class MatchingActivity : AppCompatActivity() {
     }
 
     private fun waitForOpponentAcceptance(roomName: String, opponentAccept: String, opponentId: String) {
+        val db = FirebaseFirestore.getInstance()
+        val timer = Timer()
+        val timerTask = object : TimerTask() {
+            override fun run() {
+                db.collection("BattleRooms").document(roomName).delete()
+                    .addOnSuccessListener {
+                        runOnUiThread {
+                            Toast.makeText(this@MatchingActivity, "Room deleted due to timeout", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        runOnUiThread {
+                            Toast.makeText(this@MatchingActivity, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            }
+        }
+
+        // Schedule the timer to delete the room after 10 seconds
+        timer.schedule(timerTask, 10000)
+
         db.collection("BattleRooms").document(roomName)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
@@ -170,6 +191,9 @@ class MatchingActivity : AppCompatActivity() {
                 if (snapshot != null && snapshot.exists()) {
                     val opponentChk = snapshot.getLong(opponentAccept) ?: 0L
                     if (opponentChk == 1L) {
+                        // Cancel the timer if opponent accepted
+                        timer.cancel()
+
                         // Step 4: Start the game
                         val intent = Intent(this, InGameActivity::class.java)
                         intent.putExtra("userId", userId)
@@ -180,6 +204,7 @@ class MatchingActivity : AppCompatActivity() {
                 }
             }
     }
+
 
     private fun waitForOpponentChallenge() {
         db.collection("BattleWait").document(userId)

@@ -353,7 +353,7 @@ class InGameActivity : AppCompatActivity() {
         startRoundTimer()
     }
 
-    private var listenerRegistration: ListenerRegistration? = null
+    private var listenerWaitOpponent: ListenerRegistration? = null
 
     // 상대방의 주사위 결과를 기다리는 함수 (여기서는 단순히 랜덤 값을 설정합니다)
     private fun waitForOppoenent() {
@@ -365,21 +365,20 @@ class InGameActivity : AppCompatActivity() {
         var opponentCounter : Int = 0
         var opponentChoose : Int = 0
 
-        var flag = false
-
-        listenerRegistration = db.collection("BattleRooms").document(roomName)
+        listenerWaitOpponent  = db.collection("BattleRooms").document(roomName)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     Toast.makeText(this, "Error waiting for opponent acceptance", Toast.LENGTH_SHORT).show()
                     return@addSnapshotListener
                 }
 
-                if (snapshot != null && snapshot.exists() && !flag) {
+                if (snapshot != null && snapshot.exists()) {
                     // 상대방의 선택했는지 = true 인지 확인
                     val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
                     val playerRound = snapshot.getLong(playerId + "Round") ?: 0L
                     if (opponentRound == 1L && playerRound == 1L) {
-                        flag = true
+                        // 리스너 제거
+                        listenerWaitOpponent?.remove()
 
                         opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
                         opponentDefense = snapshot.getLong(opponentId + "Defense")!!.toInt()
@@ -395,9 +394,6 @@ class InGameActivity : AppCompatActivity() {
                         // round timer 종료 후 게임 결과 프로세스로 넘어간다
                         roundTimer?.cancel()
                         showResult()
-
-                        // 리스너 제거
-                        listenerRegistration?.remove()
                     }
                 }
             }
@@ -557,8 +553,6 @@ class InGameActivity : AppCompatActivity() {
         curPlayerHealth = curPlayerHealth.clamp(0, playerHealth)
         curOpponentHealth = curOpponentHealth.clamp(0, opponentHealth)
 
-        Log.d("LogTemp", curPlayerHealth.toString() + " " + curOpponentHealth.toString())
-
         // firebase에 update 된 HP를 write
         db.collection("BattleRooms")
             .document(roomName)
@@ -604,6 +598,8 @@ class InGameActivity : AppCompatActivity() {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), context.resources.displayMetrics).toInt()
     }
 
+    private var listenerResultRound: ListenerRegistration? = null
+
     // 결과창 타이머 시작 함수
     private fun startResultTimer() {
         resultTimer = object : CountDownTimer(resultTimeLimit, 1000) {
@@ -625,28 +621,30 @@ class InGameActivity : AppCompatActivity() {
                         }
                     }
 
-                var flag = false
-
-                db.collection("BattleRooms").document(roomName)
+                listenerResultRound = db.collection("BattleRooms").document(roomName)
                     .addSnapshotListener { snapshot, e ->
                         if (e != null) {
                             return@addSnapshotListener
                         }
 
-                        if (snapshot != null && snapshot.exists() && !flag) {
+                        if (snapshot != null && snapshot.exists()) {
                             // 상대방의 round = true 인지 확인
 
                             val opponentRound = snapshot.getLong(opponentId + "Round") ?: 1L
                             val playerRound = snapshot.getLong(playerId + "Round") ?: 1L
                             if (opponentRound + playerRound == 0L) {
+                                // 리스너 제거
+                                listenerResultRound?.remove()
+
                                 proceedToNextTurn()
-                                flag = true
                             }
                         }
                     }
             }
         }.start()
     }
+
+    private var listenerStartRound: ListenerRegistration? = null
 
     // 라운드 타이머 시작 함수
     private fun startRoundTimer() {
@@ -681,20 +679,18 @@ class InGameActivity : AppCompatActivity() {
                     var opponentCounter : Int = 0
                     var opponentChoose : Int = 0
 
-                    var flag = false
-
-                    db.collection("BattleRooms").document(roomName)
+                    listenerStartRound = db.collection("BattleRooms").document(roomName)
                         .addSnapshotListener { snapshot, e ->
                             if (e != null) {
                                 return@addSnapshotListener
                             }
 
-                            if (snapshot != null && snapshot.exists() && !flag) {
+                            if (snapshot != null && snapshot.exists()) {
                                 // 상대방의 round = true 인지 확인
                                 val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
                                 if (opponentRound == 1L) {
-
-                                    flag = true
+                                    // 리스너 제거
+                                    listenerStartRound?.remove()
 
                                     opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
                                     opponentDefense = snapshot.getLong(opponentId + "Defense")!!.toInt()
@@ -722,20 +718,18 @@ class InGameActivity : AppCompatActivity() {
                     var opponentCounter : Int = 0
                     var opponentChoose : Int = 0
 
-                    var flag = false
-
-                    db.collection("BattleRooms").document(roomName)
+                    listenerStartRound = db.collection("BattleRooms").document(roomName)
                         .addSnapshotListener { snapshot, e ->
                             if (e != null) {
                                 return@addSnapshotListener
                             }
 
-                            if (snapshot != null && snapshot.exists() && !flag) {
+                            if (snapshot != null && snapshot.exists()) {
                                 // 상대방의 round = true 인지 확인
                                 val opponentRound = snapshot.getLong(opponentId + "Round") ?: 0L
                                 if (opponentRound == 1L) {
-
-                                    flag = true
+                                    // 리스너 제거
+                                    listenerStartRound?.remove()
 
                                     opponentAttack = snapshot.getLong(opponentId + "Attack")!!.toInt()
                                     opponentDefense = snapshot.getLong(opponentId + "Defense")!!.toInt()

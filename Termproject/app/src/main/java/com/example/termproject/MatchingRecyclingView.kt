@@ -53,6 +53,9 @@ class MatchingRecyclingView : AppCompatActivity() {
         userNick = intent.getStringExtra("userNick").toString()
         userProfile = intent.getStringExtra("userProfile").toString()
 
+        // SFX - BGM
+        SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
+
         waitForOpponentChallenge()
 
         // User List를 Recycling View에 추가하기
@@ -94,7 +97,7 @@ class MatchingRecyclingView : AppCompatActivity() {
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "DB 연결 실패", Toast.LENGTH_SHORT).show()
+                createToast("DB 연결 실패")
             }
     }
 
@@ -228,11 +231,11 @@ class MatchingRecyclingView : AppCompatActivity() {
                         waitForOpponentAcceptance(roomName, opponentAccept, opponentId)
                     }
                     .addOnFailureListener {
-                        Toast.makeText(this, "Failed to invite opponent", Toast.LENGTH_SHORT).show()
+                        createToast("Failed to invite opponent")
                     }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Failed to create battle room", Toast.LENGTH_SHORT).show()
+                createToast("Failed to create battle room")
             }
     }
 
@@ -245,23 +248,14 @@ class MatchingRecyclingView : AppCompatActivity() {
     }
 
     private fun createToast(message: String) {
-        val layoutInflater = layoutInflater
-        val layout = layoutInflater.inflate(R.layout.custom_toast_layout, findViewById(R.id.customToastLayout))
-        val toastText : TextView = layout.findViewById(R.id.customToastText)
-        toastText.text = message
-
-        val toast = Toast(applicationContext)
-        toast.setGravity(Gravity.BOTTOM, 0, 100)
-        toast.duration = Toast.LENGTH_LONG
-        toast.view = layout
-        toast.show()
+        ToastUtils.createToast(this, message)
     }
 
     private fun waitForOpponentAcceptance(roomName: String, opponentAccept: String, opponentId: String) {
         val db = FirebaseFirestore.getInstance()
         val dialog = ChallengeWaitDialogFragment(waitTimeLimit, roomName, opponentId, opponentAccept) { accepted ->
             when (accepted) {
-                -1 -> Toast.makeText(this@MatchingRecyclingView, "Error", Toast.LENGTH_SHORT).show()
+                -1 -> createToast("Error")
                 0 -> toastMatchingMessageAndDeleteDB("상대방이 거절했습니다", opponentId)
                 1 -> { // 상대 수락 : 인게임으로 넘어감
                     val intent = Intent(this, InGameActivity::class.java)

@@ -78,11 +78,11 @@ class LoginActivity : AppCompatActivity() {
                             finish()
                         }
                         else{
-                            Toast.makeText(this, "ID 혹은 PW가 틀렸습니다.", Toast.LENGTH_SHORT).show()
+                            ToastUtils.createToast(this, "ID 혹은 비밀번호가 틀렸습니다.")
                         }
                     }
                 } else {
-                    Toast.makeText(this, "ID 혹은 PW가 틀렸습니다.", Toast.LENGTH_SHORT).show()
+                    ToastUtils.createToast(this, "ID 혹은 비밀번호가 틀렸습니다.")
                 }
             }
             .addOnFailureListener {

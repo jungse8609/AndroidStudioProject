@@ -57,11 +57,11 @@ class RegisterActivity : AppCompatActivity() {
             val password = RPassword.text.toString().trim()
 
             if (nickname.isEmpty() || id.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
+                ToastUtils.createToast(this, "모든 칸을 채워주세요.")
             } else if (nickname.length > 8) {
-                Toast.makeText(this, "Please enter a nickname within 8 characters.", Toast.LENGTH_SHORT).show()
+                ToastUtils.createToast(this, "닉네임은 8자 이내로 작성해주세요")
             } else if (selectedProfileImage == null) {
-                Toast.makeText(this, "Please select a profile picture.", Toast.LENGTH_SHORT).show()
+                ToastUtils.createToast(this, "프로필 사진을 선택해주세요")
             } else {
                 // Perform registration operation
                 writeFirebase(nickname, id, password, selectedProfileImage!!) // Pass image name
@@ -85,14 +85,14 @@ class RegisterActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    Toast.makeText(this, "ID가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
+                    ToastUtils.createToast(this, "ID가 이미 존재합니다.")
                 } else {
                     db.collection("NickName")
                         .document(nickname)
                         .get()
                         .addOnSuccessListener { document ->
                             if (document.exists()) {
-                                Toast.makeText(this, "NickName이 이미 존재합니다.", Toast.LENGTH_SHORT).show()
+                                ToastUtils.createToast(this, "닉네임이 이미 존재합니다.")
                             } else {
                                 val encryptedPW = md5(pw)
                                 val user = mapOf(
@@ -101,7 +101,8 @@ class RegisterActivity : AppCompatActivity() {
                                     "NickName" to nickname,
                                     "Score" to 0,
                                     "Status" to 0,
-                                    "ProfileImage" to profileImage
+                                    "ProfileImage" to profileImage,
+                                    "Rank" to 1
                                 )
                                 val nick = mapOf("ID" to id)
                                 db.collection("users").document(id).set(user)
@@ -109,7 +110,6 @@ class RegisterActivity : AppCompatActivity() {
                                         db.collection("NickName").document(nickname).set(nick)
                                             .addOnSuccessListener {
                                                 chk = true
-                                                Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show()
                                                 finish()
                                             }
                                             .addOnFailureListener {

@@ -319,11 +319,9 @@ class MatchingRecyclingView : AppCompatActivity() {
                                                 intent.putExtra("userId", userId)
                                                 intent.putExtra("opponentId", opponentId)
                                                 intent.putExtra("roomName", roomName)
+                                                startActivity(intent)
 
-                                                db.collection("BattleWait").document(userId).delete()
-                                                    .addOnSuccessListener {
-                                                        startActivity(intent)
-                                                    }
+                                                db.collection(" ").document(userId).delete()
                                             }
                                         }
                                 }

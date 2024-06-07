@@ -356,12 +356,12 @@ class InGameActivity : AppCompatActivity() {
             // SFX
             SoundManager.playSoundEffect(R.raw.sfx_click02)
 
+            var outRoomFlag = false
             db.collection("BattleRooms").document(roomName).delete()
                 .addOnSuccessListener {
                     db.collection("BattleWait").document(acceptId).delete()
                         .addOnSuccessListener {
-                            SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
-                            finish()
+                            outRoomFlag = true
                         }
                         .addOnFailureListener { e ->
                             Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
@@ -370,6 +370,9 @@ class InGameActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
                 }
+            if (outRoomFlag){
+                finish()
+            }
         }
     }
 
@@ -804,6 +807,8 @@ class InGameActivity : AppCompatActivity() {
         // SFX
         SoundManager.playSoundEffect(R.raw.sfx_popup)
 
+        var resultShowFlag = false
+
         db.collection("BattleRooms")
             .document(roomName)
             .get()
@@ -878,20 +883,22 @@ class InGameActivity : AppCompatActivity() {
                                 // Rank 정보 업데이트
                                 db.collection("Ranking") .document("Ranking").update("scoreList", updatedScoreList)
 
-
+                                resultShowFlag = true
                             }
                         }
                 }
             }
 
         // Popup 창 띄우기
-        layoutResult.post {
-            val layoutParams = FrameLayout.LayoutParams(
-                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),
-                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
-            )
-            layoutResult.layoutParams.width = layoutParams.width
-            layoutResult.layoutParams.height = layoutParams.height
+        if (resultShowFlag){
+            layoutResult.post {
+                val layoutParams = FrameLayout.LayoutParams(
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
+                )
+                layoutResult.layoutParams.width = layoutParams.width
+                layoutResult.layoutParams.height = layoutParams.height
+            }
         }
     }
 

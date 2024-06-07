@@ -65,25 +65,31 @@ class LoginActivity : AppCompatActivity() {
                         val pw = user["Password"] as String
                         val encryptedPW = md5(pws)
                         if (pw != null && encryptedPW==pw){
-                            document.reference.update("Status", 1)
-                            val intent = Intent(this, StartActivity::class.java)
-                            val userNick = user["NickName"] as String
-                            val userScore = user["Score"] as Long
-                            val userImg = user["ProfileImage"] as String
-                            intent.putExtra("userId", ids)
-                            intent.putExtra("userNick", userNick)
-                            intent.putExtra("userScore", userScore)
-                            intent.putExtra("profileImage", userImg)
-                            updateRanking()
-                            startActivity(intent)
-                            finish()
+                            val userStatus = user["Status"] as Long
+                            if (userStatus == 1L){
+                                ToastUtils.createToast(this, "접속 중인 아이디입니다")
+                            }
+                            else{
+                                document.reference.update("Status", 1)
+                                val intent = Intent(this, StartActivity::class.java)
+                                val userNick = user["NickName"] as String
+                                val userScore = user["Score"] as Long
+                                val userImg = user["ProfileImage"] as String
+                                intent.putExtra("userId", ids)
+                                intent.putExtra("userNick", userNick)
+                                intent.putExtra("userScore", userScore)
+                                intent.putExtra("profileImage", userImg)
+                                updateRanking()
+                                startActivity(intent)
+                                finish()
+                            }
                         }
                         else{
-                            ToastUtils.createToast(this, "ID 혹은 비밀번호가 틀렸습니다.")
+                            ToastUtils.createToast(this, "ID 혹은 비밀번호가 틀렸습니다")
                         }
                     }
                 } else {
-                    ToastUtils.createToast(this, "ID 혹은 비밀번호가 틀렸습니다.")
+                    ToastUtils.createToast(this, "ID 혹은 비밀번호가 틀렸습니다")
                 }
             }
             .addOnFailureListener {

@@ -55,7 +55,7 @@ class AcceptDeclineDialogFragment(
         // 시간 초과
         countDownTimer = object : CountDownTimer(10000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.textViewTimer.text = "Time remaining: ${millisUntilFinished / 1000} seconds"
+                binding.textViewTimer.text = "남은 시간: ${millisUntilFinished / 1000}초"
             }
 
             override fun onFinish() {

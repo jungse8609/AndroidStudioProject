@@ -13,10 +13,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlin.random.Random
 
 // Enum 클래스 정의
@@ -270,7 +274,7 @@ class InGameActivity : AppCompatActivity() {
                             btnAttack.setTextColor(colorTextAttackEnable); btnAttack .background = null
                             btnDefense.setTextColor(colorTextDisable); btnDefense.background = null
                             btnCounter.setTextColor(colorTextDisable); btnCounter.background = null
-                            waitForOppoenent()
+                            waitForOpponent()
                         }
                     }
             }
@@ -293,7 +297,7 @@ class InGameActivity : AppCompatActivity() {
                             btnAttack.setTextColor(colorTextDisable); btnAttack.background = null
                             btnDefense.setTextColor(colorTextDefenseEnable); btnDefense.background = null
                             btnCounter.setTextColor(colorTextDisable); btnCounter.background = null
-                            waitForOppoenent()
+                            waitForOpponent()
                         }
                     }
             }
@@ -316,7 +320,7 @@ class InGameActivity : AppCompatActivity() {
                             btnAttack .setTextColor(colorTextDisable); btnAttack.background = null
                             btnDefense.setTextColor(colorTextDisable); btnDefense.background = null
                             btnCounter.setTextColor(colorTextCounterEnable); btnCounter.background = null
-                            waitForOppoenent()
+                            waitForOpponent()
                         }
                     }
             }
@@ -420,7 +424,7 @@ class InGameActivity : AppCompatActivity() {
     private var listenerWaitOpponent: ListenerRegistration? = null
 
     // 상대방의 주사위 결과를 기다리는 함수
-    private fun waitForOppoenent() {
+    private fun waitForOpponent() {
         isWaiting = true
 
         listenerWaitOpponent?.remove()
@@ -655,99 +659,85 @@ class InGameActivity : AppCompatActivity() {
 
     // 결과창 타이머 시작 함수
     private fun startResultTimer() {
-        resultTimer = object : CountDownTimer(resultTimeLimit, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
+        lifecycleScope.launch {
+            delay(resultTimeLimit)
 
-            }
+            val document = db.collection("BattleRooms").document(roomName).get().await()
 
-            override fun onFinish() {
-                db.collection("BattleRooms")
-                    .document(roomName)
-                    .get()
-                    .addOnSuccessListener { document ->
-                        if (document != null) {
-                            document.reference.update(playerId + "Round", 0)
-                            document.reference.update(playerId + "Attack", 0)
-                            document.reference.update(playerId + "Defense", 0)
-                            document.reference.update(playerId + "Counter", 0)
-                            document.reference.update(playerId + "Choose", 0)
-                        }
+            document?.reference?.update(playerId + "Round", 0)
+            document?.reference?.update(playerId + "Attack", 0)
+            document?.reference?.update(playerId + "Defense", 0)
+            document?.reference?.update(playerId + "Counter", 0)
+            document?.reference?.update(playerId + "Choose", 0)
+
+            listenerResultRound = db.collection("BattleRooms").document(roomName)
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        return@addSnapshotListener
                     }
 
-                listenerResultRound = db.collection("BattleRooms").document(roomName)
-                    .addSnapshotListener { snapshot, e ->
-                        if (e != null) {
-                            return@addSnapshotListener
-                        }
+                    if (snapshot != null && snapshot.exists()) {
+                        // 상대방의 round = true 인지 확인
+                        val opponentRound = snapshot.getLong(opponentId + "Round") ?: 1L
+                        val playerRound = snapshot.getLong(playerId + "Round") ?: 1L
+                        if (opponentRound + playerRound == 0L) {
+                            // 리스너 제거
+                            listenerResultRound?.remove()
 
-                        if (snapshot != null && snapshot.exists()) {
-                            // 상대방의 round = true 인지 확인
-
-                            val opponentRound = snapshot.getLong(opponentId + "Round") ?: 1L
-                            val playerRound = snapshot.getLong(playerId + "Round") ?: 1L
-                            if (opponentRound + playerRound == 0L) {
-                                // 리스너 제거
-                                listenerResultRound?.remove()
-
-                                proceedToNextTurn()
-                            }
+                            proceedToNextTurn()
                         }
                     }
-            }
-        }.start()
+                }
+        }
     }
 
-    // 라운드 타이머 시작 함수
     private fun startRoundTimer() {
-        roundTimer = object : CountDownTimer(roundTimeLimit, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                txtRoundTimer.text = "${millisUntilFinished / 1000}"
+        lifecycleScope.launch {
+            for (i in roundTimeLimit downTo 0 step 1000) {
+                txtRoundTimer.text = "${i / 1000}"
+                delay(1000)
             }
 
-            override fun onFinish() {
-                // 본인이 아무것도 선택하지 않았을 때, 주사위 랜덤으로 굴려야 함
-                if (!isWaiting) {
-                    // Roll Dices Randomly
-                    playerRolls = rollDices()
-                    var randomChoose = Random.nextInt(0, 2) // return Random Integer between 0 from 2
-                    when (randomChoose) {
-                        0 -> playerType = DiceType.ATTACK
-                        1 -> playerType = DiceType.DEFENSE
-                        2 -> playerType = DiceType.COUNTER
-                    }
-                    db.collection("BattleRooms")
-                        .document(roomName)
-                        .get()
-                        .addOnSuccessListener { document ->
-                            if (document != null) {
-                                document.reference.update(playerId + "Attack", playerRolls!!.first)
-                                document.reference.update(playerId + "Defense", playerRolls!!.second)
-                                document.reference.update(playerId + "Counter", playerRolls!!.third)
+            onRoundTimerFinish()
+        }
+    }
 
-                                document.reference.update(playerId + "Choose", randomChoose)
-                                document.reference.update(playerId + "Round", 1)
-                            }
-                        }
-
-                    btnDice.setTextColor (colorTextDisable); btnDice.background = null
-                    btnAttack.setTextColor (colorTextDisable); btnAttack.background = null
-                    btnDefense.setTextColor(colorTextDisable); btnDefense.background = null
-                    btnCounter.setTextColor(colorTextDisable); btnCounter.background = null
-                    when (playerType) {
-                        DiceType.ATTACK  -> { imgDiceAttack.setBackgroundResource(R.drawable.button_green_border); btnAttack.setTextColor(colorTextAttackEnable); }
-                        DiceType.DEFENSE -> { imgDiceDefense.setBackgroundResource(R.drawable.button_green_border); btnDefense.setTextColor(colorTextDefenseEnable); }
-                        DiceType.COUNTER -> { imgDiceCounter.setBackgroundResource(R.drawable.button_green_border); btnCounter.setTextColor(colorTextCounterEnable); }
-                    }
-                    onUpdateDiceImage()
-
-                    waitForOppoenent()
-                }
-                // 본인은 선택했지만 상대방이 선택을 못한채 타이머가 끝남
-                else {
-                    waitForOppoenent()
-                }
+    private suspend fun onRoundTimerFinish() {
+        if (!isWaiting) {
+            // Roll Dices Randomly
+            playerRolls = rollDices()
+            val randomChoose = Random.nextInt(0, 3) // return Random Integer between 0 and 2
+            playerType = when (randomChoose) {
+                0 -> DiceType.ATTACK
+                1 -> DiceType.DEFENSE
+                else -> DiceType.COUNTER
             }
-        }.start()
+            val document = db.collection("BattleRooms")
+                .document(roomName)
+                .get()
+                .await()
+
+            document?.reference?.update(playerId + "Attack", playerRolls!!.first)
+            document?.reference?.update(playerId + "Defense", playerRolls!!.second)
+            document?.reference?.update(playerId + "Counter", playerRolls!!.third)
+            document?.reference?.update(playerId + "Choose", randomChoose)
+            document?.reference?.update(playerId + "Round", 1)
+
+            btnDice.setTextColor(colorTextDisable); btnDice.background = null
+            btnAttack.setTextColor(colorTextDisable); btnAttack.background = null
+            btnDefense.setTextColor(colorTextDisable); btnDefense.background = null
+            btnCounter.setTextColor(colorTextDisable); btnCounter.background = null
+            when (playerType) {
+                DiceType.ATTACK -> { imgDiceAttack.setBackgroundResource(R.drawable.button_green_border); btnAttack.setTextColor(colorTextAttackEnable) }
+                DiceType.DEFENSE -> { imgDiceDefense.setBackgroundResource(R.drawable.button_green_border); btnDefense.setTextColor(colorTextDefenseEnable) }
+                DiceType.COUNTER -> { imgDiceCounter.setBackgroundResource(R.drawable.button_green_border); btnCounter.setTextColor(colorTextCounterEnable) }
+            }
+            onUpdateDiceImage()
+
+            waitForOpponent()
+        } else {
+            waitForOpponent()
+        }
     }
 
     private fun exitGame() {

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/customToastLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/customToastText"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:background="@drawable/custom_toast_background"
+            android:textColor="#222222"
+            android:text = "여기는 커스텀 토스트 텍스트가 들어갑니다."
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/neodgm"
+            android:padding="16dp"
+            android:typeface="monospace"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

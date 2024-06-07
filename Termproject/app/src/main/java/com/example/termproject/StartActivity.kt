@@ -88,6 +88,7 @@ class StartActivity : AppCompatActivity() {
             intent.putExtra("userId", userId)
             intent.putExtra("userNick", userNick)
             intent.putExtra("userProfile", userProfile)
+            intent.putExtra("userScore", userScore)
             startActivityForResult(intent, 100)
         }
 
@@ -207,8 +208,6 @@ class StartActivity : AppCompatActivity() {
         var userScore : Long = -1
         var userRank : Long = -1
 
-        Log.d("LogTemp", "액티비티리절트!!!!!!!!!ㅅ")
-
         if (resultCode == Activity.RESULT_OK) {
             db.collection("users")
                 .document(userId)
@@ -220,10 +219,11 @@ class StartActivity : AppCompatActivity() {
 
                         myScore.text = userScore.toString()
                         myRank.text = userRank.toString() + "등"
-
-                        Log.d("LogTemp", "액티비티리절트")
                     }
                 }
+
+            SoundManager.init(this)
+            SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
         }
     }
 }

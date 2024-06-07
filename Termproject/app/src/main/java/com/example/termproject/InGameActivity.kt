@@ -1,5 +1,7 @@
 package com.example.termproject
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -360,6 +362,9 @@ class InGameActivity : AppCompatActivity() {
                 .addOnSuccessListener {
                     db.collection("BattleWait").document(acceptId).delete()
                         .addOnSuccessListener {
+                            var intent = Intent(this, MatchingRecyclingView::class.java)
+                            intent.putExtra("data", "")
+                            setResult(Activity.RESULT_OK, intent)
                             finish()
                         }
                         .addOnFailureListener { e ->
@@ -898,12 +903,13 @@ class InGameActivity : AppCompatActivity() {
                     db.collection("users")
                         .document(playerId)
                         .update("Score", (playerScore - 5).clamp(0, Long.MAX_VALUE))
+
+                    var intent = Intent(this, MatchingRecyclingView::class.java)
+                    intent.putExtra("data", "")
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
                 }
             }
-
-        curOpponentHealth = 5
-        curPlayerHealth = -1
-        //exitGame()
     }
 
     private var listenerOpponentStatus: ListenerRegistration? = null

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -51,6 +52,7 @@ class MatchingRecyclingView : AppCompatActivity() {
         userId = intent.getStringExtra("userId").toString()
         userNick = intent.getStringExtra("userNick").toString()
         userProfile = intent.getStringExtra("userProfile").toString()
+        userScore = intent.getLongExtra("userScore", -1L)
 
         // SFX - BGM
         SoundManager.init(this)
@@ -153,15 +155,6 @@ class MatchingRecyclingView : AppCompatActivity() {
         roomName = opponentId + "_" + userId + "_BattleRoom"
         val gameHp = 20
 
-        db.collection("users")
-            .document(userId)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    userScore = document.getLong("Score") ?: 0
-                }
-            }
-
         var opponentScore = 0L
         var opponentNick: String? = null
         var opponentProfile: String? = null
@@ -179,7 +172,17 @@ class MatchingRecyclingView : AppCompatActivity() {
                     }
                     // Step 2: Create room settings and proceed
                     if (opponentNick != null) {
-                        createBattleRoom(opponentId, gameHp, opponentScore, opponentNick!!, opponentProfile!!)
+                        db.collection("users")
+                            .document(userId)
+                            .get()
+                            .addOnSuccessListener { document ->
+                                if (document != null) {
+                                    userScore = document["Score"] as Long
+
+                                    Log.d("LogTemp", userScore.toString())
+                                    createBattleRoom(opponentId, gameHp, opponentScore, opponentNick!!, opponentProfile!!)
+                                }
+                            }
                     } else {
                         createToast("상대방을 찾을 수 없습니다.")
                     }
@@ -265,7 +268,7 @@ class MatchingRecyclingView : AppCompatActivity() {
                     intent.putExtra("opponentId", opponentId)
                     intent.putExtra("roomName", roomName)
 
-                    startActivity(intent)
+                    startActivityForResult(intent, 100)
                 }
                 2 -> toastMatchingMessageAndDeleteDB("취소했습니다", opponentId)
                 3 -> toastMatchingMessageAndDeleteDB("시간 초과", opponentId)
@@ -313,9 +316,10 @@ class MatchingRecyclingView : AppCompatActivity() {
                                                 intent.putExtra("userId", userId)
                                                 intent.putExtra("opponentId", opponentId)
                                                 intent.putExtra("roomName", roomName)
-                                                startActivity(intent)
+                                                startActivityForResult(intent, 100)
 
                                                 db.collection("BattleWait").document(userId).delete()
+
                                             }
                                         }
                                 }
@@ -353,6 +357,17 @@ class MatchingRecyclingView : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK) {
+            waitForOpponentChallenge()
+
+            SoundManager.init(this)
+            SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
         }
     }
 }

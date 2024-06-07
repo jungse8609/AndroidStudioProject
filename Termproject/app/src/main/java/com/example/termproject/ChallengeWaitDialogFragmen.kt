@@ -33,7 +33,7 @@ class ChallengeWaitDialogFragment(private val waitTime: Long, private val roomNa
         waitTimer = object : CountDownTimer(waitTime, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val seconds = millisUntilFinished / 1000
-                binding.txtWaitTime.text = "Waiting for opponent... (${seconds}s)"
+                binding.txtWaitTime.text = "상대방 대기 중... (${seconds}초)"
             }
 
             override fun onFinish() {

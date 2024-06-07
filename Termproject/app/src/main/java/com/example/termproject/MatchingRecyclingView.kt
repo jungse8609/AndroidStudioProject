@@ -4,7 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
+import android.view.Gravity
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
@@ -140,6 +142,15 @@ class MatchingRecyclingView : AppCompatActivity() {
             userList.addAll(updatedUserList)
 
             // UserList를 Recycler View 에 띄워줘
+
+            // 기존 RecyclerView의 Adapter 및 LayoutManager 제거
+            binding.matchingRecyclingView.adapter = null
+            binding.matchingRecyclingView.layoutManager = null
+            for (i in 0 until binding.matchingRecyclingView.itemDecorationCount) {
+                binding.matchingRecyclingView.removeItemDecorationAt(i)
+            }
+
+            // 새로운
             binding.matchingRecyclingView.layoutManager = LinearLayoutManager(this)
             binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick)
             binding.matchingRecyclingView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
@@ -167,14 +178,14 @@ class MatchingRecyclingView : AppCompatActivity() {
                     if (opponentNick != null) {
                         createBattleRoom(opponentId, gameHp, opponentScore, opponentNick!!)
                     } else {
-                        Toast.makeText(this, "Opponent nickname not found", Toast.LENGTH_SHORT).show()
+                        createToast("상대방을 찾을 수 없습니다.")
                     }
                 } else {
-                    Toast.makeText(this, "Opponent not found", Toast.LENGTH_SHORT).show()
+                    createToast("상대방을 찾을 수 없습니다.")
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Failed to fetch opponent details", Toast.LENGTH_SHORT).show()
+                createToast("상대방을 찾을 수 없습니다.")
             }
     }
 
@@ -230,13 +241,25 @@ class MatchingRecyclingView : AppCompatActivity() {
         db.collection("BattleWait").document(userId).delete()
         db.collection("BattleWait").document(opponentId).delete()
 
-        Toast.makeText(this@MatchingRecyclingView, message, Toast.LENGTH_SHORT).show()
+        createToast(message)
+    }
+
+    private fun createToast(message: String) {
+        val layoutInflater = layoutInflater
+        val layout = layoutInflater.inflate(R.layout.custom_toast_layout, findViewById(R.id.customToastLayout))
+        val toastText : TextView = layout.findViewById(R.id.customToastText)
+        toastText.text = message
+
+        val toast = Toast(applicationContext)
+        toast.setGravity(Gravity.BOTTOM, 0, 100)
+        toast.duration = Toast.LENGTH_LONG
+        toast.view = layout
+        toast.show()
     }
 
     private fun waitForOpponentAcceptance(roomName: String, opponentAccept: String, opponentId: String) {
         val db = FirebaseFirestore.getInstance()
         val dialog = ChallengeWaitDialogFragment(waitTimeLimit, roomName, opponentId, opponentAccept) { accepted ->
-            Log.d("LogTemp", "user "+accepted.toString())
             when (accepted) {
                 -1 -> Toast.makeText(this@MatchingRecyclingView, "Error", Toast.LENGTH_SHORT).show()
                 0 -> toastMatchingMessageAndDeleteDB("상대방이 거절했습니다", opponentId)
@@ -262,11 +285,7 @@ class MatchingRecyclingView : AppCompatActivity() {
         db.collection("BattleWait").document(userId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    Toast.makeText(
-                        this,
-                        "Error waiting for opponent acceptance",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    createToast("오류가 발생했습니다.")
                     return@addSnapshotListener
                 }
 
@@ -278,7 +297,6 @@ class MatchingRecyclingView : AppCompatActivity() {
 
                         // 팝업 띄우기
                         val dialog = AcceptDeclineDialogFragment(userId, opponentId) { accepted ->
-                            Log.d("LogTemp", "opponent " + accepted.toString())
                             when (accepted) {
                                 0 -> toastMatchingMessageAndDeleteDB("거절했습니다", opponentId)
                                 1 -> { // 상대 수락 : 인게임으로 넘어감

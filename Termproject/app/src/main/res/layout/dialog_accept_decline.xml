@@ -1,46 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/textViewOpponentId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Opponent ID: "
-        android:textSize="18sp" />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/challengeimg"
+        android:scaleType="centerCrop"/>
 
-    <TextView
-        android:id="@+id/textViewTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Time remaining: 10 seconds"
-        android:textSize="18sp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#AA000000"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:gravity="center"
-        android:layout_marginTop="16dp">
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/buttonDecline"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="거절"
-            android:layout_marginEnd="8dp" />
+        <TextView
+            android:id="@+id/textViewOpponentId"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Opponent ID: "
+            android:textColor="#ff0000"
+            android:textSize="18sp"
+            android:fontFamily="@font/neodgm"
+            android:paddingTop="20dp"/>
 
-        <Button
-            android:id="@+id/buttonAccept"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="수락"
-            android:layout_marginStart="8dp" />
+        <TextView
+            android:id="@+id/textViewTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="남은 시간: 10초"
+            android:textSize="18sp"
+            android:textColor="#dddddd"
+            android:fontFamily="@font/neodgm"
+            android:paddingTop="20dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/buttonDecline"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="취소"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/neodgm"
+                android:background="@null"
+                android:paddingTop="8dp"/>
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="match_parent"/>
+
+            <Button
+                android:id="@+id/buttonAccept"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:text="수락"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/neodgm"
+                android:background="@null"
+                android:paddingTop="8dp"/>
+        </LinearLayout>
+
     </LinearLayout>
 
-</LinearLayout>
+
+
+</FrameLayout>

@@ -5,11 +5,10 @@
 
     <!-- Background Image -->
     <ImageView
-        android:id="@+id/backgroundImage"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:src="@drawable/challengeimg"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"/>
 
     <View
         android:layout_width="match_parent"
@@ -31,22 +30,26 @@
         <TextView
             android:id="@+id/txtWaitTime"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:text="상대방 대기 중..."
             android:textSize="18sp"
-            android:textColor="@android:color/white"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"/>
-
+            android:textColor="#dddd99"
+            android:fontFamily="@font/neodgm"
+            android:paddingTop="18dp"/>
+        
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp"/>
 
         <Button
             android:id="@+id/btnCancel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
             android:text="취소"
             android:textSize="16sp"
             android:textColor="@android:color/white"
-            android:background="@drawable/button_background"
-            android:layout_marginTop="16dp"/>
+            android:fontFamily="@font/neodgm"
+            android:background="@null"
+            android:paddingTop="8dp"/>
     </LinearLayout>
 </FrameLayout>

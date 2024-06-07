@@ -214,11 +214,6 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
-                            android:layout_width="52dp"
-                            android:layout_height="52dp"
-                            android:background="#333333"/>
-
-                        <ImageView
                             android:id="@+id/ImgOpponentResult"
                             android:layout_width="55dp"
                             android:layout_height="55dp"

@@ -27,7 +27,7 @@ class MatchingRecyclingView : AppCompatActivity() {
     private lateinit var userNick: String
     private lateinit var userProfile: String
     private lateinit var roomName: String
-    private var userScore = 0
+    private var userScore = 0L
     private val userList = mutableListOf<User>()
 
     private lateinit var waitTimer: CountDownTimer
@@ -50,6 +50,7 @@ class MatchingRecyclingView : AppCompatActivity() {
         userId = intent.getStringExtra("userId").toString()
         userNick = intent.getStringExtra("userNick").toString()
         userProfile = intent.getStringExtra("userProfile").toString()
+        userScore = intent.getLongExtra("userScore", 0L)
 
         // SFX - BGM
         SoundManager.init(this)

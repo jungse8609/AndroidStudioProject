@@ -803,15 +803,6 @@ class InGameActivity : AppCompatActivity() {
         // SFX
         SoundManager.playSoundEffect(R.raw.sfx_popup)
 
-        db.collection("BattleRooms")
-            .document(roomName)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    playerScore = document.getLong(playerId + "Score") ?: 0
-                }
-            }
-
         txtResult.text = result
         txtScore.text = scoreStr
 

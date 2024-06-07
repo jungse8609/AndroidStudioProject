@@ -112,13 +112,9 @@ class MatchingRecyclingView : AppCompatActivity() {
                 var profile = dbUser["ProfileImage"] as String
                 val score = dbUser["Score"] as Long
                 val status = dbUser["Status"] as Long
+                val rank = dbUser["Rank"] as Long
                 lateinit var user: User
-                if (status == 1L){
-                    user = User(resources.getIdentifier(profile, "drawable", packageName), id, nick, score, 1)
-                }
-                else{
-                    user = User(resources.getIdentifier(profile, "drawable", packageName), id, nick, score, 0)
-                }
+                user = User(resources.getIdentifier(profile, "drawable", packageName), id, nick, score, status, rank)
 
                 updatedUserList.add(user)
             }

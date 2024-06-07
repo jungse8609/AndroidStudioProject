@@ -1,6 +1,7 @@
 package com.example.termproject
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -103,7 +104,7 @@ class RegisterActivity : AppCompatActivity() {
                                     "Score" to 0,
                                     "Status" to 0,
                                     "ProfileImage" to profileImage,
-                                    "Rank" to 1
+                                    "Rank" to -1
                                 )
                                 val nick = mapOf("ID" to id)
                                 db.collection("users").document(id).set(user)
@@ -111,6 +112,7 @@ class RegisterActivity : AppCompatActivity() {
                                         db.collection("NickName").document(nickname).set(nick)
                                             .addOnSuccessListener {
                                                 chk = true
+                                                addScoreToRankingList(id, 0)
                                                 finish()
                                             }
                                             .addOnFailureListener {
@@ -129,6 +131,33 @@ class RegisterActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 Toast.makeText(this, "DB 연결 실패2", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun addScoreToRankingList(id: String, score: Int) {
+        db.collection("Ranking")
+            .document("Ranking")
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    // Score List에 정보 추가
+                    val scoreList = document.get("scoreList") as List<Map<String, Any>>
+
+                    // MutableList로 변환하여 새로운 요소 추가
+                    val updatedScoreList = scoreList.toMutableList()
+                    updatedScoreList.add(mapOf("ID" to id, "Score" to score))
+
+                    // 업데이트된 리스트를 Firestore에 저장
+                    db.collection("Ranking")
+                        .document("Ranking")
+                        .update("scoreList", updatedScoreList)
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "DocumentSnapshot successfully updated!")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("Firestore", "Error updating document", e)
+                        }
+                }
             }
     }
 }

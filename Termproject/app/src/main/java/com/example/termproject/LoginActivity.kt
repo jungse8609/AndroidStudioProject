@@ -74,6 +74,7 @@ class LoginActivity : AppCompatActivity() {
                             intent.putExtra("userNick", userNick)
                             intent.putExtra("userScore", userScore)
                             intent.putExtra("profileImage", userImg)
+                            updateRanking()
                             startActivity(intent)
                             finish()
                         }
@@ -87,6 +88,49 @@ class LoginActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 Toast.makeText(this, "DB 연결 실패", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun updateRanking() {
+        db.collection("Ranking")
+            .document("Ranking")
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val scoreList = document.get("scoreList") as List<Map<String, Any>>
+
+
+                    // TODO : score에 따라 내림차순 정렬
+                    var userList = scoreList.map {
+                        Pair(it["ID"] as String, (it["Score"] as Long).toInt())
+                    }.toMutableList()
+
+                    userList.sortByDescending { it.second }
+
+                    // Ranking 계산
+                    val rankingList = mutableListOf<Triple<String, Int, Int>>()
+                    var currentRank = 1
+                    var currentScore = userList.first().second
+                    var sameRankCounter = 0
+                    for ((index, item) in userList.withIndex()) {
+                        var (id, score) = item
+                        if (score == currentScore) {
+                            rankingList.add(Triple(id, score, currentRank))
+                            sameRankCounter += 1
+                        }
+                        else {
+                            currentRank += sameRankCounter
+                            sameRankCounter = 1
+                            currentScore = score
+                            rankingList.add(Triple(id, score, currentRank))
+                        }
+                    }
+
+                    // User 정보 업데이트
+                    for (item in rankingList) {
+                        db.collection("users").document(item.first).update("Rank", item.third)
+                    }
+                }
             }
     }
 }

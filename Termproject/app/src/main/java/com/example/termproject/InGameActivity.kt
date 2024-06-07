@@ -379,8 +379,8 @@ class InGameActivity : AppCompatActivity() {
 
             // User List를 Recycling View에 추가하기
             var userList : MutableList<Pair<String, Int>> = mutableListOf()
-            db.collection("users")
-                .document("userRanking")
+            db.collection("Ranking")
+                .document("Ranking")
                 .get()
                 .addOnSuccessListener { document ->
                     if (document != null && !document.exists()) {

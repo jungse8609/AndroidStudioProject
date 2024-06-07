@@ -4,10 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
-import android.view.Gravity
 import android.view.MenuItem
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -217,7 +214,7 @@ class MatchingRecyclingView : AppCompatActivity() {
             opponentId + "Status" to 1,
             opponentId + "Profile" to opponentProfile
         )
-        val srcId = mapOf("Opponent" to userId,"OpponentNick" to opponentNick)
+        val srcId = mapOf("Opponent" to userId,"OpponentNick" to userNick)
         val opponentAccept = opponentId + "Accept"
 
         db.collection("BattleRooms").document(roomName).set(roomSetting)

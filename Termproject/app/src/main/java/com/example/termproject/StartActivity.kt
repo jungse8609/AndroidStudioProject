@@ -62,30 +62,6 @@ class StartActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
 
-        /*// 유저 등수 실시간 업데이트
-        db.collection("users").addSnapshotListener { snapshot, e ->
-            if (e != null) {
-                Log.w("LogTemp", "Listen failed", e)
-                return@addSnapshotListener
-            }
-
-            // Firestore에서 받아온 데이터를 userList에 추가
-            var userList : MutableList<Pair<String, Int>> = mutableListOf()
-
-            var rank : Int = 0
-
-            for (document in snapshot!!.documents) {
-                val dbUser = document.data
-                val id = dbUser?.get("ID") as String
-                val score = (dbUser["Score"] as Long).toInt()
-                userList.add(Pair(id, score))
-
-                rank = (dbUser["Rank"] as Long).toInt()
-            }
-            // score에 따라 내림차순 정렬
-            userList.sortByDescending { it.second }
-        }*/
-
 
         // DrawerView
         toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_opened, R.string.drawer_closed)

@@ -34,7 +34,6 @@ class AcceptDeclineDialogFragment(
 
         binding.textViewOpponentId.text = opponentNick + "님의 결투 신청"
         
-        
         // 수락 버튼
         binding.buttonAccept.setOnClickListener {
             countDownTimer?.cancel()

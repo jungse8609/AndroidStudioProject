@@ -29,6 +29,7 @@ class RegisterActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(this)
 
         db = FirebaseFirestore.getInstance()
+
         Nickname = findViewById(R.id.Nickname)
         RID = findViewById(R.id.RID)
         RPassword = findViewById(R.id.RPassword)
@@ -122,12 +123,12 @@ class RegisterActivity : AppCompatActivity() {
                             }
                         }
                         .addOnFailureListener {
-                            Toast.makeText(this, "DB 연결 실패", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "DB 연결 실패1", Toast.LENGTH_SHORT).show()
                         }
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "DB 연결 실패", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "DB 연결 실패2", Toast.LENGTH_SHORT).show()
             }
     }
 }

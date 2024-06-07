@@ -54,7 +54,7 @@
                 android:layout_height="30dp"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="취소"
+                android:text="거절"
                 android:textSize="16sp"
                 android:textColor="@android:color/white"
                 android:fontFamily="@font/neodgm"

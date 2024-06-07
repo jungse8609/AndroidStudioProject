@@ -815,7 +815,7 @@ class InGameActivity : AppCompatActivity() {
         txtResult.text = result
         txtScore.text = scoreStr
 
-        db.collection("users")
+        /*db.collection("users")
             .document(playerId)
             .get()
             .addOnSuccessListener { document ->
@@ -879,7 +879,7 @@ class InGameActivity : AppCompatActivity() {
                             }
                         }
                 }
-            }
+            }*/
 
         // Popup 창 띄우기
         layoutResult.post {

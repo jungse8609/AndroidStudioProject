@@ -878,19 +878,21 @@ class InGameActivity : AppCompatActivity() {
                                 // Rank 정보 업데이트
                                 db.collection("Ranking") .document("Ranking").update("scoreList", updatedScoreList)
 
-                                // Popup 창 띄우기
-                                layoutResult.post {
-                                    val layoutParams = FrameLayout.LayoutParams(
-                                        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),
-                                        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
-                                    )
-                                    layoutResult.layoutParams.width = layoutParams.width
-                                    layoutResult.layoutParams.height = layoutParams.height
-                                }
+
                             }
                         }
                 }
             }
+
+        // Popup 창 띄우기
+        layoutResult.post {
+            val layoutParams = FrameLayout.LayoutParams(
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
+            )
+            layoutResult.layoutParams.width = layoutParams.width
+            layoutResult.layoutParams.height = layoutParams.height
+        }
     }
 
     override fun onBackPressed() {

@@ -214,6 +214,8 @@ class InGameActivity : AppCompatActivity() {
                 }
             }
 
+        monitoringOpponentStatus()
+
         btnDice.setOnClickListener {
             if (!rollDiceOnce) {
                 rollDiceOnce = true
@@ -230,8 +232,8 @@ class InGameActivity : AppCompatActivity() {
                             document.reference.update(playerId + "Counter", playerRolls!!.third)
 
                             // 버튼 interactive 설정
-                            btnDice.isEnabled = false  ; btnDice.setTextColor(Color.parseColor("#dddddd")); btnDice.background = null
-                            btnAttack.isEnabled = true ; btnAttack.setTextColor(Color.parseColor("#b80080"));   btnAttack.setBackgroundResource(R.drawable.button_yellow_border)
+                            btnDice.isEnabled = false  ; btnDice   .setTextColor(Color.parseColor("#dddddd")); btnDice.background = null
+                            btnAttack.isEnabled = true ; btnAttack .setTextColor(Color.parseColor("#b80080"));   btnAttack.setBackgroundResource(R.drawable.button_yellow_border)
                             btnDefense.isEnabled = true; btnDefense.setTextColor(Color.parseColor("#00008b")); btnDefense.setBackgroundResource(R.drawable.button_yellow_border)
                             btnCounter.isEnabled = true; btnCounter.setTextColor(Color.parseColor("#9011d3")); btnCounter.setBackgroundResource(R.drawable.button_yellow_border)
 
@@ -278,7 +280,7 @@ class InGameActivity : AppCompatActivity() {
                             document.reference.update(playerId + "Round", 1)
 
                             imgDiceDefense.setBackgroundResource(R.drawable.button_green_border)
-                            btnAttack .setTextColor(Color.parseColor("#444444")); btnAttack.background = null
+                            btnAttack.setTextColor(Color.parseColor("#444444")); btnAttack.background = null
                             btnDefense.background = null
                             btnCounter.setTextColor(Color.parseColor("#444444")); btnCounter.background = null
                             waitForOppoenent()
@@ -311,6 +313,25 @@ class InGameActivity : AppCompatActivity() {
         }
 
         btnGoLobby.setOnClickListener {
+            db.collection("BattleRooms").document(roomName).delete()
+                .addOnSuccessListener {
+                    db.collection("BattleWait").document(acceptId).delete()
+                        .addOnSuccessListener {
+                            runOnUiThread {
+                                Toast.makeText(this@InGameActivity, "Complete out of battle room", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            runOnUiThread {
+                                Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                }
+                .addOnFailureListener { e ->
+                    runOnUiThread {
+                        Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
+                    }
+                }
             finish()
         }
     }
@@ -469,9 +490,6 @@ class InGameActivity : AppCompatActivity() {
             DiceType.DEFENSE -> { imgPlayerResult.setImageResource(imgNameDefense[defenseValue.toInt() - 1]); txtPlayerType.text = "방어" }
             DiceType.COUNTER -> { imgPlayerResult.setImageResource(imgNameCounter[counterValue.toInt() - 1]); txtPlayerType.text = "카운터" }
         }
-
-
-
 
         when (opponentType) {
             DiceType.ATTACK -> { imgOpponentResult.setImageResource(imgNameAttack[opAttackValue.toInt() - 1]); txtOpponentType.text = "공격" }
@@ -710,6 +728,17 @@ class InGameActivity : AppCompatActivity() {
                             }
                         }
 
+
+                    btnDice.background = null
+                    btnAttack.setTextColor(Color.parseColor("#444444"));
+                    btnDefense.setTextColor(Color.parseColor("#444444"));
+                    btnCounter.setTextColor(Color.parseColor("#444444"));
+                    when (playerType) {
+                        DiceType.ATTACK -> { imgDiceAttack.setBackgroundResource(R.drawable.button_green_border); btnAttack.setTextColor(Color.parseColor("#b80080")) }
+                        DiceType.DEFENSE -> { imgDiceDefense.setBackgroundResource(R.drawable.button_green_border); btnDefense.setTextColor(Color.parseColor("#00008b"));}
+                        DiceType.COUNTER -> { imgDiceCounter.setBackgroundResource(R.drawable.button_green_border); btnCounter.setTextColor(Color.parseColor("#9011d3"));}
+                    }
+
                     waitForOppoenent()
                 }
                 // 본인은 선택했지만 상대방이 선택을 못한채 타이머가 끝남
@@ -742,7 +771,6 @@ class InGameActivity : AppCompatActivity() {
             resultScore = (playerScore + curPlayerHealth).clamp(0, Long.MAX_VALUE)
             showResultPopup("WIN" , "$playerScore -> $resultScore", resultScore)
         }
-
     }
 
     private fun showResultPopup(result: String, scoreStr: String, score: Long) {
@@ -770,27 +798,6 @@ class InGameActivity : AppCompatActivity() {
                 }
             }
 
-        db.collection("BattleRooms").document(roomName).delete()
-            .addOnSuccessListener {
-                db.collection("BattleWait").document(acceptId).delete()
-                    .addOnSuccessListener {
-                        runOnUiThread {
-                            Toast.makeText(this@InGameActivity, "Complete out of battle room", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    .addOnFailureListener { e ->
-                        runOnUiThread {
-                            Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-            }
-            .addOnFailureListener { e ->
-                runOnUiThread {
-                    Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-
         // Popup 창 띄우기
         layoutResult.post {
             val layoutParams = FrameLayout.LayoutParams(
@@ -814,7 +821,7 @@ class InGameActivity : AppCompatActivity() {
         finish()
     }
 
-    fun monitoringOpponentStatus() {
+    private fun monitoringOpponentStatus() {
         // Firestore에서 사용자 상태를 실시간으로 모니터링
         db.collection("BattleRooms").document(roomName)
             .addSnapshotListener { snapshot, e ->

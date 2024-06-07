@@ -24,6 +24,7 @@ class MatchingRecyclingView : AppCompatActivity() {
 
     private lateinit var db: FirebaseFirestore
     private lateinit var userId: String
+    private lateinit var opponentId: String
     private lateinit var userNick: String
     private lateinit var roomName: String
     private var userScore = 0
@@ -225,32 +226,12 @@ class MatchingRecyclingView : AppCompatActivity() {
             }
     }
 
-    private fun toastMatchingOpponentMessage(message : String) {
+    private fun toastMatchingMessageAndDeleteDB(message : String) {
         db.collection("BattleRooms").document(roomName).delete()
-            .addOnSuccessListener {
-                runOnUiThread {
-                    Toast.makeText(this@MatchingRecyclingView, message, Toast.LENGTH_SHORT).show()
-                }
-            }
-            .addOnFailureListener { e ->
-                runOnUiThread {
-                    Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
-                }
-            }
-    }
-
-    private fun toastMatchingUserMessage(message : String) {
         db.collection("BattleWait").document(userId).delete()
-            .addOnSuccessListener {
-                runOnUiThread {
-                    Toast.makeText(this@MatchingRecyclingView, message, Toast.LENGTH_SHORT).show()
-                }
-            }
-            .addOnFailureListener { e ->
-                runOnUiThread {
-                    Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
-                }
-            }
+        db.collection("BattleWait").document(opponentId).delete()
+
+        Toast.makeText(this@MatchingRecyclingView, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun waitForOpponentAcceptance(roomName: String, opponentAccept: String, opponentId: String) {
@@ -259,7 +240,7 @@ class MatchingRecyclingView : AppCompatActivity() {
             Log.d("LogTemp", accepted.toString())
             when (accepted) {
                 -1 -> Toast.makeText(this@MatchingRecyclingView, "Error", Toast.LENGTH_SHORT).show()
-                0 -> toastMatchingOpponentMessage("상대방이 거절했습니다")
+                0 -> toastMatchingMessageAndDeleteDB("상대방이 거절했습니다")
                 1 -> { // 상대 수락 : 인게임으로 넘어감
                     val intent = Intent(this, InGameActivity::class.java)
                     intent.putExtra("userId", userId)
@@ -268,8 +249,8 @@ class MatchingRecyclingView : AppCompatActivity() {
 
                     startActivity(intent)
                 }
-                2 -> toastMatchingOpponentMessage("취소했습니다")
-                3 -> toastMatchingOpponentMessage("시간 초과")
+                2 -> toastMatchingMessageAndDeleteDB("취소했습니다")
+                3 -> toastMatchingMessageAndDeleteDB("시간 초과")
             }
         }
         dialog.show(supportFragmentManager, "ChallengeWaitDialog")
@@ -299,7 +280,7 @@ class MatchingRecyclingView : AppCompatActivity() {
                         // 팝업 띄우기
                         val dialog = AcceptDeclineDialogFragment(userId, opponentId) { accepted ->
                             when (accepted) {
-                                0 -> toastMatchingUserMessage("거절했습니다")
+                                0 -> toastMatchingMessageAndDeleteDB("거절했습니다")
                                 1 -> { // 상대 수락 : 인게임으로 넘어감
                                     hasAccepted = true
 
@@ -315,12 +296,12 @@ class MatchingRecyclingView : AppCompatActivity() {
                                                 intent.putExtra("roomName", roomName)
                                                 startActivity(intent)
 
-                                                db.collection(" ").document(userId).delete()
+                                                db.collection("BattleWait").document(userId).delete()
                                             }
                                         }
                                 }
-                                2 -> toastMatchingUserMessage("시간 초과")
-                                3 -> toastMatchingUserMessage("상대방이 취소했습니다")
+                                2 -> toastMatchingMessageAndDeleteDB("시간 초과")
+                                3 -> toastMatchingMessageAndDeleteDB("상대방이 취소했습니다")
                             }
                         }
                         try {

@@ -108,7 +108,7 @@ class InGameActivity : AppCompatActivity() {
     private val roundTimeLimit: Long = 10000 // 15 seconds
 
     private var resultTimerJob: Job? = null
-    private val resultTimeLimit: Long = 3500 // 3.5 seconds
+    private val resultTimeLimit: Long = 1000 // 3.5 seconds
 
     // Flow Control Boolean
     private var isWaiting: Boolean = false // 상대방이 고를 때까지 기다리는 중인가
@@ -356,12 +356,11 @@ class InGameActivity : AppCompatActivity() {
             // SFX
             SoundManager.playSoundEffect(R.raw.sfx_click02)
 
-            var outRoomFlag = false
             db.collection("BattleRooms").document(roomName).delete()
                 .addOnSuccessListener {
                     db.collection("BattleWait").document(acceptId).delete()
                         .addOnSuccessListener {
-                            outRoomFlag = true
+                            finish()
                         }
                         .addOnFailureListener { e ->
                             Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
@@ -370,9 +369,6 @@ class InGameActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
                 }
-            while (outRoomFlag){
-                finish()
-            }
         }
     }
 
@@ -807,8 +803,6 @@ class InGameActivity : AppCompatActivity() {
         // SFX
         SoundManager.playSoundEffect(R.raw.sfx_popup)
 
-        var resultShowFlag = false
-
         db.collection("BattleRooms")
             .document(roomName)
             .get()
@@ -882,24 +876,21 @@ class InGameActivity : AppCompatActivity() {
 
                                 // Rank 정보 업데이트
                                 db.collection("Ranking") .document("Ranking").update("scoreList", updatedScoreList)
-
-                                resultShowFlag = true
                             }
                         }
                 }
             }
 
         // Popup 창 띄우기
-        while (resultShowFlag){
-            layoutResult.post {
-                val layoutParams = FrameLayout.LayoutParams(
-                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),
-                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
-                )
-                layoutResult.layoutParams.width = layoutParams.width
-                layoutResult.layoutParams.height = layoutParams.height
-            }
+        layoutResult.post {
+            val layoutParams = FrameLayout.LayoutParams(
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
+            )
+            layoutResult.layoutParams.width = layoutParams.width
+            layoutResult.layoutParams.height = layoutParams.height
         }
+
     }
 
     override fun onBackPressed() {

@@ -217,7 +217,7 @@ class MatchingRecyclingView : AppCompatActivity() {
             opponentId + "Status" to 1,
             opponentId + "Profile" to opponentProfile
         )
-        val srcId = mapOf("Opponent" to userId)
+        val srcId = mapOf("Opponent" to userId,"OpponentNick" to opponentNick)
         val opponentAccept = opponentId + "Accept"
 
         db.collection("BattleRooms").document(roomName).set(roomSetting)
@@ -280,7 +280,6 @@ class MatchingRecyclingView : AppCompatActivity() {
 
     private fun waitForOpponentChallenge() {
         val fragmentManager: FragmentManager = supportFragmentManager
-
         var hasAccepted = false
         db.collection("BattleWait").document(userId)
             .addSnapshotListener { snapshot, e ->
@@ -291,12 +290,13 @@ class MatchingRecyclingView : AppCompatActivity() {
 
                 if (snapshot != null && snapshot.exists() && !hasAccepted) {
                     val opponentId = snapshot.getString("Opponent")
+                    val opponentNick = snapshot.getString("OpponentNick")
 
                     if (opponentId != null) {
                         roomName = userId + "_" + opponentId + "_BattleRoom"
 
                         // 팝업 띄우기
-                        val dialog = AcceptDeclineDialogFragment(userId, opponentId) { accepted ->
+                        val dialog = AcceptDeclineDialogFragment(userId, opponentNick.toString()) { accepted ->
                             when (accepted) {
                                 0 -> toastMatchingMessageAndDeleteDB("거절했습니다", opponentId)
                                 1 -> { // 상대 수락 : 인게임으로 넘어감

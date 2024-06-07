@@ -2,7 +2,6 @@ package com.example.termproject
 
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import com.google.firebase.firestore.ListenerRegistration
 
 class AcceptDeclineDialogFragment(
     private val userId: String,
-    private val opponentId: String,
+    private val opponentNick: String,
     private val onResult: (Int) -> Unit
 ) : DialogFragment() {
 
@@ -33,7 +32,7 @@ class AcceptDeclineDialogFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.textViewOpponentId.text = opponentId
+        binding.textViewOpponentId.text = opponentNick + "님의 결투 신청"
         
         
         // 수락 버튼

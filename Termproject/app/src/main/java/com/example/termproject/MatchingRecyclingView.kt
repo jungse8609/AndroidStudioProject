@@ -223,28 +223,59 @@ class MatchingRecyclingView : AppCompatActivity() {
             }
     }
 
+    private fun toastMatchingOpponentMessage(message : String) {
+        db.collection("BattleRooms").document(roomName).delete()
+            .addOnSuccessListener {
+                runOnUiThread {
+                    Toast.makeText(this@MatchingRecyclingView, message, Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener { e ->
+                runOnUiThread {
+                    Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun toastMatchingUserMessage(message : String) {
+        db.collection("BattleWait").document(userId).delete()
+            .addOnSuccessListener {
+                runOnUiThread {
+                    Toast.makeText(this@MatchingRecyclingView, message, Toast.LENGTH_SHORT).show()
+                    db.collection("BattleRooms")
+                        .document(roomName)
+                        .get()
+                        .addOnSuccessListener { document ->
+                            if (document != null) {
+                                document.reference.update(userId + "Accept", -1)
+                            }
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                runOnUiThread {
+                    Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
     private fun waitForOpponentAcceptance(roomName: String, opponentAccept: String, opponentId: String) {
         val db = FirebaseFirestore.getInstance()
         val dialog = ChallengeWaitDialogFragment(waitTimeLimit, roomName, opponentId, opponentAccept) { accepted ->
-            if (accepted) {
-                val intent = Intent(this, InGameActivity::class.java)
-                intent.putExtra("userId", userId)
-                intent.putExtra("opponentId", opponentId)
-                intent.putExtra("roomName", roomName)
+            Log.d("LogTemp", accepted.toString())
+            when (accepted) {
+                -1 -> Toast.makeText(this@MatchingRecyclingView, "Error", Toast.LENGTH_SHORT).show()
+                0 -> toastMatchingOpponentMessage("상대방이 거절했습니다")
+                1 -> { // 상대 수락 : 인게임으로 넘어감
+                    val intent = Intent(this, InGameActivity::class.java)
+                    intent.putExtra("userId", userId)
+                    intent.putExtra("opponentId", opponentId)
+                    intent.putExtra("roomName", roomName)
 
-                startActivity(intent)
-            } else {
-                db.collection("BattleRooms").document(roomName).delete()
-                    .addOnSuccessListener {
-                        runOnUiThread {
-                            Toast.makeText(this@MatchingRecyclingView, "상대방이 거절했습니다", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    .addOnFailureListener { e ->
-                        runOnUiThread {
-                            Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                    startActivity(intent)
+                }
+                2 -> toastMatchingOpponentMessage("취소했습니다")
+                3 -> toastMatchingOpponentMessage("시간 초과")
             }
         }
         dialog.show(supportFragmentManager, "ChallengeWaitDialog")
@@ -273,47 +304,31 @@ class MatchingRecyclingView : AppCompatActivity() {
 
                         // 팝업 띄우기
                         val dialog = AcceptDeclineDialogFragment(userId, opponentId) { accepted ->
-                            if (accepted) {
-                                hasAccepted = true
+                            when (accepted) {
+                                0 -> toastMatchingUserMessage("거절했습니다")
+                                1 -> { // 상대 수락 : 인게임으로 넘어감
+                                    hasAccepted = true
 
-                                db.collection("BattleRooms")
-                                    .document(roomName)
-                                    .get()
-                                    .addOnSuccessListener { document ->
-                                        if (document != null) {
-                                            document.reference.update(userId + "Accept", 1)
-                                            val intent = Intent(this, InGameActivity::class.java)
-                                            intent.putExtra("userId", userId)
-                                            intent.putExtra("opponentId", opponentId)
-                                            intent.putExtra("roomName", roomName)
+                                    db.collection("BattleRooms")
+                                        .document(roomName)
+                                        .get()
+                                        .addOnSuccessListener { document ->
+                                            if (document != null) {
+                                                document.reference.update(userId + "Accept", 1)
+                                                val intent = Intent(this, InGameActivity::class.java)
+                                                intent.putExtra("userId", userId)
+                                                intent.putExtra("opponentId", opponentId)
+                                                intent.putExtra("roomName", roomName)
 
-                                            db.collection("BattleWait").document(userId).delete()
-                                                .addOnSuccessListener {
-                                                    startActivity(intent)
-                                                }
-                                        }
-                                    }
-                            } else {
-                                // 거절한 경우 처리
-                                db.collection("BattleWait").document(userId).delete()
-                                    .addOnSuccessListener {
-                                        runOnUiThread {
-                                            Toast.makeText(this@MatchingRecyclingView, "거절했습니다", Toast.LENGTH_SHORT).show()
-                                            db.collection("BattleRooms")
-                                                .document(roomName)
-                                                .get()
-                                                .addOnSuccessListener { document ->
-                                                    if (document != null) {
-                                                        document.reference.update(userId + "Accept", -1)
+                                                db.collection("BattleWait").document(userId).delete()
+                                                    .addOnSuccessListener {
+                                                        startActivity(intent)
                                                     }
-                                                }
+                                            }
                                         }
-                                    }
-                                    .addOnFailureListener { e ->
-                                        runOnUiThread {
-                                            Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
-                                        }
-                                    }
+                                }
+                                2 -> toastMatchingUserMessage("시간 초과")
+                                3 -> toastMatchingUserMessage("상대방이 취소했습니다")
                             }
                         }
                         dialog.show(fragmentManager, "AcceptDeclineDialog")

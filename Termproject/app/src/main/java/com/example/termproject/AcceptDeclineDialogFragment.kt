@@ -14,7 +14,7 @@ import com.google.firebase.firestore.ListenerRegistration
 class AcceptDeclineDialogFragment(
     private val userId: String,
     private val opponentId: String,
-    private val onResult: (Boolean) -> Unit
+    private val onResult: (Int) -> Unit
 ) : DialogFragment() {
 
     private lateinit var binding: DialogAcceptDeclineBinding
@@ -38,14 +38,14 @@ class AcceptDeclineDialogFragment(
         binding.buttonAccept.setOnClickListener {
             countDownTimer?.cancel()
             listenerRegistration?.remove()
-            onResult(true)
+            onResult(1)
             dismiss()
         }
 
         binding.buttonDecline.setOnClickListener {
             countDownTimer?.cancel()
             listenerRegistration?.remove()
-            onResult(false)
+            onResult(0)
             dismiss()
         }
 
@@ -57,7 +57,7 @@ class AcceptDeclineDialogFragment(
 
             override fun onFinish() {
                 listenerRegistration?.remove()
-                onResult(false) // Time expired, treat as declined
+                onResult(2) // Time expired, treat as declined
                 dismiss()
             }
         }.start()
@@ -67,7 +67,7 @@ class AcceptDeclineDialogFragment(
             .addSnapshotListener { snapshot, e ->
                 if (e != null || snapshot == null || !snapshot.exists()) {
                     countDownTimer?.cancel()
-                    onResult(false) // Document no longer exists
+                    onResult(3) // Document no longer exists
                     listenerRegistration?.remove()
                     dismiss()
                 }

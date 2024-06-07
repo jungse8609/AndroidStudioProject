@@ -815,14 +815,15 @@ class InGameActivity : AppCompatActivity() {
         txtResult.text = result
         txtScore.text = scoreStr
 
-        /*db.collection("users")
+        db.collection("users")
             .document(playerId)
             .get()
             .addOnSuccessListener { document ->
                 if (document != null) {
                     // Update Database
                     document.reference.update("Score", score)
-                    var userList : MutableList<Pair<String, Int>> = mutableListOf()
+
+                    /*var userList : MutableList<Pair<String, Int>> = mutableListOf()
                     db.collection("Ranking")
                         .document("Ranking")
                         .get()
@@ -877,9 +878,9 @@ class InGameActivity : AppCompatActivity() {
                                 // Rank 정보 업데이트
                                 db.collection("Ranking") .document("Ranking").update("scoreList", updatedScoreList)
                             }
-                        }
+                        }*/
                 }
-            }*/
+            }
 
         // Popup 창 띄우기
         layoutResult.post {

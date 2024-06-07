@@ -2,19 +2,25 @@ package com.example.termproject
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.termproject.databinding.DialogAcceptDeclineBinding
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 class AcceptDeclineDialogFragment(
+    private val userId: String,
     private val opponentId: String,
     private val onResult: (Boolean) -> Unit
 ) : DialogFragment() {
 
     private lateinit var binding: DialogAcceptDeclineBinding
     private var countDownTimer: CountDownTimer? = null
+    private var listenerRegistration: ListenerRegistration? = null
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,31 +37,46 @@ class AcceptDeclineDialogFragment(
 
         binding.buttonAccept.setOnClickListener {
             countDownTimer?.cancel()
+            listenerRegistration?.remove()
             onResult(true)
             dismiss()
         }
 
         binding.buttonDecline.setOnClickListener {
             countDownTimer?.cancel()
+            listenerRegistration?.remove()
             onResult(false)
             dismiss()
         }
 
-        // 10초 타이머 시작
+        // Start 10-second timer
         countDownTimer = object : CountDownTimer(10000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 binding.textViewTimer.text = "Time remaining: ${millisUntilFinished / 1000} seconds"
             }
 
             override fun onFinish() {
-                onResult(false) // 시간 초과 시 거절 처리
+                listenerRegistration?.remove()
+                onResult(false) // Time expired, treat as declined
                 dismiss()
             }
         }.start()
+
+        // Add snapshot listener to detect deletion of opponentId document
+        listenerRegistration = db.collection("BattleWait").document(userId)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null || snapshot == null || !snapshot.exists()) {
+                    countDownTimer?.cancel()
+                    onResult(false) // Document no longer exists
+                    listenerRegistration?.remove()
+                    dismiss()
+                }
+            }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         countDownTimer?.cancel()
+        listenerRegistration?.remove()
     }
 }

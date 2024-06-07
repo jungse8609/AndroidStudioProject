@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ProfileAdapter(
     private val context: Context,
-    private val images: List<Int>,
-    private val onItemClick: (Int) -> Unit
+    private val imageNames: List<String>, // Change to list of image names
+    private val onItemClick: (String) -> Unit // Pass image name on item click
 ) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
 
     private var selectedPosition = -1
@@ -21,10 +21,13 @@ class ProfileAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.imageView.setImageResource(images[position])
+        val imageName = "profile${position + 1}" // Construct image name like profile1, profile2, ...
+        // Load image using resource ID
+        val resourceId = context.resources.getIdentifier(imageName, "drawable", context.packageName)
+        holder.imageView.setImageResource(resourceId)
 
         holder.itemView.setOnClickListener {
-            onItemClick(images[position])
+            onItemClick(imageName) // Pass image name on item click
             selectedPosition = position
             notifyDataSetChanged()
         }
@@ -33,7 +36,7 @@ class ProfileAdapter(
     }
 
     override fun getItemCount(): Int {
-        return images.size
+        return imageNames.size
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

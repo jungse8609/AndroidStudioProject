@@ -18,14 +18,14 @@ class StartActivity : AppCompatActivity() {
     lateinit var toggle: ActionBarDrawerToggle
     lateinit var userId: String
     lateinit var profileImageView: ImageView
-    private val profileImages = arrayOf(
-        R.drawable.profile1,
-        R.drawable.profile2,
-        R.drawable.profile3,
-        R.drawable.profile4,
-        R.drawable.profile5,
-        R.drawable.profile6,
-        R.drawable.profile7
+    private val profileImageNames = arrayOf(
+        "profile1",
+        "profile2",
+        "profile3",
+        "profile4",
+        "profile5",
+        "profile6",
+        "profile7"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +42,7 @@ class StartActivity : AppCompatActivity() {
         userId = intent.getStringExtra("userId").toString()
         val userNick = intent.getStringExtra("userNick").toString()
         val userScore = intent.getLongExtra("userScore", -1)
-        val profileImage = intent.getIntExtra("profileImage", R.drawable.profile1)
+        val profileImage = intent.getStringExtra("profileImage").toString()
 
         val myNick = findViewById<TextView>(R.id.myNick)
         val myScore = findViewById<TextView>(R.id.myScore)
@@ -50,7 +50,7 @@ class StartActivity : AppCompatActivity() {
 
         myNick.text = userNick
         myScore.text = userScore.toString()
-        profileImageView.setImageResource(profileImage)
+        profileImageView.setImageResource(resources.getIdentifier(profileImage, "drawable", packageName))
 
         toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_opened, R.string.drawer_closed)
         binding.drawer.addDrawerListener(toggle)
@@ -83,7 +83,7 @@ class StartActivity : AppCompatActivity() {
         val inflater = layoutInflater
         val dialogLayout = inflater.inflate(R.layout.dialog_profile_images, null)
         builder.setView(dialogLayout)
-        builder.setTitle("프로필 사진 선택")
+        builder.setTitle("프로필 이미지 변경")
 
         val imageViews = arrayOf(
             dialogLayout.findViewById<ImageView>(R.id.image1),
@@ -98,11 +98,12 @@ class StartActivity : AppCompatActivity() {
         val dialog = builder.create()
 
         imageViews.forEachIndexed { index, imageView ->
-            imageView.setImageResource(profileImages[index])
+            val imageName = profileImageNames[index]
+            val resourceId = resources.getIdentifier(imageName, "drawable", packageName)
+            imageView.setImageResource(resourceId)
             imageView.setOnClickListener {
-                val selectedImage = profileImages[index]
-                profileImageView.setImageResource(selectedImage)
-                updateProfileImageInDatabase(selectedImage)
+                profileImageView.setImageResource(resourceId)
+                updateProfileImageInDatabase(imageName) // Pass image name instead of resource ID
                 dialog.dismiss() // Close the dialog when an image is selected
             }
         }
@@ -110,17 +111,18 @@ class StartActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun updateProfileImageInDatabase(selectedImage: Int) {
+    private fun updateProfileImageInDatabase(selectedImage: String) {
         val db = FirebaseFirestore.getInstance()
         db.collection("users").document(userId)
             .update("ProfileImage", selectedImage)
             .addOnSuccessListener {
-                Toast.makeText(this, "프로필 사진이 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "프로필 이미지 업데이트 성공", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener {
-                Toast.makeText(this, "프로필 사진 변경 실패", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "프로필 이미지 업데이트 실패", Toast.LENGTH_SHORT).show()
             }
     }
+
 
     private fun logout() {
         val db = FirebaseFirestore.getInstance()

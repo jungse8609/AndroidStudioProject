@@ -20,7 +20,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var btnComplete: Button
     private lateinit var btnBack: Button
     private lateinit var recyclerView: RecyclerView
-    private var selectedProfileImage: Int? = null
+    private var selectedProfileImage: String? = null
     private var chk = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,19 +36,19 @@ class RegisterActivity : AppCompatActivity() {
         btnBack = findViewById(R.id.btnBack)
         recyclerView = findViewById(R.id.recyclerView)
 
-        val images = listOf(
-            R.drawable.profile1,
-            R.drawable.profile2,
-            R.drawable.profile3,
-            R.drawable.profile4,
-            R.drawable.profile5,
-            R.drawable.profile6,
-            R.drawable.profile7
+        val imageNames = listOf(
+            "profile1",
+            "profile2",
+            "profile3",
+            "profile4",
+            "profile5",
+            "profile6",
+            "profile7"
         )
 
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        recyclerView.adapter = ProfileAdapter(this, images) { selectedImage ->
-            selectedProfileImage = selectedImage
+        recyclerView.adapter = ProfileAdapter(this, imageNames) { selectedImage ->
+            selectedProfileImage = selectedImage // Receive image name
         }
 
         btnComplete.setOnClickListener {
@@ -57,16 +57,17 @@ class RegisterActivity : AppCompatActivity() {
             val password = RPassword.text.toString().trim()
 
             if (nickname.isEmpty() || id.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "빈칸없이 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
             } else if (nickname.length > 8) {
-                Toast.makeText(this, "닉네임을 8글자 이내로 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter a nickname within 8 characters.", Toast.LENGTH_SHORT).show()
             } else if (selectedProfileImage == null) {
-                Toast.makeText(this, "프로필 사진을 선택해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please select a profile picture.", Toast.LENGTH_SHORT).show()
             } else {
                 // Perform registration operation
-                writeFirebase(nickname, id, password, selectedProfileImage!!)
+                writeFirebase(nickname, id, password, selectedProfileImage!!) // Pass image name
             }
         }
+
 
         btnBack.setOnClickListener {
             finish()
@@ -78,7 +79,7 @@ class RegisterActivity : AppCompatActivity() {
         return BigInteger(1, md.digest(input.toByteArray())).toString(16).padStart(32, '0')
     }
 
-    fun writeFirebase(nickname: String, id: String, pw: String, profileImage: Int) {
+    fun writeFirebase(nickname: String, id: String, pw: String, profileImage: String) {
         db.collection("users")
             .document(id)
             .get()

@@ -15,7 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class MatchingRecyclingView : AppCompatActivity() {
     data class User(
-        var profile: Long = 0,
+        var profile: Int = 0,
         val id: String = "",
         val nick: String = "",
         val score: Long = 0,
@@ -60,15 +60,15 @@ class MatchingRecyclingView : AppCompatActivity() {
                         val dbUser = document.data
                         val id = dbUser["ID"] as String
                         val nick = dbUser["NickName"] as String
-                        var profile = dbUser["ProfileImage"] as Long
+                        var profile = dbUser["ProfileImage"] as String
                         val score = dbUser["Score"] as Long
                         val status = dbUser["Status"] as Long
                         lateinit var user: User
                         if (status == 1L){
-                            user = User(profile, id, nick, score, 1)
+                            user = User(resources.getIdentifier(profile, "drawable", packageName), id, nick, score, 1)
                         }
                         else{
-                            user = User(profile, id, nick, score, 0)
+                            user = User(resources.getIdentifier(profile, "drawable", packageName), id, nick, score, 0)
                         }
 
                         userList.add(user)
@@ -111,15 +111,15 @@ class MatchingRecyclingView : AppCompatActivity() {
                 val dbUser = document.data
                 val id = dbUser?.get("ID") as String
                 val nick = dbUser["NickName"] as String
-                var profile = dbUser["ProfileImage"] as Long
+                var profile = dbUser["ProfileImage"] as String
                 val score = dbUser["Score"] as Long
                 val status = dbUser["Status"] as Long
                 lateinit var user: User
                 if (status == 1L){
-                    user = User(profile, id, nick, score, 1)
+                    user = User(resources.getIdentifier(profile, "drawable", packageName), id, nick, score, 1)
                 }
                 else{
-                    user = User(profile, id, nick, score, 0)
+                    user = User(resources.getIdentifier(profile, "drawable", packageName), id, nick, score, 0)
                 }
 
                 updatedUserList.add(user)

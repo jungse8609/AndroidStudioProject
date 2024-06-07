@@ -27,6 +27,7 @@ class MatchingRecyclingView : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private lateinit var userId: String
     private lateinit var userNick: String
+    private lateinit var userProfile: String
     private lateinit var roomName: String
     private var userScore = 0
     private val userList = mutableListOf<User>()
@@ -50,6 +51,7 @@ class MatchingRecyclingView : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         userId = intent.getStringExtra("userId").toString()
         userNick = intent.getStringExtra("userNick").toString()
+        userProfile = intent.getStringExtra("userProfile").toString()
 
         waitForOpponentChallenge()
 
@@ -163,6 +165,7 @@ class MatchingRecyclingView : AppCompatActivity() {
         val gameHp = 20
         var opponentScore = 0L
         var opponentNick: String? = null
+        var opponentProfile: String? = null
 
         // Step 1: Fetch opponent details
         db.collection("users")
@@ -173,10 +176,11 @@ class MatchingRecyclingView : AppCompatActivity() {
                     for (document in documents) {
                         opponentScore = document["Score"] as Long
                         opponentNick = document["NickName"] as String
+                        opponentProfile = document["ProfileImage"] as String
                     }
                     // Step 2: Create room settings and proceed
                     if (opponentNick != null) {
-                        createBattleRoom(opponentId, gameHp, opponentScore, opponentNick!!)
+                        createBattleRoom(opponentId, gameHp, opponentScore, opponentNick!!, opponentProfile!!)
                     } else {
                         createToast("상대방을 찾을 수 없습니다.")
                     }
@@ -189,7 +193,7 @@ class MatchingRecyclingView : AppCompatActivity() {
             }
     }
 
-    private fun createBattleRoom(opponentId: String, gameHp: Int, opponentScore: Long, opponentNick: String) {
+    private fun createBattleRoom(opponentId: String, gameHp: Int, opponentScore: Long, opponentNick: String, opponentProfile: String) {
         val roomSetting = mapOf(
             "roomName" to roomName,
             "roundTime" to 0,
@@ -206,6 +210,7 @@ class MatchingRecyclingView : AppCompatActivity() {
             userId + "Choose"  to 0,
             userId + "Round"   to 0,
             userId + "Status" to 1,
+            userId + "Profile" to userProfile,
             opponentId + "Accept" to 0,
             opponentId + "HP" to gameHp,
             opponentId + "Score" to opponentScore,
@@ -216,6 +221,7 @@ class MatchingRecyclingView : AppCompatActivity() {
             opponentId + "Choose"  to 0,
             opponentId + "Round"   to 0,
             opponentId + "Status" to 1,
+            opponentId + "Profile" to opponentProfile
         )
         val srcId = mapOf("Opponent" to userId)
         val opponentAccept = opponentId + "Accept"

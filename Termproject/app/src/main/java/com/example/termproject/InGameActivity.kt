@@ -1,6 +1,5 @@
 package com.example.termproject
 
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -14,8 +13,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.delay
@@ -82,6 +79,9 @@ class InGameActivity : AppCompatActivity() {
     private lateinit var roomName : String
     private lateinit var roundTimerId : String
     private lateinit var acceptId: String
+    // User Profile Image
+    private lateinit var playerProfile : String
+    private lateinit var opponentProfile : String
     // User Status
     private var playerStatus : Long = 1
     private var opponentStatus : Long = 1
@@ -186,11 +186,13 @@ class InGameActivity : AppCompatActivity() {
                     playerScore = document.getLong(playerId + "Score") ?: 0
                     playerHealth = document.getLong(playerId + "HP") ?: 0
                     playerStatus = document.getLong(playerId + "Status") ?: 0
+                    playerProfile = document.getString(playerId + "Profile") ?: "null"
 
                     opponentNick = document.getString(opponentId + "Nick") ?: "null"
                     opponentScore = document.getLong(opponentId + "Score") ?: 0
                     opponentHealth = document.getLong(opponentId + "HP") ?: 0
                     opponentStatus = document.getLong(opponentId + "Status") ?: 0
+                    opponentProfile = document.getString(opponentId + "Profile") ?: "null"
 
                     curPlayerHealth= playerHealth
                     curOpponentHealth = opponentHealth
@@ -219,6 +221,9 @@ class InGameActivity : AppCompatActivity() {
 
                     txtPlayerNick.text = playerNick
                     txtOpponentNick.text = opponentNick
+
+                    imgPlayerProfile.setImageResource(resources.getIdentifier(playerProfile, "drawable", packageName))
+                    imgOpponentProfile.setImageResource(resources.getIdentifier(opponentProfile, "drawable", packageName))
 
                     // ### Round Play while someone died
                     gameplay();

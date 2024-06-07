@@ -42,7 +42,7 @@ class StartActivity : AppCompatActivity() {
         userId = intent.getStringExtra("userId").toString()
         val userNick = intent.getStringExtra("userNick").toString()
         val userScore = intent.getLongExtra("userScore", -1)
-        val profileImage = intent.getStringExtra("profileImage").toString()
+        val userProfile = intent.getStringExtra("profileImage").toString()
 
         val myNick = findViewById<TextView>(R.id.myNick)
         val myScore = findViewById<TextView>(R.id.myScore)
@@ -50,7 +50,7 @@ class StartActivity : AppCompatActivity() {
 
         myNick.text = userNick
         myScore.text = userScore.toString()
-        profileImageView.setImageResource(resources.getIdentifier(profileImage, "drawable", packageName))
+        profileImageView.setImageResource(resources.getIdentifier(userProfile, "drawable", packageName))
 
         toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_opened, R.string.drawer_closed)
         binding.drawer.addDrawerListener(toggle)
@@ -70,6 +70,7 @@ class StartActivity : AppCompatActivity() {
             intent.putExtra("userId", userId)
             intent.putExtra("userNick", userNick)
             intent.putExtra("userScore", userScore)
+            intent.putExtra("userProfile", userProfile)
             startActivity(intent)
         }
 

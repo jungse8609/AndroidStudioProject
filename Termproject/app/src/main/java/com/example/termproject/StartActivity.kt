@@ -49,6 +49,7 @@ class StartActivity : AppCompatActivity() {
         userId = intent.getStringExtra("userId").toString()
         val userNick = intent.getStringExtra("userNick").toString()
         val userScore = intent.getLongExtra("userScore", -1)
+        val userRank = intent.getLongExtra("userRank", -1)
         val userProfile = intent.getStringExtra("profileImage").toString()
 
         val myNick = findViewById<TextView>(R.id.myNick)
@@ -58,10 +59,10 @@ class StartActivity : AppCompatActivity() {
 
         myNick.text = userNick
         myScore.text = userScore.toString()
+        myRank.text = userRank.toString() + "등"
         profileImageView.setImageResource(resources.getIdentifier(userProfile, "drawable", packageName))
 
         db = FirebaseFirestore.getInstance()
-
 
         // DrawerView
         toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_opened, R.string.drawer_closed)

@@ -361,6 +361,8 @@ class InGameActivity : AppCompatActivity() {
                     db.collection("BattleWait").document(acceptId).delete()
                         .addOnSuccessListener {
                             runOnUiThread {
+                                SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
+                                finish()
                             }
                         }
                         .addOnFailureListener { e ->
@@ -372,54 +374,6 @@ class InGameActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     runOnUiThread {
                         Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-            SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
-
-            // User List를 Recycling View에 추가하기
-            var userList : MutableList<Pair<String, Int>> = mutableListOf()
-            db.collection("Ranking")
-                .document("Ranking")
-                .get()
-                .addOnSuccessListener { document ->
-                    if (document != null && !document.exists()) {
-                        val scoreList = document.get("scoreList") as List<Map<String, Any>>
-
-                        for (item in scoreList) {
-                            val id = item["ID"] as String
-                            val score = (item["Score"] as Long).toInt()
-                            userList.add(Pair(id, score))
-                        }
-
-                        // score에 따라 내림차순 정렬
-                        userList.sortByDescending { it.second }
-
-                        // Ranking 계산
-                        val rankingList = mutableListOf<Triple<String, Int, Int>>()
-                        var currentRank = 1
-                        var currentScore = userList.first().second
-                        var sameRankCounter = 0
-                        for ((index, item) in userList.withIndex()) {
-                            var (id, score) = item
-                            if (score == currentScore) {
-                                rankingList.add(Triple(id, score, currentRank))
-                                sameRankCounter += 1
-                            }
-                            else {
-                                currentRank += sameRankCounter
-                                sameRankCounter = 1
-                                currentScore = score
-                                rankingList.add(Triple(id, score, currentRank))
-                            }
-                        }
-
-                        // User 정보 업데이트
-                        for (item in rankingList) {
-                            db.collection("users").document(item.first).update("Rank", item.third)
-                        }
-
-                        finish()
                     }
                 }
         }
@@ -874,6 +828,58 @@ class InGameActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     document.reference.update("Score", score)
+                }
+            }
+
+        // Update Database
+        var userList : MutableList<Pair<String, Int>> = mutableListOf()
+        db.collection("Ranking")
+            .document("Ranking")
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    // Score List에 정보 추가
+                    val scoreList = document.get("scoreList") as List<Map<String, Any>>
+
+                    // MutableList로 변환하여 새로운 요소 추가
+                    val updatedScoreList = scoreList.toMutableList()
+                    var index = updatedScoreList.indexOfFirst { it["ID"] == playerId }
+                    if (index != -1) {
+                        updatedScoreList[index] = updatedScoreList[index].toMutableMap().apply {
+                            this["Score"] = score
+                        }
+                    }
+
+                    // score에 따라 내림차순 정렬
+                    userList.sortByDescending { it.second }
+
+                    // Ranking 계산
+                    val rankingList = mutableListOf<Triple<String, Int, Int>>() // id, score, rank
+                    var currentRank = 1
+                    var currentScore = userList.first().second
+                    var sameRankCounter = 0
+                    for ((index, item) in userList.withIndex()) {
+                        var (id, score) = item
+                        if (score == currentScore) {
+                            rankingList.add(Triple(id, score, currentRank))
+                            sameRankCounter += 1
+                        }
+                        else {
+                            currentRank += sameRankCounter
+                            sameRankCounter = 1
+                            currentScore = score
+                            rankingList.add(Triple(id, score, currentRank))
+                        }
+                    }
+
+                    // User 정보 업데이트
+                    for (item in rankingList) {
+                        db.collection("users").document(item.first).update("Score", item.second)
+                        db.collection("users").document(item.first).update("Rank", item.third)
+                    }
+
+                    // Rank 정보 업데이트
+                    db.collection("Ranking") .document("Ranking").update("scoreList", updatedScoreList)
                 }
             }
 

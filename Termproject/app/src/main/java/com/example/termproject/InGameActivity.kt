@@ -779,8 +779,8 @@ class InGameActivity : AppCompatActivity() {
         roundTimerJob?.cancel()
         resultTimerJob?.cancel()
 
-        listenerWaitOpponent?.remove()
-        listenerResultRound?.remove()
+        /*listenerWaitOpponent?.remove()
+        listenerResultRound?.remove()*/
 
         var resultScore : Long
 
@@ -882,8 +882,8 @@ class InGameActivity : AppCompatActivity() {
             )
             layoutResult.layoutParams.width = layoutParams.width
             layoutResult.layoutParams.height = layoutParams.height
+            layoutResult.requestLayout() // 레이아웃을 다시 그리도록 요청
         }
-
     }
 
     override fun onBackPressed() {
@@ -918,13 +918,19 @@ class InGameActivity : AppCompatActivity() {
             }
 
             if (snapshot != null && snapshot.exists()) {
-                listenerOpponentStatus?.remove()
 
-                opponentStatus = snapshot.getLong(opponentId + "Status") ?: 0
+
+                opponentStatus = snapshot.getLong(opponentId + "Status") ?: 0L
                 if (opponentStatus == 0L) {
-                    db.collection("users")
+                    listenerOpponentStatus?.remove()
+
+                    /*db.collection("users")
                         .document(playerId)
-                        .update("Score", (playerScore + 5).clamp(0, Long.MAX_VALUE))
+                        .update("Score", (playerScore + 5).clamp(0, Long.MAX_VALUE))*/
+
+                    curOpponentHealth = 0
+                    curPlayerHealth = 5
+                    exitGame()
                 }
             }
         }

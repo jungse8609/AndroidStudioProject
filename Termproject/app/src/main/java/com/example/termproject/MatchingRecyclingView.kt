@@ -236,7 +236,7 @@ class MatchingRecyclingView : AppCompatActivity() {
     private fun waitForOpponentAcceptance(roomName: String, opponentAccept: String, opponentId: String) {
         val db = FirebaseFirestore.getInstance()
         val dialog = ChallengeWaitDialogFragment(waitTimeLimit, roomName, opponentId, opponentAccept) { accepted ->
-            Log.d("LogTemp", accepted.toString())
+            Log.d("LogTemp", "user "+accepted.toString())
             when (accepted) {
                 -1 -> Toast.makeText(this@MatchingRecyclingView, "Error", Toast.LENGTH_SHORT).show()
                 0 -> toastMatchingMessageAndDeleteDB("상대방이 거절했습니다", opponentId)
@@ -278,6 +278,7 @@ class MatchingRecyclingView : AppCompatActivity() {
 
                         // 팝업 띄우기
                         val dialog = AcceptDeclineDialogFragment(userId, opponentId) { accepted ->
+                            Log.d("LogTemp", "opponent " + accepted.toString())
                             when (accepted) {
                                 0 -> toastMatchingMessageAndDeleteDB("거절했습니다", opponentId)
                                 1 -> { // 상대 수락 : 인게임으로 넘어감

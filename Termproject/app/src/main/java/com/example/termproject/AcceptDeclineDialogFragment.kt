@@ -34,14 +34,17 @@ class AcceptDeclineDialogFragment(
         super.onViewCreated(view, savedInstanceState)
 
         binding.textViewOpponentId.text = opponentId
-
+        
+        
+        // 수락 버튼
         binding.buttonAccept.setOnClickListener {
             countDownTimer?.cancel()
             listenerRegistration?.remove()
             onResult(1)
             dismiss()
         }
-
+        
+        // 거절 버튼
         binding.buttonDecline.setOnClickListener {
             countDownTimer?.cancel()
             listenerRegistration?.remove()
@@ -49,7 +52,7 @@ class AcceptDeclineDialogFragment(
             dismiss()
         }
 
-        // Start 10-second timer
+        // 시간 초과
         countDownTimer = object : CountDownTimer(10000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 binding.textViewTimer.text = "Time remaining: ${millisUntilFinished / 1000} seconds"
@@ -62,7 +65,7 @@ class AcceptDeclineDialogFragment(
             }
         }.start()
 
-        // Add snapshot listener to detect deletion of opponentId document
+        // 상대가 취소
         listenerRegistration = db.collection("BattleWait").document(userId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null || snapshot == null || !snapshot.exists()) {

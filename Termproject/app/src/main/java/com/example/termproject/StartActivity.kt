@@ -33,6 +33,10 @@ class StartActivity : AppCompatActivity() {
         val binding = ActivityStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Sound Effect - BGM
+        SoundManager.init(this)
+        SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
+
         // Init XML
         val btnStart = binding.BtnStart
         userId = intent.getStringExtra("userId").toString()
@@ -58,6 +62,10 @@ class StartActivity : AppCompatActivity() {
         }
 
         btnStart.setOnClickListener {
+            // Sound
+            SoundManager.playSoundEffect(R.raw.sfx_touch01)
+
+            // Intent to Matching Acivity
             val intent = Intent(this, MatchingRecyclingView::class.java)
             intent.putExtra("userId", userId)
             intent.putExtra("userNick", userNick)
@@ -163,5 +171,10 @@ class StartActivity : AppCompatActivity() {
             }
         val alert = builder.create()
         alert.show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SoundManager.release()
     }
 }

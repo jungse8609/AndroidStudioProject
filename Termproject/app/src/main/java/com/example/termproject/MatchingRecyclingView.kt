@@ -194,6 +194,7 @@ class MatchingRecyclingView : AppCompatActivity() {
             userId + "Counter" to 0,
             userId + "Choose" to 0,
             userId + "Round" to 0,
+            userId + "Status" to 1,
             opponentId + "Accept" to 0,
             opponentId + "HP" to gameHp,
             opponentId + "Score" to opponentScore,
@@ -203,6 +204,7 @@ class MatchingRecyclingView : AppCompatActivity() {
             opponentId + "Counter" to 0,
             opponentId + "Choose" to 0,
             opponentId + "Round" to 0,
+            opponentId + "Status" to 1,
         )
         val srcId = mapOf("Opponent" to userId)
         val opponentAccept = opponentId + "Accept"

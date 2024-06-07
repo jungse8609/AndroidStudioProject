@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.util.TypedValue
 import android.widget.Button
 import android.widget.FrameLayout
@@ -12,6 +13,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlin.random.Random
@@ -75,6 +78,9 @@ class InGameActivity : AppCompatActivity() {
     private lateinit var roomName : String
     private lateinit var roundTimerId : String
     private lateinit var acceptId: String
+    // User Status
+    private var playerStatus : Long = 1
+    private var opponentStatus : Long = 1
     // User Nickname and Score
     private lateinit var playerNick : String
     private lateinit var opponentNick : String
@@ -168,10 +174,12 @@ class InGameActivity : AppCompatActivity() {
                     playerNick = document.getString(playerId + "Nick") ?: "null"
                     playerScore = document.getLong(playerId + "Score") ?: 0
                     playerHealth = document.getLong(playerId + "HP") ?: 0
+                    playerStatus = document.getLong(playerId + "Status") ?: 0
 
                     opponentNick = document.getString(opponentId + "Nick") ?: "null"
                     opponentScore = document.getLong(opponentId + "Score") ?: 0
                     opponentHealth = document.getLong(opponentId + "HP") ?: 0
+                    opponentStatus = document.getLong(opponentId + "Status") ?: 0
 
                     curPlayerHealth= playerHealth
                     curOpponentHealth = opponentHealth
@@ -713,6 +721,12 @@ class InGameActivity : AppCompatActivity() {
     }
 
     private fun exitGame() {
+        roundTimer?.cancel()
+        resultTimer?.cancel()
+
+        listenerWaitOpponent?.remove()
+        listenerResultRound?.remove()
+
         var resultScore : Long
 
         // 무승부
@@ -789,6 +803,33 @@ class InGameActivity : AppCompatActivity() {
     }
     override fun onBackPressed() {
         super.onBackPressed()
+        db.collection("BattleRooms")
+            .document(roomName)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    document.reference.update(playerId + "Status", 0)
+                }
+            }
         finish()
+    }
+
+    fun monitoringOpponentStatus() {
+        // Firestore에서 사용자 상태를 실시간으로 모니터링
+        db.collection("BattleRooms").document(roomName)
+            .addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w("LogTemp", "Listen failed", e)
+                return@addSnapshotListener
+            }
+
+                if (snapshot != null && snapshot.exists()) {
+                    opponentStatus = snapshot.getLong(opponentId + "Status") ?: 0
+                    if (opponentStatus == 0L) {
+                        curOpponentHealth = 0
+                        exitGame()
+                    }
+                }
+        }
     }
 }

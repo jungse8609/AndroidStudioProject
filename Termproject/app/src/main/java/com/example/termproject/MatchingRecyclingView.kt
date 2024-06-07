@@ -10,17 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.termproject.databinding.ItemUserBinding
 import com.example.termproject.databinding.MatchingRecyclingViewBinding
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.Timer
-import java.util.TimerTask
-import java.util.zip.Inflater
 
 class MatchingRecyclingView : AppCompatActivity() {
     data class User(
@@ -87,10 +78,10 @@ class MatchingRecyclingView : AppCompatActivity() {
 
                     // 결투 버튼 클릭 이벤트
                     val onItemClick: (String) -> Unit = { text ->
-                        //makeGame(text)
+                        makeGame(text)
 
                         // 상대방 수락 대기 팝업창 띄워야함
-                        showChallengePopup(text)
+                        //showChallengePopup(text)
                     }
 
                     // UserList를 Recycler View 에 띄워줘
@@ -187,17 +178,6 @@ class MatchingRecyclingView : AppCompatActivity() {
             }
     }
 
-    private fun showChallengePopup(opponentId: String) {
-        val dialog = ChallengeWaitDialogFragment(waitTimeLimit) { accepted ->
-            if (accepted) {
-                makeGame(opponentId)
-            } else {
-                Toast.makeText(this@MatchingRecyclingView, "상대가 거절했습니다", Toast.LENGTH_SHORT).show()
-            }
-        }
-        dialog.show(supportFragmentManager, "ChallengeWaitDialog")
-    }
-
     private fun createBattleRoom(opponentId: String, gameHp: Int, opponentScore: Long, opponentNick: String) {
         val roomSetting = mapOf(
             "roomName" to roomName,
@@ -245,22 +225,20 @@ class MatchingRecyclingView : AppCompatActivity() {
 
     private fun waitForOpponentAcceptance(roomName: String, opponentAccept: String, opponentId: String) {
         val db = FirebaseFirestore.getInstance()
-        val timer = Timer()
-        val timerTask = object : TimerTask() {
-            override fun run() {
+        val dialog = ChallengeWaitDialogFragment(waitTimeLimit, roomName, opponentId, opponentAccept) { accepted ->
+            if (accepted) {
+                val intent = Intent(this, InGameActivity::class.java)
+                intent.putExtra("userId", userId)
+                intent.putExtra("opponentId", opponentId)
+                intent.putExtra("roomName", roomName)
+
+                startActivity(intent)
+            } else {
                 db.collection("BattleRooms").document(roomName).delete()
                     .addOnSuccessListener {
-                        db.collection("BattleWait").document(opponentId).delete()
-                            .addOnSuccessListener {
-                                runOnUiThread {
-                                    Toast.makeText(this@MatchingRecyclingView, "Room deleted due to timeout", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                            .addOnFailureListener { e ->
-                                runOnUiThread {
-                                    Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                        runOnUiThread {
+                            Toast.makeText(this@MatchingRecyclingView, "상대방이 거절했습니다", Toast.LENGTH_SHORT).show()
+                        }
                     }
                     .addOnFailureListener { e ->
                         runOnUiThread {
@@ -269,54 +247,7 @@ class MatchingRecyclingView : AppCompatActivity() {
                     }
             }
         }
-
-        // Schedule the timer to delete the room after 10 seconds
-        timer.schedule(timerTask, 10000)
-
-        // 수락 대기 팝업창 띄워
-
-        var hasGameStarted = false;
-
-        db.collection("BattleRooms").document(roomName)
-            .addSnapshotListener { snapshot, e ->
-                if (e != null) {
-                    Toast.makeText(this, "Error waiting for opponent acceptance", Toast.LENGTH_SHORT).show()
-                    return@addSnapshotListener
-                }
-
-                if (snapshot != null && snapshot.exists() && !hasGameStarted) {
-                    val opponentChk = snapshot.getLong(opponentAccept) ?: 0L
-                    // 상대가 수락한 경우
-                    if (opponentChk == 1L) {
-                        hasGameStarted = true // 플래그 설정
-
-                        // Cancel the timer if opponent accepted
-                        timer.cancel()
-
-                        // Start the game
-                        val intent = Intent(this, InGameActivity::class.java)
-                        intent.putExtra("userId", userId)
-                        intent.putExtra("opponentId", opponentId)
-                        intent.putExtra("roomName", roomName)
-
-                        startActivity(intent)
-                    }
-                    // 상대가 거절한 경우
-                    else if (opponentChk == -1L) {
-                        db.collection("BattleRooms").document(roomName).delete()
-                            .addOnSuccessListener {
-                                runOnUiThread {
-                                    Toast.makeText(this@MatchingRecyclingView, "상대방이 거절했습니다", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                            .addOnFailureListener { e ->
-                                runOnUiThread {
-                                    Toast.makeText(this@MatchingRecyclingView, "Error deleting room: $e", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                    }
-                }
-            }
+        dialog.show(supportFragmentManager, "ChallengeWaitDialog")
     }
 
     private fun waitForOpponentChallenge() {
@@ -341,7 +272,7 @@ class MatchingRecyclingView : AppCompatActivity() {
                         val roomName = userId + "_" + opponentId + "_BattleRoom"
 
                         // 팝업 띄우기
-                        val dialog = AcceptDeclineDialogFragment(opponentId) { accepted ->
+                        val dialog = AcceptDeclineDialogFragment(userId, opponentId) { accepted ->
                             if (accepted) {
                                 hasAccepted = true
 

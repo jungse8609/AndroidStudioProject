@@ -380,16 +380,18 @@ class InGameActivity : AppCompatActivity() {
             // User List를 Recycling View에 추가하기
             var userList : MutableList<Pair<String, Int>> = mutableListOf()
             db.collection("users")
+                .document("userRanking")
                 .get()
-                .addOnSuccessListener { documents ->
-                    if (documents != null && !documents.isEmpty) {
-                        for (document in documents) {
-                            val dbUser = document.data
-                            val id = dbUser["ID"] as String
-                            val score = (dbUser["Score"] as Long).toInt()
+                .addOnSuccessListener { document ->
+                    if (document != null && !document.exists()) {
+                        val scoreList = document.get("scoreList") as List<Map<String, Any>>
 
+                        for (item in scoreList) {
+                            val id = item["ID"] as String
+                            val score = (item["Score"] as Long).toInt()
                             userList.add(Pair(id, score))
                         }
+
                         // score에 따라 내림차순 정렬
                         userList.sortByDescending { it.second }
 

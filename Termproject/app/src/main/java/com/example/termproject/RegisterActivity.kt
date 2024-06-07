@@ -59,8 +59,8 @@ class RegisterActivity : AppCompatActivity() {
 
             if (nickname.isEmpty() || id.isEmpty() || password.isEmpty()) {
                 ToastUtils.createToast(this, "모든 칸을 채워주세요.")
-            } else if (nickname.length > 8) {
-                ToastUtils.createToast(this, "닉네임은 8자 이내로 작성해주세요")
+            } else if (nickname.length > 5) {
+                ToastUtils.createToast(this, "닉네임은 5자 이내로 작성해주세요")
             } else if (selectedProfileImage == null) {
                 ToastUtils.createToast(this, "프로필 사진을 선택해주세요")
             } else {

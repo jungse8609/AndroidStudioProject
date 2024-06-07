@@ -1,5 +1,6 @@
 package com.example.termproject
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,7 @@ class UserAdapter(private val userList: List<MatchingRecyclingView.User>, privat
     inner class UserViewHolder(private val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(user: MatchingRecyclingView.User) {
             binding.ItemRank.text = user.rank.toString()
+            Log.d("LogTemp", user.rank.toString())
             binding.ItemProfile.setImageResource(user.profile)
             binding.ItemNick.text = user.nick
             binding.ItemScore.text = user.score.toString()

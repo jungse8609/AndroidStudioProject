@@ -792,7 +792,8 @@ class InGameActivity : AppCompatActivity() {
     private suspend fun onRoundTimerFinish() {
         if (!isWaiting) {
             // Roll Dices Randomly
-            playerRolls = rollDices()
+            if (!rollDiceOnce)
+                playerRolls = rollDices()
             val randomChoose = Random.nextInt(0, 3) // return Random Integer between 0 and 2
             playerType = when (randomChoose) {
                 0 -> DiceType.ATTACK

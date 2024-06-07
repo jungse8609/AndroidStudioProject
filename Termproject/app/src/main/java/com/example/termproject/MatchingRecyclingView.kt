@@ -260,6 +260,9 @@ class MatchingRecyclingView : AppCompatActivity() {
             }
         }
         dialog.show(supportFragmentManager, "ChallengeWaitDialog")
+
+        // Sound - Pop Up
+        SoundManager.playSoundEffect(R.raw.sfx_popup)
     }
 
     private fun waitForOpponentChallenge() {
@@ -280,6 +283,8 @@ class MatchingRecyclingView : AppCompatActivity() {
                         roomName = userId + "_" + opponentId + "_BattleRoom"
 
                         // 팝업 띄우기
+                        // Sound - Pop Up
+                        SoundManager.playSoundEffect(R.raw.sfx_popup)
                         val dialog = AcceptDeclineDialogFragment(userId, opponentNick.toString()) { accepted ->
                             when (accepted) {
                                 0 -> toastMatchingMessageAndDeleteDB("거절했습니다", opponentId)
@@ -308,6 +313,9 @@ class MatchingRecyclingView : AppCompatActivity() {
                         }
                         try {
                             dialog.show(fragmentManager, "AcceptDeclineDialog")
+
+                            // Sound - Pop Up
+                            SoundManager.playSoundEffect(R.raw.sfx_popup)
                         } catch (e : Exception) {
                             Log.w("LogTemp", e.toString())
                         }

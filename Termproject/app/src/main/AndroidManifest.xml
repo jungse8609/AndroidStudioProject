@@ -33,7 +33,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".InGameActivity" />
-        <activity android:name=".RegisterActivity" />
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".StartActivity" />
     </application>
 

@@ -23,19 +23,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp">
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="150dp"/>
+        android:padding="16dp"
+        android:gravity="center">
 
         <!-- Nickname Input Field -->
         <EditText
             android:id="@+id/Nickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nickname"
-            android:inputType="textPersonName"
+            android:hint="닉네임"
+            android:inputType="text"
             android:textSize="16sp"
             android:textStyle="italic"
             android:textColor="#dddddd"
@@ -48,7 +45,7 @@
             android:id="@+id/RID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="ID"
+            android:hint="아이디"
             android:inputType="text"
             android:textSize="16sp"
             android:textStyle="italic"
@@ -62,7 +59,7 @@
             android:id="@+id/RPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
+            android:hint="비밀번호"
             android:inputType="textPassword"
             android:textColor="#dddddd"
             android:textColorHint="#dddddd"
@@ -75,7 +72,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:text="Select Profile Picture"
+            android:text="프로필 사진 선택"
             android:textSize="20sp"
             android:textColor="#dddddd"
             android:fontFamily="@font/neodgm"
@@ -97,8 +94,8 @@
             <!-- Back Button -->
             <Button
                 android:id="@+id/btnBack"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="10dp"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:background="@null"
                 android:text="뒤로가기"
@@ -108,15 +105,12 @@
                 android:paddingTop="10dp"/>
 
             <!-- Spacer -->
-            <View
-                android:layout_width="16dp"
-                android:layout_height="wrap_content" />
 
             <!-- Complete Button -->
             <Button
                 android:id="@+id/btnComplete"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="10dp"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:background="@null"
                 android:text="완료"

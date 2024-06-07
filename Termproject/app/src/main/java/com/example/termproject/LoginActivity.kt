@@ -65,14 +65,7 @@ class LoginActivity : AppCompatActivity() {
                         val pw = user["Password"] as String
                         val encryptedPW = md5(pws)
                         if (pw != null && encryptedPW==pw){
-                            Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
                             document.reference.update("Status", 1)
-//                                .addOnSuccessListener {
-//                                    Toast.makeText(this, "상태 업데이트 성공", Toast.LENGTH_SHORT).show()
-//                                }
-//                                .addOnFailureListener { e ->
-//                                    Toast.makeText(this, "상태 업데이트 실패: ${e.message}", Toast.LENGTH_SHORT).show()
-//                                }
                             val intent = Intent(this, StartActivity::class.java)
                             val userNick = user["NickName"] as String
                             val userScore = user["Score"] as Long
@@ -85,7 +78,6 @@ class LoginActivity : AppCompatActivity() {
                             finish()
                         }
                         else{
-                            //Toast.makeText(this, "${encryptedPW}", Toast.LENGTH_SHORT).show()
                             Toast.makeText(this, "ID 혹은 PW가 틀렸습니다.", Toast.LENGTH_SHORT).show()
                         }
                     }

@@ -24,7 +24,6 @@ class MatchingRecyclingView : AppCompatActivity() {
 
     private lateinit var db: FirebaseFirestore
     private lateinit var userId: String
-    private lateinit var opponentId: String
     private lateinit var userNick: String
     private lateinit var roomName: String
     private var userScore = 0
@@ -226,7 +225,7 @@ class MatchingRecyclingView : AppCompatActivity() {
             }
     }
 
-    private fun toastMatchingMessageAndDeleteDB(message : String) {
+    private fun toastMatchingMessageAndDeleteDB(message : String, opponentId: String) {
         db.collection("BattleRooms").document(roomName).delete()
         db.collection("BattleWait").document(userId).delete()
         db.collection("BattleWait").document(opponentId).delete()
@@ -240,7 +239,7 @@ class MatchingRecyclingView : AppCompatActivity() {
             Log.d("LogTemp", accepted.toString())
             when (accepted) {
                 -1 -> Toast.makeText(this@MatchingRecyclingView, "Error", Toast.LENGTH_SHORT).show()
-                0 -> toastMatchingMessageAndDeleteDB("상대방이 거절했습니다")
+                0 -> toastMatchingMessageAndDeleteDB("상대방이 거절했습니다", opponentId)
                 1 -> { // 상대 수락 : 인게임으로 넘어감
                     val intent = Intent(this, InGameActivity::class.java)
                     intent.putExtra("userId", userId)
@@ -249,8 +248,8 @@ class MatchingRecyclingView : AppCompatActivity() {
 
                     startActivity(intent)
                 }
-                2 -> toastMatchingMessageAndDeleteDB("취소했습니다")
-                3 -> toastMatchingMessageAndDeleteDB("시간 초과")
+                2 -> toastMatchingMessageAndDeleteDB("취소했습니다", opponentId)
+                3 -> toastMatchingMessageAndDeleteDB("시간 초과", opponentId)
             }
         }
         dialog.show(supportFragmentManager, "ChallengeWaitDialog")
@@ -280,7 +279,7 @@ class MatchingRecyclingView : AppCompatActivity() {
                         // 팝업 띄우기
                         val dialog = AcceptDeclineDialogFragment(userId, opponentId) { accepted ->
                             when (accepted) {
-                                0 -> toastMatchingMessageAndDeleteDB("거절했습니다")
+                                0 -> toastMatchingMessageAndDeleteDB("거절했습니다", opponentId)
                                 1 -> { // 상대 수락 : 인게임으로 넘어감
                                     hasAccepted = true
 
@@ -300,8 +299,8 @@ class MatchingRecyclingView : AppCompatActivity() {
                                             }
                                         }
                                 }
-                                2 -> toastMatchingMessageAndDeleteDB("시간 초과")
-                                3 -> toastMatchingMessageAndDeleteDB("상대방이 취소했습니다")
+                                2 -> toastMatchingMessageAndDeleteDB("시간 초과", opponentId)
+                                3 -> toastMatchingMessageAndDeleteDB("상대방이 취소했습니다", opponentId)
                             }
                         }
                         try {

@@ -274,7 +274,7 @@ class MatchingRecyclingView : AppCompatActivity() {
                     val opponentId = snapshot.getString("Opponent")
 
                     if (opponentId != null) {
-                        val roomName = userId + "_" + opponentId + "_BattleRoom"
+                        roomName = userId + "_" + opponentId + "_BattleRoom"
 
                         // 팝업 띄우기
                         val dialog = AcceptDeclineDialogFragment(userId, opponentId) { accepted ->

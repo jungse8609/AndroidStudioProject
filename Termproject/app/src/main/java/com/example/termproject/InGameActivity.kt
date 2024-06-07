@@ -166,6 +166,9 @@ class InGameActivity : AppCompatActivity() {
 
         layoutResult = findViewById(R.id.LayoutResult)
 
+        // SFX - BGM
+        SoundManager.playBackgroundMusic(SoundManager.Bgm.GAME)
+
         // Firebase 에서 read 해와야함 Hp Section
         db = FirebaseFirestore.getInstance()
 
@@ -232,6 +235,12 @@ class InGameActivity : AppCompatActivity() {
 
         monitoringOpponentStatus()
 
+        btnDice.setSoundEffectsEnabled(false)
+        btnAttack.setSoundEffectsEnabled(false)
+        btnDefense.setSoundEffectsEnabled(false)
+        btnCounter.setSoundEffectsEnabled(false)
+        btnGoLobby.setSoundEffectsEnabled(false)
+
         btnDice.setOnClickListener {
             if (!rollDiceOnce) {
                 rollDiceOnce = true
@@ -266,6 +275,9 @@ class InGameActivity : AppCompatActivity() {
             if (!isWaiting && rollDiceOnce) {
                 playerType = DiceType.ATTACK
 
+                // SFX
+                SoundManager.playSoundEffect(R.raw.sfx_click02)
+
                 // firebase에 주사위 type write
                 db.collection("BattleRooms")
                     .document(roomName)
@@ -288,6 +300,9 @@ class InGameActivity : AppCompatActivity() {
         btnDefense.setOnClickListener {
             if (!isWaiting && rollDiceOnce) {
                 playerType = DiceType.DEFENSE
+
+                // SFX
+                SoundManager.playSoundEffect(R.raw.sfx_click02)
 
                 // firebase에 주사위 type write
                 db.collection("BattleRooms")
@@ -312,6 +327,9 @@ class InGameActivity : AppCompatActivity() {
             if (!isWaiting && rollDiceOnce) {
                 playerType = DiceType.COUNTER
 
+                // SFX
+                SoundManager.playSoundEffect(R.raw.sfx_click02)
+
                 // firebase에 주사위 type write
                 db.collection("BattleRooms")
                     .document(roomName)
@@ -332,12 +350,14 @@ class InGameActivity : AppCompatActivity() {
         }
 
         btnGoLobby.setOnClickListener {
+            // SFX
+            SoundManager.playSoundEffect(R.raw.sfx_click02)
+
             db.collection("BattleRooms").document(roomName).delete()
                 .addOnSuccessListener {
                     db.collection("BattleWait").document(acceptId).delete()
                         .addOnSuccessListener {
                             runOnUiThread {
-                                Toast.makeText(this@InGameActivity, "Complete out of battle room", Toast.LENGTH_SHORT).show()
                             }
                         }
                         .addOnFailureListener { e ->
@@ -351,6 +371,9 @@ class InGameActivity : AppCompatActivity() {
                         Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
                     }
                 }
+
+            SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
+
             finish()
         }
     }
@@ -655,6 +678,18 @@ class InGameActivity : AppCompatActivity() {
                     }
                     txtOpponentHpBar.text = "$curOpponentHealth/$opponentHealth"
 
+                    // SFX
+                    if (result.first > 0) // 화복
+                        SoundManager.playSoundEffect(R.raw.sfx_heal02)
+                    else if (result.first < 0) // 데미지
+                        SoundManager.playSoundEffect(R.raw.sfx_damaged)
+                    else if (result.second > 0) // 화복
+                        SoundManager.playSoundEffect(R.raw.sfx_heal02)
+                    else if (result.second < 0) // 데미지
+                        SoundManager.playSoundEffect(R.raw.sfx_damaged)
+                    else
+                        SoundManager.playSoundEffect(R.raw.sfx_pass)
+
                     gameplay()
                 }
             }
@@ -698,8 +733,8 @@ class InGameActivity : AppCompatActivity() {
 
     private fun startRoundTimer() {
         lifecycleScope.launch {
-            for (i in roundTimeLimit downTo 0 step 1000) {
-                txtRoundTimer.text = "${i / 1000}"
+            for (i in (roundTimeLimit / 1000) downTo 0) {
+                txtRoundTimer.text = "$i"
                 delay(1000)
             }
 
@@ -773,6 +808,9 @@ class InGameActivity : AppCompatActivity() {
         // Set Result
         var playerScore : Long = 0
 
+        // SFX
+        SoundManager.playSoundEffect(R.raw.sfx_popup)
+
         db.collection("BattleRooms")
             .document(roomName)
             .get()
@@ -804,6 +842,7 @@ class InGameActivity : AppCompatActivity() {
             layoutResult.layoutParams.height = layoutParams.height
         }
     }
+
     override fun onBackPressed() {
         super.onBackPressed()
         db.collection("BattleRooms")

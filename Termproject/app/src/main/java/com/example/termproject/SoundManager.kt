@@ -44,11 +44,11 @@ object SoundManager {
         if (isInitialized) return
 
         // Initialize MediaPlayer for background music
-        val bgmLobby = MediaPlayer.create(context, R.raw.bgm01).apply {
+        val bgmLobby = MediaPlayer.create(context, R.raw.bgm_lobby).apply {
             isLooping = true
             setVolume(1.0f, 1.0f)  // Set volume to maximum
         }
-        val bgmGame = MediaPlayer.create(context, R.raw.bgm01).apply {
+        val bgmGame = MediaPlayer.create(context, R.raw.bgm_ingame).apply {
             isLooping = true
             setVolume(1.0f, 1.0f)  // Set volume to maximum
         }
@@ -71,6 +71,13 @@ object SoundManager {
         }
 
         // Load sound effects into the SoundPool
+        soundMap[R.raw.sfx_click] = soundPool.load(context, R.raw.sfx_click, 1)
+        soundMap[R.raw.sfx_click02] = soundPool.load(context, R.raw.sfx_click02, 1)
+        soundMap[R.raw.sfx_damaged] = soundPool.load(context, R.raw.sfx_damaged, 1)
+        soundMap[R.raw.sfx_heal01] = soundPool.load(context, R.raw.sfx_heal01, 1)
+        soundMap[R.raw.sfx_heal02] = soundPool.load(context, R.raw.sfx_heal02, 1)
+        soundMap[R.raw.sfx_popup] = soundPool.load(context, R.raw.sfx_popup, 1)
+        soundMap[R.raw.sfx_rolldice] = soundPool.load(context, R.raw.sfx_rolldice, 1)
         soundMap[R.raw.sfx_touch01] = soundPool.load(context, R.raw.sfx_touch01, 1)
 
         isInitialized = true

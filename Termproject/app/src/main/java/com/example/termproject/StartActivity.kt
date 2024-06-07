@@ -2,6 +2,7 @@ package com.example.termproject
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.ImageView
@@ -10,6 +11,10 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.component1
+import androidx.core.graphics.component2
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.termproject.databinding.ActivityStartBinding
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -28,6 +33,8 @@ class StartActivity : AppCompatActivity() {
         "profile7"
     )
 
+    private lateinit var db: FirebaseFirestore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityStartBinding.inflate(layoutInflater)
@@ -45,6 +52,7 @@ class StartActivity : AppCompatActivity() {
         val userProfile = intent.getStringExtra("profileImage").toString()
 
         val myNick = findViewById<TextView>(R.id.myNick)
+        val myRank = findViewById<TextView>(R.id.myRank)
         val myScore = findViewById<TextView>(R.id.myScore)
         profileImageView = findViewById(R.id.profileImage)
 
@@ -52,18 +60,76 @@ class StartActivity : AppCompatActivity() {
         myScore.text = userScore.toString()
         profileImageView.setImageResource(resources.getIdentifier(userProfile, "drawable", packageName))
 
+        db = FirebaseFirestore.getInstance()
+
+        // 유저 등수 실시간 업데이트
+        db.collection("users").addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w("LogTemp", "Listen failed", e)
+                return@addSnapshotListener
+            }
+
+            // Firestore에서 받아온 데이터를 userList에 추가
+            var userList : MutableList<Pair<String, Int>> = mutableListOf()
+
+            for (document in snapshot!!.documents) {
+                val dbUser = document.data
+                val id = dbUser?.get("ID") as String
+                val score = (dbUser["Score"] as Long).toInt()
+
+                userList.add(Pair(id, score))
+            }
+            // score에 따라 내림차순 정렬
+            userList.sortByDescending { it.second }
+
+            // Ranking 계산
+            val rankingList = mutableListOf<Triple<String, Int, Int>>()
+            var currentRank = 1
+            var currentScore = userList.first().second
+            var sameRankCounter = 0
+            for ((index, item) in userList.withIndex()) {
+                var (id, score) = item
+                if (score == currentScore) {
+                    rankingList.add(Triple(id, score, currentRank))
+                    sameRankCounter += 1
+                }
+                else {
+                    currentRank += sameRankCounter
+                    sameRankCounter = 1
+                    currentScore = score
+                    rankingList.add(Triple(id, score, currentRank))
+                }
+            }
+
+            for (item in rankingList) {
+                // User 정보 업데이트
+                db.collection("users").document(item.first).update("Rank", item.third)
+
+                // 마이페이지 텍스트 업데이트
+                if (item.first == userId) {
+                    myRank.text = "${item.third}등"
+                }
+            }
+            Log.d("LogTemp", rankingList.toString())
+        }
+
+
+        // DrawerView
         toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_opened, R.string.drawer_closed)
         binding.drawer.addDrawerListener(toggle)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toggle.syncState()
 
+        // 마이페이지 프로필 사진 업데이트
         profileImageView.setOnClickListener {
             showProfileImageDialog()
         }
 
+        // 게임 시작 버튼
+        btnStart.setSoundEffectsEnabled(false)
         btnStart.setOnClickListener {
             // Sound
-            SoundManager.playSoundEffect(R.raw.sfx_touch01)
+            SoundManager.playSoundEffect(R.raw.sfx_click02)
 
             // Intent to Matching Acivity
             val intent = Intent(this, MatchingRecyclingView::class.java)
@@ -117,7 +183,7 @@ class StartActivity : AppCompatActivity() {
         db.collection("users").document(userId)
             .update("ProfileImage", selectedImage)
             .addOnSuccessListener {
-                Toast.makeText(this, "프로필 이미지 업데이트 성공", Toast.LENGTH_SHORT).show()
+                ToastUtils.createToast(this, "프로필 이미지 업데이트")
             }
             .addOnFailureListener {
                 Toast.makeText(this, "프로필 이미지 업데이트 실패", Toast.LENGTH_SHORT).show()

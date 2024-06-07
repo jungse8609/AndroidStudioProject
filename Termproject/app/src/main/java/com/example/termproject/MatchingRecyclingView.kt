@@ -189,21 +189,21 @@ class MatchingRecyclingView : AppCompatActivity() {
             userId + "HP" to gameHp,
             userId + "Score" to userScore,
             userId + "Nick" to userNick,
-            userId + "Attack" to 0,
-            userId + "Defense" to 0,
-            userId + "Counter" to 0,
-            userId + "Choose" to 0,
-            userId + "Round" to 0,
+            userId + "Attack"  to 1,
+            userId + "Defense" to 1,
+            userId + "Counter" to 1,
+            userId + "Choose"  to 0,
+            userId + "Round"   to 0,
             userId + "Status" to 1,
             opponentId + "Accept" to 0,
             opponentId + "HP" to gameHp,
             opponentId + "Score" to opponentScore,
             opponentId + "Nick" to opponentNick,
-            opponentId + "Attack" to 0,
-            opponentId + "Defense" to 0,
-            opponentId + "Counter" to 0,
-            opponentId + "Choose" to 0,
-            opponentId + "Round" to 0,
+            opponentId + "Attack"  to 1,
+            opponentId + "Defense" to 1,
+            opponentId + "Counter" to 1,
+            opponentId + "Choose"  to 0,
+            opponentId + "Round"   to 0,
             opponentId + "Status" to 1,
         )
         val srcId = mapOf("Opponent" to userId)
@@ -274,7 +274,7 @@ class MatchingRecyclingView : AppCompatActivity() {
                     val opponentId = snapshot.getString("Opponent")
 
                     if (opponentId != null) {
-                        val roomName = userId + "_" + opponentId + "_BattleRoom"
+                        roomName = userId + "_" + opponentId + "_BattleRoom"
 
                         // 팝업 띄우기
                         val dialog = AcceptDeclineDialogFragment(userId, opponentId) { accepted ->

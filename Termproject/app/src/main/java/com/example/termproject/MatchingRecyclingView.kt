@@ -331,7 +331,12 @@ class MatchingRecyclingView : AppCompatActivity() {
                                 3 -> toastMatchingUserMessage("상대방이 취소했습니다")
                             }
                         }
-                        dialog.show(fragmentManager, "AcceptDeclineDialog")
+                        try {
+                            dialog.show(fragmentManager, "AcceptDeclineDialog")
+                        } catch (e : Exception) {
+                            Log.w("LogTemp", e.toString())
+                        }
+
                     }
                 }
             }

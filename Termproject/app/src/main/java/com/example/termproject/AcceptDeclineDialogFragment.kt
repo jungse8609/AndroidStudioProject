@@ -66,9 +66,9 @@ class AcceptDeclineDialogFragment(
         listenerRegistration = db.collection("BattleWait").document(userId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null || snapshot == null || !snapshot.exists()) {
+                    listenerRegistration?.remove()
                     countDownTimer?.cancel()
                     onResult(3) // Document no longer exists
-                    listenerRegistration?.remove()
                     dismiss()
                 }
             }

@@ -918,15 +918,9 @@ class InGameActivity : AppCompatActivity() {
             }
 
             if (snapshot != null && snapshot.exists()) {
-
-
                 opponentStatus = snapshot.getLong(opponentId + "Status") ?: 0L
                 if (opponentStatus == 0L) {
                     listenerOpponentStatus?.remove()
-
-                    /*db.collection("users")
-                        .document(playerId)
-                        .update("Score", (playerScore + 5).clamp(0, Long.MAX_VALUE))*/
 
                     curOpponentHealth = 0
                     curPlayerHealth = 5

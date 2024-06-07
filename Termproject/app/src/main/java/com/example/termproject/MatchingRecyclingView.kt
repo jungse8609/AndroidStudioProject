@@ -50,7 +50,6 @@ class MatchingRecyclingView : AppCompatActivity() {
         userId = intent.getStringExtra("userId").toString()
         userNick = intent.getStringExtra("userNick").toString()
         userProfile = intent.getStringExtra("userProfile").toString()
-        userScore = intent.getLongExtra("userScore", 0L)
 
         // SFX - BGM
         SoundManager.init(this)
@@ -152,6 +151,16 @@ class MatchingRecyclingView : AppCompatActivity() {
     fun makeGame(opponentId: String) {
         roomName = opponentId + "_" + userId + "_BattleRoom"
         val gameHp = 20
+
+        db.collection("BattleRooms")
+            .document(roomName)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    userScore = document.getLong(userId + "Score") ?: 0
+                }
+            }
+
         var opponentScore = 0L
         var opponentNick: String? = null
         var opponentProfile: String? = null

@@ -27,6 +27,7 @@ class ChallengeWaitDialogFragment(private val waitTime: Long, private val roomNa
             .setCancelable(false)
 
         val dialog = builder.create()
+        var flag = true
 
         // Start the countdown timer
         waitTimer = object : CountDownTimer(waitTime, 1000) {
@@ -58,22 +59,24 @@ class ChallengeWaitDialogFragment(private val waitTime: Long, private val roomNa
                 // 상대방 거절
                 listenerRegistration = db.collection("BattleWait").document(opponentId)
                     .addSnapshotListener { snapshot2, e2 ->
-                        if (e2 != null || snapshot2 == null || !snapshot2.exists()) {
-                            waitTimer?.cancel() // Stop the timer
-                            listenerRegistration?.remove()
+                        if ((e2 != null || snapshot2 == null || !snapshot2.exists())&&flag) {
+                            flag = false
                             listenerWaiteOpponent?.remove()
+                            listenerRegistration?.remove()
+                            waitTimer?.cancel() // Stop the timer
                             callback.invoke(0) // User cancelled, return false
                             dialog.dismiss() // Close the dialog
                         }
                     }
 
                 // 상대방 수락
-                if (snapshot != null && snapshot.exists()) {
+                if (snapshot != null && snapshot.exists()&&flag) {
                     val opponentChk = snapshot.getLong(opponentAccept) ?: 0L
                     if (opponentChk == 1L) {
-                        waitTimer?.cancel() // Stop the timer
+                        flag = false
                         listenerRegistration?.remove()
                         listenerWaiteOpponent?.remove()
+                        waitTimer?.cancel() // Stop the timer
                         callback.invoke(1) // Opponent accepted, return true
                         dismiss() // Close the dialog
                     }

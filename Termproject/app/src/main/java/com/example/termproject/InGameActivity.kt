@@ -728,7 +728,6 @@ class InGameActivity : AppCompatActivity() {
                             }
                         }
 
-
                     btnDice.background = null
                     btnAttack.setTextColor(Color.parseColor("#444444"));
                     btnDefense.setTextColor(Color.parseColor("#444444"));

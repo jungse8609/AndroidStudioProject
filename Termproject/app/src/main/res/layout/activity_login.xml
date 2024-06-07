@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#555555"
-    android:orientation="vertical"
-    android:padding="16dp"
     tools:context=".LoginActivity">
 
+    <!-- Background Image -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/loginimg"
+        android:scaleType="centerCrop"/>
+
+    <!-- Semi-transparent overlay -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AA000000"/> <!-- Adjust the transparency here (#AA000000 is 67% opaque black) -->
+
+    <!-- Main Content Layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
         android:orientation="vertical"
-        android:paddingTop="50dp">
+        android:padding="16dp"
+        android:gravity="center">
 
         <!-- ID Input Field -->
         <EditText
@@ -23,8 +34,8 @@
             android:hint="ID"
             android:textSize="16sp"
             android:textStyle="italic"
-            android:textColor = "#dddddd"
-            android:textColorHint = "#dddddd"
+            android:textColor="#dddddd"
+            android:textColorHint="#dddddd"
             android:inputType="text"
             android:padding="12dp"
             android:layout_marginBottom="16dp"/>
@@ -37,8 +48,8 @@
             android:hint="Password"
             android:textSize="16sp"
             android:textStyle="italic"
-            android:textColor = "#dddddd"
-            android:textColorHint = "#dddddd"
+            android:textColor="#dddddd"
+            android:textColorHint="#dddddd"
             android:inputType="textPassword"
             android:padding="12dp"
             android:layout_marginBottom="16dp"/>
@@ -80,5 +91,4 @@
 
     </LinearLayout>
 
-
-</LinearLayout>
+</FrameLayout>

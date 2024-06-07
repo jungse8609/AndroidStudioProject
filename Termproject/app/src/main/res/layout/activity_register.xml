@@ -1,108 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#555555"
-    android:padding="16dp"
     tools:context=".RegisterActivity">
 
-    <!-- Nickname Input Field -->
-    <EditText
-        android:id="@+id/Nickname"
+    <!-- Background Image -->
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Nickname"
-        android:inputType="textPersonName"
-        android:textSize="16sp"
-        android:textStyle="italic"
-        android:textColor = "#dddddd"
-        android:textColorHint = "#dddddd"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="match_parent"
+        android:src="@drawable/registryimg"
+        android:scaleType="centerCrop"/>
 
-    <!-- ID Input Field -->
-    <EditText
-        android:id="@+id/RID"
+    <!-- Semi-transparent overlay -->
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="ID"
-        android:inputType="text"
-        android:textSize="16sp"
-        android:textStyle="italic"
-        android:textColor = "#dddddd"
-        android:textColorHint = "#dddddd"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="match_parent"
+        android:background="#AA000000"/> <!-- Adjust the transparency here (#AA000000 is 67% opaque black) -->
 
-    <!-- Password Input Field -->
-    <EditText
-        android:id="@+id/RPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:textColor = "#dddddd"
-        android:textColorHint = "#dddddd"
-        android:textSize="16sp"
-        android:textStyle="italic"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
-
-    <!-- Profile Picture Selection -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:text="Select Profile Picture"
-        android:textSize="20sp"
-        android:textColor="#dddddd"
-        android:fontFamily="@font/neodgm"
-        android:paddingTop="5dp"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginBottom="16dp"/>
-
-    <!-- Horizontal LinearLayout for Back and Complete buttons -->
+    <!-- Main Content Layout -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Back Button -->
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="0dp"
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="150dp"/>
+
+        <!-- Nickname Input Field -->
+        <EditText
+            android:id="@+id/Nickname"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null"
-            android:text="뒤로가기"
+            android:hint="Nickname"
+            android:inputType="textPersonName"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            android:textColor="#dddddd"
+            android:textColorHint="#dddddd"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- ID Input Field -->
+        <EditText
+            android:id="@+id/RID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="ID"
+            android:inputType="text"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            android:textColor="#dddddd"
+            android:textColorHint="#dddddd"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Password Input Field -->
+        <EditText
+            android:id="@+id/RPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:textColor="#dddddd"
+            android:textColorHint="#dddddd"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Profile Picture Selection -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="Select Profile Picture"
             android:textSize="20sp"
             android:textColor="#dddddd"
             android:fontFamily="@font/neodgm"
-            android:paddingTop="10dp"/>
+            android:paddingTop="5dp"/>
 
-        <!-- Spacer -->
-        <View
-            android:layout_width="16dp"
-            android:layout_height="wrap_content" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginBottom="16dp"/>
 
-        <!-- Complete Button -->
-        <Button
-            android:id="@+id/btnComplete"
-            android:layout_width="0dp"
+        <!-- Horizontal LinearLayout for Back and Complete buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null"
-            android:text="완료"
-            android:textSize="20sp"
-            android:textColor="#dddddd"
-            android:fontFamily="@font/neodgm"
-            android:paddingTop="10dp"/>
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <!-- Back Button -->
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:text="뒤로가기"
+                android:textSize="20sp"
+                android:textColor="#dddddd"
+                android:fontFamily="@font/neodgm"
+                android:paddingTop="10dp"/>
+
+            <!-- Spacer -->
+            <View
+                android:layout_width="16dp"
+                android:layout_height="wrap_content" />
+
+            <!-- Complete Button -->
+            <Button
+                android:id="@+id/btnComplete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:text="완료"
+                android:textSize="20sp"
+                android:textColor="#dddddd"
+                android:fontFamily="@font/neodgm"
+                android:paddingTop="10dp"/>
+        </LinearLayout>
+
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>

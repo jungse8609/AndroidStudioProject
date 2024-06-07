@@ -791,6 +791,7 @@ class InGameActivity : AppCompatActivity() {
         }
         else if (curPlayerHealth <= 0) {
             resultScore = (playerScore - curOpponentHealth).clamp(0, Long.MAX_VALUE)
+            Log.d("LogTemp", curOpponentHealth.toString() + " " + resultScore.toString())
             showResultPopup("DEFEAT" , "$playerScore -> $resultScore", resultScore)
         }
         else {
@@ -894,15 +895,15 @@ class InGameActivity : AppCompatActivity() {
                 if (document != null) {
                     document.reference.update(playerId + "Status", 0)
 
-                    /*db.collection("users")
+                    db.collection("users")
                         .document(playerId)
-                        .update("Score", (playerScore - 3).clamp(0, Long.MAX_VALUE))*/
+                        .update("Score", (playerScore - 5).clamp(0, Long.MAX_VALUE))
                 }
             }
 
         curOpponentHealth = 5
-        curPlayerHealth = 0
-        exitGame()
+        curPlayerHealth = -1
+        //exitGame()
     }
 
     private var listenerOpponentStatus: ListenerRegistration? = null
@@ -921,9 +922,9 @@ class InGameActivity : AppCompatActivity() {
 
                 opponentStatus = snapshot.getLong(opponentId + "Status") ?: 0
                 if (opponentStatus == 0L) {
-                    curOpponentHealth = 0
-                    curPlayerHealth = 5
-                    exitGame()
+                    db.collection("users")
+                        .document(playerId)
+                        .update("Score", (playerScore + 5).clamp(0, Long.MAX_VALUE))
                 }
             }
         }

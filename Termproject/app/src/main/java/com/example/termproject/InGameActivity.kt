@@ -392,34 +392,34 @@ class InGameActivity : AppCompatActivity() {
                         }
                         // score에 따라 내림차순 정렬
                         userList.sortByDescending { it.second }
+
+                        // Ranking 계산
+                        val rankingList = mutableListOf<Triple<String, Int, Int>>()
+                        var currentRank = 1
+                        var currentScore = userList.first().second
+                        var sameRankCounter = 0
+                        for ((index, item) in userList.withIndex()) {
+                            var (id, score) = item
+                            if (score == currentScore) {
+                                rankingList.add(Triple(id, score, currentRank))
+                                sameRankCounter += 1
+                            }
+                            else {
+                                currentRank += sameRankCounter
+                                sameRankCounter = 1
+                                currentScore = score
+                                rankingList.add(Triple(id, score, currentRank))
+                            }
+                        }
+
+                        // User 정보 업데이트
+                        for (item in rankingList) {
+                            db.collection("users").document(item.first).update("Rank", item.third)
+                        }
+
+                        finish()
                     }
                 }
-
-            // Ranking 계산
-            val rankingList = mutableListOf<Triple<String, Int, Int>>()
-            var currentRank = 1
-            var currentScore = userList.first().second
-            var sameRankCounter = 0
-            for ((index, item) in userList.withIndex()) {
-                var (id, score) = item
-                if (score == currentScore) {
-                    rankingList.add(Triple(id, score, currentRank))
-                    sameRankCounter += 1
-                }
-                else {
-                    currentRank += sameRankCounter
-                    sameRankCounter = 1
-                    currentScore = score
-                    rankingList.add(Triple(id, score, currentRank))
-                }
-            }
-
-            // User 정보 업데이트
-            for (item in rankingList) {
-                db.collection("users").document(item.first).update("Rank", item.third)
-            }
-
-            finish()
         }
     }
 

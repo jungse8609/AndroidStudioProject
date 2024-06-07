@@ -13,6 +13,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.delay
@@ -373,6 +375,48 @@ class InGameActivity : AppCompatActivity() {
                 }
 
             SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
+
+            // User List를 Recycling View에 추가하기
+            var userList : MutableList<Pair<String, Int>> = mutableListOf()
+            db.collection("users")
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (documents != null && !documents.isEmpty) {
+                        for (document in documents) {
+                            val dbUser = document.data
+                            val id = dbUser["ID"] as String
+                            val score = (dbUser["Score"] as Long).toInt()
+
+                            userList.add(Pair(id, score))
+                        }
+                        // score에 따라 내림차순 정렬
+                        userList.sortByDescending { it.second }
+                    }
+                }
+
+            // Ranking 계산
+            val rankingList = mutableListOf<Triple<String, Int, Int>>()
+            var currentRank = 1
+            var currentScore = userList.first().second
+            var sameRankCounter = 0
+            for ((index, item) in userList.withIndex()) {
+                var (id, score) = item
+                if (score == currentScore) {
+                    rankingList.add(Triple(id, score, currentRank))
+                    sameRankCounter += 1
+                }
+                else {
+                    currentRank += sameRankCounter
+                    sameRankCounter = 1
+                    currentScore = score
+                    rankingList.add(Triple(id, score, currentRank))
+                }
+            }
+
+            // User 정보 업데이트
+            for (item in rankingList) {
+                db.collection("users").document(item.first).update("Rank", item.third)
+            }
 
             finish()
         }

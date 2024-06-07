@@ -12,7 +12,7 @@ class UserAdapter(private val userList: List<MatchingRecyclingView.User>, privat
 
     inner class UserViewHolder(private val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(user: MatchingRecyclingView.User) {
-            binding.ItemRank.text = getRank(user).toString()
+            binding.ItemRank.text = user.rank.toString()
             binding.ItemProfile.setImageResource(user.profile)
             binding.ItemNick.text = user.nick
             binding.ItemScore.text = user.score.toString()
@@ -32,10 +32,6 @@ class UserAdapter(private val userList: List<MatchingRecyclingView.User>, privat
                 }
             }
         }
-    }
-
-    private fun getRank(user: MatchingRecyclingView.User) : Int {
-        return sortedUserList.indexOfFirst { it.id == user.id } + 1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {

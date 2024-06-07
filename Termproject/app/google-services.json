@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "350502562409",
-    "project_id": "android-ba014",
-    "storage_bucket": "android-ba014.appspot.com"
+    "project_number": "879249514614",
+    "project_id": "dice-de627",
+    "storage_bucket": "dice-de627.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:350502562409:android:fd19d961b0b8181db7d0f8",
+        "mobilesdk_app_id": "1:879249514614:android:78835a67254450ab0dff57",
         "android_client_info": {
           "package_name": "com.example.termproject"
         }
@@ -15,26 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAtmv6uoPMS5g6z19VDaL3siFIn4ltaqWk"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:350502562409:android:f716dc1ce88c10c9b7d0f8",
-        "android_client_info": {
-          "package_name": "com.example.week9_ex1"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAtmv6uoPMS5g6z19VDaL3siFIn4ltaqWk"
+          "current_key": "AIzaSyAG__jsE2Nb5yyrjxe8iNHmZXB-4tZ35hY"
         }
       ],
       "services": {

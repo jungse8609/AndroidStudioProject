@@ -62,7 +62,7 @@ class StartActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
 
-        // 유저 등수 실시간 업데이트
+        /*// 유저 등수 실시간 업데이트
         db.collection("users").addSnapshotListener { snapshot, e ->
             if (e != null) {
                 Log.w("LogTemp", "Listen failed", e)
@@ -72,46 +72,19 @@ class StartActivity : AppCompatActivity() {
             // Firestore에서 받아온 데이터를 userList에 추가
             var userList : MutableList<Pair<String, Int>> = mutableListOf()
 
+            var rank : Int = 0
+
             for (document in snapshot!!.documents) {
                 val dbUser = document.data
                 val id = dbUser?.get("ID") as String
                 val score = (dbUser["Score"] as Long).toInt()
-
                 userList.add(Pair(id, score))
+
+                rank = (dbUser["Rank"] as Long).toInt()
             }
             // score에 따라 내림차순 정렬
             userList.sortByDescending { it.second }
-
-            // Ranking 계산
-            val rankingList = mutableListOf<Triple<String, Int, Int>>()
-            var currentRank = 1
-            var currentScore = userList.first().second
-            var sameRankCounter = 0
-            for ((index, item) in userList.withIndex()) {
-                var (id, score) = item
-                if (score == currentScore) {
-                    rankingList.add(Triple(id, score, currentRank))
-                    sameRankCounter += 1
-                }
-                else {
-                    currentRank += sameRankCounter
-                    sameRankCounter = 1
-                    currentScore = score
-                    rankingList.add(Triple(id, score, currentRank))
-                }
-            }
-
-            for (item in rankingList) {
-                // User 정보 업데이트
-                db.collection("users").document(item.first).update("Rank", item.third)
-
-                // 마이페이지 텍스트 업데이트
-                if (item.first == userId) {
-                    myRank.text = "${item.third}등"
-                }
-            }
-            Log.d("LogTemp", rankingList.toString())
-        }
+        }*/
 
 
         // DrawerView

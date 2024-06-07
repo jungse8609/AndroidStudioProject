@@ -370,7 +370,7 @@ class InGameActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
                 }
-            if (outRoomFlag){
+            while (outRoomFlag){
                 finish()
             }
         }
@@ -890,7 +890,7 @@ class InGameActivity : AppCompatActivity() {
             }
 
         // Popup 창 띄우기
-        if (resultShowFlag){
+        while (resultShowFlag){
             layoutResult.post {
                 val layoutParams = FrameLayout.LayoutParams(
                     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),

@@ -221,6 +221,9 @@ class InGameActivity : AppCompatActivity() {
                 rollDiceOnce = true
                 playerRolls = rollDices()
 
+                // SFX
+                SoundManager.playSoundEffect(R.raw.sfx_rolldice)
+
                 // firebase에 주사위 값 write
                 db.collection("BattleRooms")
                     .document(roomName)
@@ -622,7 +625,7 @@ class InGameActivity : AppCompatActivity() {
                     imgOpponentDiceDefense.setImageResource(imgNameDefense[defenseValue.toInt() - 1])
                     imgOpponentDiceCounter.setImageResource(imgNameCounter[counterValue.toInt() - 1])
 
-                    // Update Hp Bar
+                    // Update Player Hp Bar
                     imgHpBackground.post {
                         val backgroundWidth = imgHpBackground.width
                         val curWidth = (backgroundWidth * (curPlayerHealth.toFloat() / playerHealth)).toInt()
@@ -630,7 +633,9 @@ class InGameActivity : AppCompatActivity() {
                         layoutParams.width = curWidth
                         imgCurrentHp.layoutParams = layoutParams
                     }
+                    txtHpBar.text = "$curPlayerHealth/$playerHealth"
 
+                    // Update Opponent Hp Bar
                     imgOpponentHpBackground.post {
                         val backgroundWidth = imgOpponentHpBackground.width
                         val curWidth = (backgroundWidth * (curOpponentHealth.toFloat() / opponentHealth)).toInt()
@@ -638,7 +643,6 @@ class InGameActivity : AppCompatActivity() {
                         layoutParams.width = curWidth
                         imgOpponentCurrentHp.layoutParams = layoutParams
                     }
-                    txtHpBar.text = "$curPlayerHealth/$playerHealth"
                     txtOpponentHpBar.text = "$curOpponentHealth/$opponentHealth"
 
                     gameplay()
@@ -737,6 +741,7 @@ class InGameActivity : AppCompatActivity() {
                         DiceType.DEFENSE -> { imgDiceDefense.setBackgroundResource(R.drawable.button_green_border); btnDefense.setTextColor(Color.parseColor("#00008b"));}
                         DiceType.COUNTER -> { imgDiceCounter.setBackgroundResource(R.drawable.button_green_border); btnCounter.setTextColor(Color.parseColor("#9011d3"));}
                     }
+                    onUpdateDiceImage()
 
                     waitForOppoenent()
                 }

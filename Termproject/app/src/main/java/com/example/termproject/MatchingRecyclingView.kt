@@ -1,5 +1,6 @@
 package com.example.termproject
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -338,6 +339,10 @@ class MatchingRecyclingView : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+
+        var intent = Intent(this, StartActivity::class.java)
+        intent.putExtra("data", "")
+        setResult(Activity.RESULT_OK, intent)
         finish()
     }
 

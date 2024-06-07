@@ -1,5 +1,6 @@
 package com.example.termproject
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -55,6 +56,7 @@ class StartActivity : AppCompatActivity() {
         val myNick = findViewById<TextView>(R.id.myNick)
         val myRank = findViewById<TextView>(R.id.myRank)
         val myScore = findViewById<TextView>(R.id.myScore)
+
         profileImageView = findViewById(R.id.profileImage)
 
         myNick.text = userNick
@@ -85,9 +87,8 @@ class StartActivity : AppCompatActivity() {
             val intent = Intent(this, MatchingRecyclingView::class.java)
             intent.putExtra("userId", userId)
             intent.putExtra("userNick", userNick)
-            intent.putExtra("userScore", userScore)
             intent.putExtra("userProfile", userProfile)
-            startActivity(intent)
+            startActivityForResult(intent, 100)
         }
 
         findViewById<Button>(R.id.btnLogout).setOnClickListener {
@@ -195,5 +196,34 @@ class StartActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         SoundManager.release()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        var myRank = findViewById<TextView>(R.id.myRank)
+        var myScore = findViewById<TextView>(R.id.myScore)
+
+        var userScore : Long = -1
+        var userRank : Long = -1
+
+        Log.d("LogTemp", "액티비티리절트!!!!!!!!!ㅅ")
+
+        if (resultCode == Activity.RESULT_OK) {
+            db.collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null) {
+                        userScore = document.getLong("Score") ?: 0
+                        userRank = document.getLong("Rank") ?: 0
+
+                        myScore.text = userScore.toString()
+                        myRank.text = userRank.toString() + "등"
+
+                        Log.d("LogTemp", "액티비티리절트")
+                    }
+                }
+        }
     }
 }

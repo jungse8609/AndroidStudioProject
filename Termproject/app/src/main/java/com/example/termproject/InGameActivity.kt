@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -103,10 +104,10 @@ class InGameActivity : AppCompatActivity() {
     private var curPlayerHealth : Long = 20
     private var curOpponentHealth : Long = 20
 
-    private var roundTimer: CountDownTimer? = null
+    private var roundTimerJob: Job? = null
     private val roundTimeLimit: Long = 10000 // 15 seconds
 
-    private var resultTimer: CountDownTimer? = null
+    private var resultTimerJob: Job? = null
     private val resultTimeLimit: Long = 3500 // 3.5 seconds
 
     // Flow Control Boolean
@@ -527,7 +528,7 @@ class InGameActivity : AppCompatActivity() {
                         }
 
                         // round timer 종료 후 게임 결과 프로세스로 넘어간다
-                        roundTimer?.cancel()
+                        roundTimerJob?.cancel()
 
                         showResult()
                     }
@@ -676,8 +677,8 @@ class InGameActivity : AppCompatActivity() {
     // 다음 턴으로 진행하는 함수입니다.
     private fun proceedToNextTurn() {
         // 타이머 취소
-        roundTimer?.cancel()
-        resultTimer?.cancel()
+        roundTimerJob?.cancel()
+        resultTimerJob?.cancel()
 
         // 결과 계산
         curPlayerHealth += result.first
@@ -776,7 +777,7 @@ class InGameActivity : AppCompatActivity() {
     }
 
     private fun startRoundTimer() {
-        lifecycleScope.launch {
+        roundTimerJob = lifecycleScope.launch {
             for (i in (roundTimeLimit / 1000) downTo 0) {
                 txtRoundTimer.text = "$i"
                 delay(1000)
@@ -825,8 +826,8 @@ class InGameActivity : AppCompatActivity() {
     }
 
     private fun exitGame() {
-        roundTimer?.cancel()
-        resultTimer?.cancel()
+        roundTimerJob?.cancel()
+        resultTimerJob?.cancel()
 
         listenerWaitOpponent?.remove()
         listenerResultRound?.remove()
@@ -849,9 +850,6 @@ class InGameActivity : AppCompatActivity() {
     }
 
     private fun showResultPopup(result: String, scoreStr: String, score: Long) {
-        // Set Result
-        var playerScore : Long = 0
-
         // SFX
         SoundManager.playSoundEffect(R.raw.sfx_popup)
 

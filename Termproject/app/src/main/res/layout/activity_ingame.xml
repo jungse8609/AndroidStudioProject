@@ -56,7 +56,7 @@
                         android:padding="3dp"/>
 
                     <Space
-                        android:layout_width="24dp"
+                        android:layout_width="10dp"
                         android:layout_height="match_parent"/>
 
                     <FrameLayout
@@ -91,26 +91,22 @@
                     </FrameLayout>
 
                     <LinearLayout
-                        android:layout_width="120dp"
+                        android:layout_width="140dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
                         android:gravity="center">
 
                         <TextView
                             android:id="@+id/TxtOpponentNick"
-                            android:layout_width="60dp"
+                            android:layout_width="90dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:gravity="center"
-                            android:text="닉네임은\n여덟글자"
-                            android:textSize="10sp"
+                            android:text="닉네임이다"
+                            android:textSize="14sp"
                             android:textColor="@color/white"
                             android:fontFamily="@font/neodgm"
-                            android:padding="10dp"/>
-
-                        <Space
-                            android:layout_width="5dp"
-                            android:layout_height="match_parent"/>
+                            android:paddingTop="12dp"/>
 
                         <ImageView
                             android:id="@+id/ImgOpponentProfile"
@@ -127,7 +123,7 @@
 
                 <Space
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"/>
+                    android:layout_height="30dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -468,7 +464,7 @@
                     android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="120dp"
+                        android:layout_width="130dp"
                         android:layout_height="40dp"
                         android:layout_gravity="center"
                         android:gravity="center">
@@ -481,27 +477,19 @@
                             android:background="@drawable/hp_bar_background_shape"
                             android:padding="1dp"/>
 
-                        <Space
-                            android:layout_width="5dp"
-                            android:layout_height="match_parent"/>
-
                         <TextView
                             android:id="@+id/TxtPlayerNick"
-                            android:layout_width="60dp"
+                            android:layout_width="83dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:gravity="center"
-                            android:text="닉네임은\n여덟글자"
-                            android:textSize="10sp"
+                            android:text="닉네임이다"
+                            android:textSize="13sp"
                             android:textColor="@color/white"
                             android:fontFamily="@font/neodgm"
-                            android:padding="10dp"/>
+                            android:paddingTop = "14sp"/>
 
                     </LinearLayout>
-
-                    <Space
-                        android:layout_width="5dp"
-                        android:layout_height="match_parent"/>
 
                     <FrameLayout
                         android:layout_width="150dp"
@@ -535,12 +523,12 @@
                     </FrameLayout>
 
                     <Space
-                        android:layout_width="16dp"
+                        android:layout_width="7dp"
                         android:layout_height="match_parent"/>
 
                     <Button
                         android:id="@+id/BtnDiceRoll"
-                        android:layout_width="110dp"
+                        android:layout_width="100dp"
                         android:layout_height="40dp"
                         android:enabled="true"
                         android:background="@drawable/button_yellow_border"

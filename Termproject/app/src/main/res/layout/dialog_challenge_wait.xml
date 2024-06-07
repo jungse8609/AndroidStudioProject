@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:text="상대방 대기 중..."
-            android:textSize="18sp"
+            android:textSize="24sp"
             android:textColor="#dddd99"
             android:fontFamily="@font/neodgm"
             android:paddingTop="18dp"/>

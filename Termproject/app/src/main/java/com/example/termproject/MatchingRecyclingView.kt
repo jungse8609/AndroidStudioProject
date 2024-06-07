@@ -152,12 +152,12 @@ class MatchingRecyclingView : AppCompatActivity() {
         roomName = opponentId + "_" + userId + "_BattleRoom"
         val gameHp = 20
 
-        db.collection("BattleRooms")
-            .document(roomName)
+        db.collection("users")
+            .document(userId)
             .get()
             .addOnSuccessListener { document ->
                 if (document != null) {
-                    userScore = document.getLong(userId + "Score") ?: 0
+                    userScore = document.getLong("Score") ?: 0
                 }
             }
 

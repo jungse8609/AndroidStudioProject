@@ -52,6 +52,7 @@ class MatchingRecyclingView : AppCompatActivity() {
         userProfile = intent.getStringExtra("userProfile").toString()
 
         // SFX - BGM
+        SoundManager.init(this)
         SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
 
         waitForOpponentChallenge()

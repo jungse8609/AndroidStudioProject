@@ -360,21 +360,15 @@ class InGameActivity : AppCompatActivity() {
                 .addOnSuccessListener {
                     db.collection("BattleWait").document(acceptId).delete()
                         .addOnSuccessListener {
-                            runOnUiThread {
-                                SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
-                                finish()
-                            }
+                            SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
+                            finish()
                         }
                         .addOnFailureListener { e ->
-                            runOnUiThread {
-                                Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
-                            }
+                            Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
                         }
                 }
                 .addOnFailureListener { e ->
-                    runOnUiThread {
-                        Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
-                    }
+                    Toast.makeText(this@InGameActivity, "Error out of battle room: $e", Toast.LENGTH_SHORT).show()
                 }
         }
     }
@@ -827,71 +821,76 @@ class InGameActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { document ->
                 if (document != null) {
+                    // Update Database
                     document.reference.update("Score", score)
+                    var userList : MutableList<Pair<String, Int>> = mutableListOf()
+                    db.collection("Ranking")
+                        .document("Ranking")
+                        .get()
+                        .addOnSuccessListener { document ->
+                            if (document != null && document.exists()) {
+                                // Score List에 정보 추가
+                                val scoreList = document.get("scoreList") as List<Map<String, Any>>
+
+                                // MutableList로 변환하여 새로운 요소 추가
+                                val updatedScoreList = scoreList.toMutableList()
+
+                                // Score 업데이트
+                                var index = updatedScoreList.indexOfFirst { it["ID"] == playerId }
+                                if (index != -1) {
+                                    updatedScoreList[index] = updatedScoreList[index].toMutableMap().apply {
+                                        this["Score"] = score
+                                    }
+                                }
+
+                                userList = updatedScoreList.map {
+                                    Pair(it["ID"] as String, (it["Score"] as Long).toInt())
+                                }.toMutableList()
+
+                                // score에 따라 내림차순 정렬
+                                userList.sortByDescending { it.second }
+
+                                // Ranking 계산
+                                val rankingList = mutableListOf<Triple<String, Int, Int>>() // id, score, rank
+                                var currentRank = 1
+                                var currentScore = userList.first().second
+                                var sameRankCounter = 0
+                                for ((index, item) in userList.withIndex()) {
+                                    var (id, score) = item
+                                    if (score == currentScore) {
+                                        rankingList.add(Triple(id, score, currentRank))
+                                        sameRankCounter += 1
+                                    }
+                                    else {
+                                        currentRank += sameRankCounter
+                                        sameRankCounter = 1
+                                        currentScore = score
+                                        rankingList.add(Triple(id, score, currentRank))
+                                    }
+                                }
+
+                                // User 정보 업데이트
+                                for (item in rankingList) {
+                                    db.collection("users").document(item.first).update("Score", item.second)
+                                    db.collection("users").document(item.first).update("Rank", item.third)
+                                }
+
+                                // Rank 정보 업데이트
+                                db.collection("Ranking") .document("Ranking").update("scoreList", updatedScoreList)
+
+                                // Popup 창 띄우기
+                                layoutResult.post {
+                                    val layoutParams = FrameLayout.LayoutParams(
+                                        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),
+                                        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
+                                    )
+                                    layoutResult.layoutParams.width = layoutParams.width
+                                    layoutResult.layoutParams.height = layoutParams.height
+                                }
+                            }
+                        }
                 }
             }
-
-        // Update Database
-        var userList : MutableList<Pair<String, Int>> = mutableListOf()
-        db.collection("Ranking")
-            .document("Ranking")
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    // Score List에 정보 추가
-                    val scoreList = document.get("scoreList") as List<Map<String, Any>>
-
-                    // MutableList로 변환하여 새로운 요소 추가
-                    val updatedScoreList = scoreList.toMutableList()
-                    var index = updatedScoreList.indexOfFirst { it["ID"] == playerId }
-                    if (index != -1) {
-                        updatedScoreList[index] = updatedScoreList[index].toMutableMap().apply {
-                            this["Score"] = score
-                        }
-                    }
-
-                    // score에 따라 내림차순 정렬
-                    userList.sortByDescending { it.second }
-
-                    // Ranking 계산
-                    val rankingList = mutableListOf<Triple<String, Int, Int>>() // id, score, rank
-                    var currentRank = 1
-                    var currentScore = userList.first().second
-                    var sameRankCounter = 0
-                    for ((index, item) in userList.withIndex()) {
-                        var (id, score) = item
-                        if (score == currentScore) {
-                            rankingList.add(Triple(id, score, currentRank))
-                            sameRankCounter += 1
-                        }
-                        else {
-                            currentRank += sameRankCounter
-                            sameRankCounter = 1
-                            currentScore = score
-                            rankingList.add(Triple(id, score, currentRank))
-                        }
-                    }
-
-                    // User 정보 업데이트
-                    for (item in rankingList) {
-                        db.collection("users").document(item.first).update("Score", item.second)
-                        db.collection("users").document(item.first).update("Rank", item.third)
-                    }
-
-                    // Rank 정보 업데이트
-                    db.collection("Ranking") .document("Ranking").update("scoreList", updatedScoreList)
-                }
-            }
-
-        // Popup 창 띄우기
-        layoutResult.post {
-            val layoutParams = FrameLayout.LayoutParams(
-                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt(),
-                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300f, resources.displayMetrics).toInt()
-            )
-            layoutResult.layoutParams.width = layoutParams.width
-            layoutResult.layoutParams.height = layoutParams.height
-        }
     }
 
     override fun onBackPressed() {
@@ -902,27 +901,39 @@ class InGameActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     document.reference.update(playerId + "Status", 0)
+
+                    /*db.collection("users")
+                        .document(playerId)
+                        .update("Score", (playerScore - 3).clamp(0, Long.MAX_VALUE))*/
                 }
             }
-        finish()
+
+        curOpponentHealth = 5
+        curPlayerHealth = 0
+        exitGame()
     }
+
+    private var listenerOpponentStatus: ListenerRegistration? = null
 
     private fun monitoringOpponentStatus() {
         // Firestore에서 사용자 상태를 실시간으로 모니터링
-        db.collection("BattleRooms").document(roomName)
+        listenerOpponentStatus = db.collection("BattleRooms").document(roomName)
             .addSnapshotListener { snapshot, e ->
             if (e != null) {
                 Log.w("LogTemp", "Listen failed", e)
                 return@addSnapshotListener
             }
 
-                if (snapshot != null && snapshot.exists()) {
-                    opponentStatus = snapshot.getLong(opponentId + "Status") ?: 0
-                    if (opponentStatus == 0L) {
-                        curOpponentHealth = 0
-                        exitGame()
-                    }
+            if (snapshot != null && snapshot.exists()) {
+                listenerOpponentStatus?.remove()
+
+                opponentStatus = snapshot.getLong(opponentId + "Status") ?: 0
+                if (opponentStatus == 0L) {
+                    curOpponentHealth = 0
+                    curPlayerHealth = 5
+                    exitGame()
                 }
+            }
         }
     }
 }

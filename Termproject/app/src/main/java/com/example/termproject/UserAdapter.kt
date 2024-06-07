@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.termproject.databinding.ItemUserBinding
 
-class UserAdapter(private val userList: List<MatchingRecyclingView.User>, private val onItemClick: (String) -> Unit) :
+class UserAdapter(private val userList: List<MatchingRecyclingView.User>, private val onItemClick: (String) -> Unit, private val myId: String) :
     RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
     private val sortedUserList = userList.sortedByDescending { it.score }
@@ -20,11 +20,15 @@ class UserAdapter(private val userList: List<MatchingRecyclingView.User>, privat
                 0L -> binding.ItemConnect.setImageResource(R.drawable.grey_dot)
                 1L -> binding.ItemConnect.setImageResource(R.drawable.green_dot)
             }
+
+            val position = adapterPosition
+            val item = userList[position]
+
+            if (item.id == myId) binding.ItemFight.text = ""
             binding.ItemFight.setOnClickListener {
-                val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    val item = userList[position]
-                    onItemClick(item.id)
+                    if (item.id != myId)
+                        onItemClick(item.id)
                 }
             }
         }

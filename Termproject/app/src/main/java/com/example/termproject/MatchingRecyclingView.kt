@@ -55,7 +55,7 @@ class MatchingRecyclingView : AppCompatActivity() {
 
         waitForOpponentChallenge()
 
-        // Read Users Informations From Firebase
+        // User List를 Recycling View에 추가하기
         db.collection("users")
             .get()
             .addOnSuccessListener { documents ->
@@ -83,14 +83,11 @@ class MatchingRecyclingView : AppCompatActivity() {
                     // 결투 버튼 클릭 이벤트
                     val onItemClick: (String) -> Unit = { text ->
                         makeGame(text)
-
-                        // 상대방 수락 대기 팝업창 띄워야함
-                        //showChallengePopup(text)
                     }
 
                     // UserList를 Recycler View 에 띄워줘
                     binding.matchingRecyclingView.layoutManager = LinearLayoutManager(this)
-                    binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick)
+                    binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick, userId)
                     binding.matchingRecyclingView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
 
                     monitoring()
@@ -102,7 +99,7 @@ class MatchingRecyclingView : AppCompatActivity() {
     }
 
     fun monitoring() {
-        // Firestore에서 사용자 상태를 실시간으로 모니터링하는 코루틴 실행
+        // Firestore에서 사용자 상태를 실시간으로 모니터링
         db.collection("users").addSnapshotListener { snapshot, e ->
             if (e != null) {
                 Log.w("LogTemp", "Listen failed", e)
@@ -135,9 +132,6 @@ class MatchingRecyclingView : AppCompatActivity() {
             // 결투 버튼 클릭 이벤트
             val onItemClick: (String) -> Unit = { text ->
                 makeGame(text)
-
-                // 상대방 수락 대기 팝업창 띄워야함
-                //showChallengePopup(text)
             }
 
             userList.clear()
@@ -145,16 +139,16 @@ class MatchingRecyclingView : AppCompatActivity() {
 
             // UserList를 Recycler View 에 띄워줘
 
-            // 기존 RecyclerView의 Adapter 및 LayoutManager 제거
+            // 기존 RecyclingView의 Adapter 및 LayoutManager 제거
             binding.matchingRecyclingView.adapter = null
             binding.matchingRecyclingView.layoutManager = null
             for (i in 0 until binding.matchingRecyclingView.itemDecorationCount) {
                 binding.matchingRecyclingView.removeItemDecorationAt(i)
             }
 
-            // 새로운
+            // 새로운 RecyclingView
             binding.matchingRecyclingView.layoutManager = LinearLayoutManager(this)
-            binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick)
+            binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick, userId)
             binding.matchingRecyclingView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
 
         }

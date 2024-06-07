@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:text="남은 시간: 10초"
-            android:textSize="18sp"
+            android:textSize="24sp"
             android:textColor="#dddddd"
             android:fontFamily="@font/neodgm"
             android:paddingTop="20dp"/>

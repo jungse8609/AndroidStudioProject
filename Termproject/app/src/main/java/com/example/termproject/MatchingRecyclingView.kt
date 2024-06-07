@@ -244,14 +244,6 @@ class MatchingRecyclingView : AppCompatActivity() {
             .addOnSuccessListener {
                 runOnUiThread {
                     Toast.makeText(this@MatchingRecyclingView, message, Toast.LENGTH_SHORT).show()
-                    db.collection("BattleRooms")
-                        .document(roomName)
-                        .get()
-                        .addOnSuccessListener { document ->
-                            if (document != null) {
-                                document.reference.update(userId + "Accept", -1)
-                            }
-                        }
                 }
             }
             .addOnFailureListener { e ->

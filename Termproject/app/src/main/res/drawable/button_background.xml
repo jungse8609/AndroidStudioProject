@@ -1,0 +1,6 @@
+<!-- res/drawable/button_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Set the background color with transparency -->
+    <solid android:color="#60555555" /> <!-- 80% transparent -->
+    <corners android:radius="4dp" />
+</shape>

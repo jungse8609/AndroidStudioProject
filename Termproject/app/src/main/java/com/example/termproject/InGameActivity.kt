@@ -812,72 +812,86 @@ class InGameActivity : AppCompatActivity() {
         txtResult.text = result
         txtScore.text = scoreStr
 
+        val db = FirebaseFirestore.getInstance()
+
+        // 플레이어의 점수를 업데이트
         db.collection("users")
             .document(playerId)
             .get()
             .addOnSuccessListener { document ->
-                if (document != null) {
-                    // Update Database
+                if (document != null && document.exists()) {
+                    // Update player's score in the database
                     document.reference.update("Score", score)
 
-                    /*var userList : MutableList<Pair<String, Int>> = mutableListOf()
+                    // Fetch and update the ranking list
                     db.collection("Ranking")
                         .document("Ranking")
                         .get()
-                        .addOnSuccessListener { document ->
-                            if (document != null && document.exists()) {
-                                // Score List에 정보 추가
-                                val scoreList = document.get("scoreList") as List<Map<String, Any>>
+                        .addOnSuccessListener { rankingDocument ->
+                            if (rankingDocument != null && rankingDocument.exists()) {
+                                val scoreList = rankingDocument.get("scoreList") as List<Map<String, Any>>
 
-                                // MutableList로 변환하여 새로운 요소 추가
-                                val updatedScoreList = scoreList.toMutableList()
+                                // MutableList로 변환하여 요소를 수정할 수 있게 합니다.
+                                val updatedScoreList = scoreList.map { it.toMutableMap() }.toMutableList()
 
-                                // Score 업데이트
-                                var index = updatedScoreList.indexOfFirst { it["ID"] == playerId }
+                                // 특정 ID의 score 변경
+                                val index = updatedScoreList.indexOfFirst { it["ID"] == playerId }
                                 if (index != -1) {
-                                    updatedScoreList[index] = updatedScoreList[index].toMutableMap().apply {
-                                        this["Score"] = score
-                                    }
+                                    updatedScoreList[index]["Score"] = score
+                                } else {
+                                    updatedScoreList.add(mapOf("ID" to playerId, "Score" to score).toMutableMap())
                                 }
 
-                                userList = updatedScoreList.map {
-                                    Pair(it["ID"] as String, (it["Score"] as Long).toInt())
-                                }.toMutableList()
-
                                 // score에 따라 내림차순 정렬
-                                userList.sortByDescending { it.second }
+                                updatedScoreList.sortByDescending { it["Score"] as Long }
 
-                                // Ranking 계산
-                                val rankingList = mutableListOf<Triple<String, Int, Int>>() // id, score, rank
-                                var currentRank = 1
-                                var currentScore = userList.first().second
-                                var sameRankCounter = 0
-                                for ((index, item) in userList.withIndex()) {
-                                    var (id, score) = item
-                                    if (score == currentScore) {
-                                        rankingList.add(Triple(id, score, currentRank))
+                                // 랭킹 계산 및 업데이트
+                                var currentRank : Long = 1
+                                var currentScore : Long = updatedScoreList.first()["Score"] as Long
+                                var sameRankCounter : Long = 0
+
+                                updatedScoreList.forEachIndexed { index, item ->
+                                    val itemScore = item["Score"] as Long
+                                    if (itemScore == currentScore) {
+                                        item["Rank"] = currentRank
                                         sameRankCounter += 1
-                                    }
-                                    else {
+                                    } else {
                                         currentRank += sameRankCounter
                                         sameRankCounter = 1
-                                        currentScore = score
-                                        rankingList.add(Triple(id, score, currentRank))
+                                        currentScore = itemScore
+                                        item["Rank"] = currentRank
                                     }
+                                    updatedScoreList[index] = item
                                 }
 
                                 // User 정보 업데이트
-                                for (item in rankingList) {
-                                    db.collection("users").document(item.first).update("Score", item.second)
-                                    db.collection("users").document(item.first).update("Rank", item.third)
+                                updatedScoreList.forEach { item ->
+                                    val userId = item["ID"].toString()
+                                    db.collection("users").document(userId).update("Score", item["Score"] as Long)
+                                    db.collection("users").document(userId).update("Rank", item["Rank"] as Long)
                                 }
 
                                 // Rank 정보 업데이트
-                                db.collection("Ranking") .document("Ranking").update("scoreList", updatedScoreList)
+                                db.collection("Ranking")
+                                    .document("Ranking")
+                                    .update("scoreList", updatedScoreList)
+                                    .addOnSuccessListener {
+                                        Log.d("Firestore", "Ranking successfully updated!")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.w("Firestore", "Error updating ranking", e)
+                                    }
                             }
-                        }*/
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("Firestore", "Error fetching ranking document", e)
+                        }
                 }
             }
+            .addOnFailureListener { e ->
+                Log.w("Firestore", "Error fetching user document", e)
+            }
+
 
         // Popup 창 띄우기
         layoutResult.post {

@@ -37,6 +37,8 @@ class MatchingRecyclingView : AppCompatActivity() {
 
     private lateinit var binding : MatchingRecyclingViewBinding
 
+    private var flag = false;
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = MatchingRecyclingViewBinding.inflate(layoutInflater)
@@ -81,9 +83,12 @@ class MatchingRecyclingView : AppCompatActivity() {
                     // score에 따라 내림차순 정렬
                     userList.sortByDescending { it.score }
 
+
                     db.collection("BattleWait").document(userId)
                         .addSnapshotListener { snapshot, e ->
-                            if (e != null || snapshot == null || !snapshot.exists()) {
+                            if ((e != null || snapshot == null || !snapshot.exists())&& !flag) {
+                                flag = true
+
                                 // 결투 버튼 클릭 이벤트
                                 val onItemClick: (String) -> Unit = { text ->
                                     makeGame(text)
@@ -131,28 +136,34 @@ class MatchingRecyclingView : AppCompatActivity() {
             updatedUserList.sortByDescending { it.score }
 
 
-            // 결투 버튼 클릭 이벤트
-            val onItemClick: (String) -> Unit = { text ->
-                makeGame(text)
-            }
+            db.collection("BattleWait").document(userId)
+                .addSnapshotListener { snapshot, e ->
+                    if ((e != null || snapshot == null || !snapshot.exists())&& !flag) {
+                        flag = true
 
-            userList.clear()
-            userList.addAll(updatedUserList)
+                        // 결투 버튼 클릭 이벤트
+                        val onItemClick: (String) -> Unit = { text ->
+                            makeGame(text)
+                        }
 
-            // UserList를 Recycler View 에 띄워줘
+                        userList.clear()
+                        userList.addAll(updatedUserList)
 
-            // 기존 RecyclingView의 Adapter 및 LayoutManager 제거
-            binding.matchingRecyclingView.adapter = null
-            binding.matchingRecyclingView.layoutManager = null
-            for (i in 0 until binding.matchingRecyclingView.itemDecorationCount) {
-                binding.matchingRecyclingView.removeItemDecorationAt(i)
-            }
+                        // UserList를 Recycler View 에 띄워줘
 
-            // 새로운 RecyclingView
-            binding.matchingRecyclingView.layoutManager = LinearLayoutManager(this)
-            binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick, userId)
-            binding.matchingRecyclingView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+                        // 기존 RecyclingView의 Adapter 및 LayoutManager 제거
+                        binding.matchingRecyclingView.adapter = null
+                        binding.matchingRecyclingView.layoutManager = null
+                        for (i in 0 until binding.matchingRecyclingView.itemDecorationCount) {
+                            binding.matchingRecyclingView.removeItemDecorationAt(i)
+                        }
 
+                        // 새로운 RecyclingView
+                        binding.matchingRecyclingView.layoutManager = LinearLayoutManager(this)
+                        binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick, userId)
+                        binding.matchingRecyclingView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+                    }
+                }
         }
     }
 
@@ -295,7 +306,9 @@ class MatchingRecyclingView : AppCompatActivity() {
                     return@addSnapshotListener
                 }
 
-                if (snapshot != null && snapshot.exists() && !hasAccepted) {
+                if (snapshot != null && snapshot.exists() && !hasAccepted && !flag) {
+                    flag = true
+
                     val opponentId = snapshot.getString("Opponent")
                     val opponentNick = snapshot.getString("OpponentNick")
 
@@ -369,6 +382,7 @@ class MatchingRecyclingView : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == Activity.RESULT_OK) {
+            flag = false
             waitForOpponentChallenge()
 
             SoundManager.init(this)

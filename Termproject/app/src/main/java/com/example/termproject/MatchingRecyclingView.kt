@@ -81,15 +81,20 @@ class MatchingRecyclingView : AppCompatActivity() {
                     // score에 따라 내림차순 정렬
                     userList.sortByDescending { it.score }
 
-                    // 결투 버튼 클릭 이벤트
-                    val onItemClick: (String) -> Unit = { text ->
-                        makeGame(text)
-                    }
+                    db.collection("BattleWait").document(userId)
+                        .addSnapshotListener { snapshot, e ->
+                            if (e != null || snapshot == null || !snapshot.exists()) {
+                                // 결투 버튼 클릭 이벤트
+                                val onItemClick: (String) -> Unit = { text ->
+                                    makeGame(text)
+                                }
 
-                    // UserList를 Recycler View 에 띄워줘
-                    binding.matchingRecyclingView.layoutManager = LinearLayoutManager(this)
-                    binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick, userId)
-                    binding.matchingRecyclingView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+                                // UserList를 Recycler View 에 띄워줘
+                                binding.matchingRecyclingView.layoutManager = LinearLayoutManager(this)
+                                binding.matchingRecyclingView.adapter = UserAdapter(userList, onItemClick, userId)
+                                binding.matchingRecyclingView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+                            }
+                        }
 
                     monitoring()
                 }

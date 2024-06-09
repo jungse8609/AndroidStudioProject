@@ -49,7 +49,7 @@
                         android:gravity="center"
                         android:text="999"
                         android:textAlignment="center"
-                        android:textSize="40sp"
+                        android:textSize="40dp"
                         android:textColor="#dddddd"
                         android:textStyle="bold"
                         android:visibility="visible"
@@ -78,7 +78,7 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="50/100"
-                            android:textSize="20sp"
+                            android:textSize="20dp"
                             android:textAlignment="center"
                             android:textColor="@color/white"
                             android:textStyle="bold"
@@ -100,7 +100,7 @@
                             android:layout_gravity="center"
                             android:gravity="center"
                             android:text="닉네임이다"
-                            android:textSize="14sp"
+                            android:textSize="14dp"
                             android:textColor="@color/white"
                             android:fontFamily="@font/neodgm"
                             android:paddingTop="12dp"/>
@@ -165,7 +165,7 @@
                     android:gravity="center"
                     android:text="공격"
                     android:textColor="#ffcc00"
-                    android:textSize="40sp"
+                    android:textSize="40dp"
                     android:textStyle="bold"
                     android:fontFamily="@font/neodgm"
                     android:padding="15dp"/>
@@ -208,7 +208,7 @@
                         android:text="+ 100"
                         android:textColor="#dddddd"
                         android:textAlignment="center"
-                        android:textSize="50sp"
+                        android:textSize="50dp"
                         android:textStyle="bold"/>
 
                 </LinearLayout>
@@ -252,7 +252,7 @@
                         android:text="+ 100"
                         android:textColor="#dddddd"
                         android:textAlignment="center"
-                        android:textSize="50sp"
+                        android:textSize="50dp"
                         android:textStyle="bold"/>
 
                 </LinearLayout>
@@ -268,7 +268,7 @@
                 android:gravity="center"
                 android:text="공격"
                 android:textColor="#ff9900"
-                android:textSize="40sp"
+                android:textSize="40dp"
                 android:textStyle="bold"
                 android:fontFamily="@font/neodgm"
                 android:padding="15dp"/>
@@ -335,7 +335,7 @@
                         android:enabled="true"
                         android:background="@drawable/button_yellow_border"
                         android:text="공격"
-                        android:textSize="20sp"
+                        android:textSize="20dp"
                         android:textColor="#b80080"
                         android:textStyle="bold"
                         android:fontFamily="@font/neodgm"
@@ -349,7 +349,7 @@
                         android:enabled="true"
                         android:background="@drawable/button_yellow_border"
                         android:text="방어"
-                        android:textSize="20sp"
+                        android:textSize="20dp"
                         android:textColor="#00008b"
                         android:textStyle="bold"
                         android:fontFamily="@font/neodgm"
@@ -363,7 +363,7 @@
                         android:enabled="true"
                         android:background="@drawable/button_yellow_border"
                         android:text="카운터"
-                        android:textSize="20sp"
+                        android:textSize="20dp"
                         android:textColor="#9011d3"
                         android:textStyle="bold"
                         android:fontFamily="@font/neodgm"
@@ -399,10 +399,10 @@
                             android:layout_gravity="center"
                             android:gravity="center"
                             android:text="닉네임이다"
-                            android:textSize="13sp"
+                            android:textSize="13dp"
                             android:textColor="@color/white"
                             android:fontFamily="@font/neodgm"
-                            android:paddingTop = "14sp"/>
+                            android:paddingTop = "14dp"/>
 
                     </LinearLayout>
 
@@ -428,7 +428,7 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="50/100"
-                            android:textSize="20sp"
+                            android:textSize="20dp"
                             android:textAlignment="center"
                             android:textColor="@color/white"
                             android:textStyle="bold"
@@ -439,17 +439,17 @@
 
                     <Button
                         android:id="@+id/BtnDiceRoll"
-                        android:layout_width="100dp"
+                        android:layout_width="80dp"
                         android:layout_height="48dp"
                         android:layout_marginLeft="7dp"
                         android:enabled="true"
                         android:background="@drawable/button_yellow_border"
                         android:text="주사위"
-                        android:textSize="20sp"
+                        android:textSize="15dp"
                         android:textColor="#333333"
                         android:textStyle="bold"
                         android:fontFamily="@font/neodgm"
-                        android:padding="15dp"/>
+                        android:padding="17dp"/>
 
                 </LinearLayout>
 
@@ -475,7 +475,7 @@
                 android:layout_weight="1"
                 android:padding="20dp"
                 android:text="WINNER"
-                android:textSize="50sp"
+                android:textSize="50dp"
                 android:fontFamily="@font/neodgm"/>
 
             <TextView
@@ -488,7 +488,7 @@
                 android:padding="20dp"
                 android:text="1000 (+10)"
                 android:textColor="#3FB091"
-                android:textSize="30sp"
+                android:textSize="30dp"
                 android:fontFamily="@font/neodgm"/>
 
             <Button
@@ -500,7 +500,7 @@
                 android:background="#00ff0000"
                 android:text="로비로"
                 android:textAlignment="center"
-                android:textSize="20sp"
+                android:textSize="20dp"
                 android:textColor="@color/white"
                 android:fontFamily="@font/neodgm"/>
 

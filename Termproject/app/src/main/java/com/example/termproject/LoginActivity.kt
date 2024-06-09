@@ -118,7 +118,6 @@ class LoginActivity : AppCompatActivity() {
                                                 }
                                             }
 
-
                                             intent.putExtra("userId", ids)
                                             intent.putExtra("userNick", userNick)
                                             intent.putExtra("userScore", userScore)

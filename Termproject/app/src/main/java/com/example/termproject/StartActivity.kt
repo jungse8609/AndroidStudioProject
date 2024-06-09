@@ -4,9 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -36,6 +40,19 @@ class StartActivity : AppCompatActivity() {
 
     private lateinit var db: FirebaseFirestore
 
+    private lateinit var layoutTutorial : LinearLayout
+    private lateinit var imgTutorial : ImageView
+    private lateinit var btnTutorial : Button
+    private lateinit var btnExit : Button
+    private lateinit var btnNext : Button
+    private lateinit var btnPrev : Button
+    private val tutorialImages = listOf(
+        R.drawable.tutorial01,
+        R.drawable.tutorial02,
+        R.drawable.tutorial03
+    )
+    private var currentIndex = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityStartBinding.inflate(layoutInflater)
@@ -56,6 +73,42 @@ class StartActivity : AppCompatActivity() {
         val myNick = findViewById<TextView>(R.id.myNick)
         val myRank = findViewById<TextView>(R.id.myRank)
         val myScore = findViewById<TextView>(R.id.myScore)
+
+        layoutTutorial = findViewById(R.id.LayoutTutorial)
+
+        imgTutorial = findViewById(R.id.ImgTutorial)
+
+        btnTutorial = findViewById(R.id.BtnTutorial)
+        btnExit = findViewById(R.id.BtnExit)
+        btnNext = findViewById(R.id.BtnNext)
+        btnPrev = findViewById(R.id.BtnPrev)
+
+        // # Tutorial Section Start
+        updateTutorialImage()
+        btnTutorial.setOnClickListener {
+            layoutTutorial.visibility = View.VISIBLE
+            currentIndex = 0
+        }
+
+        btnExit.setOnClickListener {
+            layoutTutorial.visibility = View.GONE
+            currentIndex = 0
+        }
+
+        btnPrev.setOnClickListener {
+            if (currentIndex > 0) {
+                currentIndex--
+                updateTutorialImage()
+            }
+        }
+
+        btnNext.setOnClickListener {
+            if (currentIndex < tutorialImages.size - 1) {
+                currentIndex++
+                updateTutorialImage()
+            }
+        }
+        // # Tutorial Section End
 
         profileImageView = findViewById(R.id.profileImage)
 
@@ -95,6 +148,12 @@ class StartActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnLogout).setOnClickListener {
             logout()
         }
+    }
+
+    private fun updateTutorialImage() {
+        imgTutorial.setImageResource(tutorialImages[currentIndex])
+        btnPrev.visibility = if (currentIndex == 0) View.INVISIBLE else View.VISIBLE
+        btnNext.visibility = if (currentIndex == tutorialImages.size - 1) View.INVISIBLE else View.VISIBLE
     }
 
     private fun showProfileImageDialog() {

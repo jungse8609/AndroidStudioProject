@@ -26,6 +26,19 @@
             android:fontFamily="@font/neodgm"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/BtnTutorial"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/icon_tutorial"/>
+
+    </LinearLayout>
+
     <!-- Drawer content layout with semi-transparent overlay -->
     <FrameLayout
         android:layout_width="wrap_content"
@@ -158,21 +171,6 @@
 
         </LinearLayout>
     </FrameLayout>
-
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <Button
-            android:id="@+id/BtnTutorial"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/icon_tutorial"/>
-
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/LayoutTutorial"

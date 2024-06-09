@@ -86,8 +86,9 @@ object SoundManager {
 
     fun playBackgroundMusic(bgmId : Bgm) {
         if (!mediaPlayerList[bgmId.toInt()].isPlaying) {
-            if (playedBgmId != bgmId.toInt())
-                mediaPlayerList[playedBgmId].stop()
+            if (playedBgmId != bgmId.toInt()) {
+                mediaPlayerList[playedBgmId].pause()
+            }
             mediaPlayerList[bgmId.toInt()].start()
 
             playedBgmId = bgmId.toInt()

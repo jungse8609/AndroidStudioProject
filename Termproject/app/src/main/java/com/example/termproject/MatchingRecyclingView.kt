@@ -195,7 +195,6 @@ class MatchingRecyclingView : AppCompatActivity() {
                                 if (document != null) {
                                     userScore = document["Score"] as Long
 
-                                    Log.d("LogTemp", userScore.toString())
                                     createBattleRoom(opponentId, gameHp, opponentScore, opponentNick!!, opponentProfile!!)
                                 }
                             }
@@ -363,7 +362,7 @@ class MatchingRecyclingView : AppCompatActivity() {
         super.onBackPressed()
 
         var intent = Intent(this, StartActivity::class.java)
-        intent.putExtra("data", "")
+        intent.putExtra("data", "data")
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
@@ -384,8 +383,6 @@ class MatchingRecyclingView : AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             flag = false
             waitForOpponentChallenge()
-
-            SoundManager.init(this)
             SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
         }
     }

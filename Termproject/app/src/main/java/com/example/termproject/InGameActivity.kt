@@ -172,6 +172,7 @@ class InGameActivity : AppCompatActivity() {
         layoutResult = findViewById(R.id.LayoutResult)
 
         // SFX - BGM
+        SoundManager.init(this)
         SoundManager.playBackgroundMusic(SoundManager.Bgm.GAME)
 
         // Firebase 에서 read 해와야함 Hp Section
@@ -796,7 +797,6 @@ class InGameActivity : AppCompatActivity() {
         }
         else if (curPlayerHealth <= 0) {
             resultScore = (playerScore - curOpponentHealth).clamp(0, Long.MAX_VALUE)
-            Log.d("LogTemp", curOpponentHealth.toString() + " " + resultScore.toString())
             showResultPopup("DEFEAT" , "$playerScore -> $resultScore", resultScore)
         }
         else {
@@ -907,6 +907,11 @@ class InGameActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+
+        var intent = Intent(this, MatchingRecyclingView::class.java)
+        intent.putExtra("data", "data")
+        setResult(Activity.RESULT_OK, intent)
+
         db.collection("BattleRooms")
             .document(roomName)
             .get()
@@ -918,9 +923,6 @@ class InGameActivity : AppCompatActivity() {
                         .document(playerId)
                         .update("Score", (playerScore - 5).clamp(0, Long.MAX_VALUE))
 
-                    var intent = Intent(this, MatchingRecyclingView::class.java)
-                    intent.putExtra("data", "")
-                    setResult(Activity.RESULT_OK, intent)
                     finish()
                 }
             }

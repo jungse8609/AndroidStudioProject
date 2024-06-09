@@ -55,13 +55,10 @@
                         android:visibility="visible"
                         android:padding="3dp"/>
 
-                    <Space
-                        android:layout_width="10dp"
-                        android:layout_height="match_parent"/>
-
                     <FrameLayout
                         android:layout_width="150dp"
-                        android:layout_height="30dp">
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="10dp">
 
                         <ImageView
                             android:id="@+id/ImgOpponentHpBackround"
@@ -121,74 +118,44 @@
 
                 </LinearLayout>
 
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp" />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/ImgOpponentDiceAttack"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/question_red"
+                        android:background="@drawable/button_white_border"
+                        android:padding="4dp"/>
 
-                        <ImageView
-                            android:id="@+id/ImgOpponentDiceAttack"
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/question_red"
-                            android:background="@drawable/button_white_border"
-                            android:padding="4dp"/>
+                    <ImageView
+                        android:id="@+id/ImgOpponentDiceDefense"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginLeft="50dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/question_blue"
+                        android:background="@drawable/button_green_border"
+                        android:padding="4dp"/>
 
-                    </FrameLayout>
 
-                    <Space
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"/>
-
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/ImgOpponentDiceDefense"
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/question_blue"
-                            android:background="@drawable/button_green_border"
-                            android:padding="4dp"/>
-
-                    </FrameLayout>
-
-                    <Space
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"/>
-
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/ImgOpponentDiceCounter"
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/question_purple"
-                            android:background="@drawable/button_white_border"
-                            android:padding="4dp"/>
-
-                    </FrameLayout>
+                    <ImageView
+                        android:id="@+id/ImgOpponentDiceCounter"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginLeft="50dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/question_purple"
+                        android:background="@drawable/button_white_border"
+                        android:padding="4dp"/>
 
                 </LinearLayout>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"/>
 
                 <TextView
                     android:id="@+id/TxtOpponentType"
@@ -231,14 +198,11 @@
 
                     </FrameLayout>
 
-                    <Space
-                        android:layout_width="30dp"
-                        android:layout_height="match_parent"/>
-
                     <TextView
                         android:id="@+id/TxtOpponentResult"
                         android:layout_width="150dp"
                         android:layout_height="50dp"
+                        android:layout_marginLeft="20dp"
                         android:fontFamily="@font/neodgm"
                         android:gravity="center"
                         android:text="+ 100"
@@ -249,18 +213,13 @@
 
                 </LinearLayout>
 
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="16dp"/>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="4dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:background="#dddddd"/>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="16dp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -283,14 +242,11 @@
 
                     </FrameLayout>
 
-                    <Space
-                        android:layout_width="30dp"
-                        android:layout_height="match_parent"/>
-
                     <TextView
                         android:id="@+id/TxtPlayerResult"
                         android:layout_width="150dp"
                         android:layout_height="50dp"
+                        android:layout_marginLeft="20dp"
                         android:fontFamily="@font/neodgm"
                         android:gravity="center"
                         android:text="+ 100"
@@ -303,15 +259,12 @@
 
             </LinearLayout>
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp"/>
-
             <TextView
                 android:id="@+id/TxtPlayerType"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:text="공격"
                 android:textColor="#ff9900"
@@ -319,10 +272,6 @@
                 android:textStyle="bold"
                 android:fontFamily="@font/neodgm"
                 android:padding="15dp"/>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -335,77 +284,53 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+
                     android:orientation="horizontal">
 
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
 
-                        <ImageView
-                            android:id="@+id/ImgDiceAttack"
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/one_red"
-                            android:background="@drawable/button_green_border"
-                            android:padding="4dp"/>
-
-                    </FrameLayout>
-
-                    <Space
-                        android:layout_width="36dp"
-                        android:layout_height="wrap_content" />
-
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/ImgDiceAttack"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/one_red"
+                        android:background="@drawable/button_green_border"
+                        android:padding="4dp"/>
 
                         <ImageView
                             android:id="@+id/ImgDiceDefense"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
+                            android:layout_marginLeft="36dp"
                             android:layout_gravity="center"
                             android:src="@drawable/two_blue"
                             android:background="@drawable/button_white_border"
                             android:padding="4dp"/>
 
-                    </FrameLayout>
-
-                    <Space
-                        android:layout_width="36dp"
-                        android:layout_height="wrap_content" />
-
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/ImgDiceCounter"
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/one_purple"
-                            android:background="@drawable/button_white_border"
-                            android:padding="4dp"/>
-
-                    </FrameLayout>
+                    <ImageView
+                        android:id="@+id/ImgDiceCounter"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginLeft="36dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/one_purple"
+                        android:background="@drawable/button_white_border"
+                        android:padding="4dp"/>
 
                 </LinearLayout>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="16dp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="10dp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
                     <Button
                         android:id="@+id/BtnAttack"
                         android:layout_width="100dp"
-                        android:layout_height="40dp"
+                        android:layout_height="48dp"
                         android:layout_gravity="center"
                         android:enabled="true"
                         android:background="@drawable/button_yellow_border"
@@ -414,16 +339,13 @@
                         android:textColor="#b80080"
                         android:textStyle="bold"
                         android:fontFamily="@font/neodgm"
-                        android:padding="10dp"/>
-
-                    <Space
-                        android:layout_width="16dp"
-                        android:layout_height="wrap_content"/>
+                        android:padding="15dp"/>
 
                     <Button
                         android:id="@+id/BtnDefense"
                         android:layout_width="100dp"
-                        android:layout_height="40dp"
+                        android:layout_height="48dp"
+                        android:layout_marginLeft="16dp"
                         android:enabled="true"
                         android:background="@drawable/button_yellow_border"
                         android:text="방어"
@@ -431,16 +353,13 @@
                         android:textColor="#00008b"
                         android:textStyle="bold"
                         android:fontFamily="@font/neodgm"
-                        android:padding="10dp"/>
-
-                    <Space
-                        android:layout_width="16dp"
-                        android:layout_height="wrap_content"/>
+                        android:padding="15dp"/>
 
                     <Button
                         android:id="@+id/BtnCounter"
                         android:layout_width="100dp"
-                        android:layout_height="40dp"
+                        android:layout_height="48dp"
+                        android:layout_marginLeft="16dp"
                         android:enabled="true"
                         android:background="@drawable/button_yellow_border"
                         android:text="카운터"
@@ -448,13 +367,9 @@
                         android:textColor="#9011d3"
                         android:textStyle="bold"
                         android:fontFamily="@font/neodgm"
-                        android:padding="10dp"/>
+                        android:padding="15dp"/>
 
                 </LinearLayout>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="16dp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -522,14 +437,11 @@
 
                     </FrameLayout>
 
-                    <Space
-                        android:layout_width="7dp"
-                        android:layout_height="match_parent"/>
-
                     <Button
                         android:id="@+id/BtnDiceRoll"
                         android:layout_width="100dp"
-                        android:layout_height="40dp"
+                        android:layout_height="48dp"
+                        android:layout_marginLeft="7dp"
                         android:enabled="true"
                         android:background="@drawable/button_yellow_border"
                         android:text="주사위"
@@ -537,7 +449,7 @@
                         android:textColor="#333333"
                         android:textStyle="bold"
                         android:fontFamily="@font/neodgm"
-                        android:padding="10dp"/>
+                        android:padding="15dp"/>
 
                 </LinearLayout>
 

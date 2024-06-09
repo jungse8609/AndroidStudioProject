@@ -124,11 +124,8 @@ class LoginActivity : AppCompatActivity() {
                                             intent.putExtra("userScore", userScore)
                                             intent.putExtra("profileImage", userImg)
                                             startActivity(intent)
-                                            finish()
                                         }
                                     }
-
-
                             }
                         }
                         else{

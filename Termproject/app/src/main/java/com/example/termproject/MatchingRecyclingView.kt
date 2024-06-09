@@ -87,10 +87,11 @@ class MatchingRecyclingView : AppCompatActivity() {
                     db.collection("BattleWait").document(userId)
                         .addSnapshotListener { snapshot, e ->
                             if ((e != null || snapshot == null || !snapshot.exists())&& !flag) {
-                                flag = true
+
 
                                 // 결투 버튼 클릭 이벤트
                                 val onItemClick: (String) -> Unit = { text ->
+                                    flag = true
                                     makeGame(text)
                                 }
 
@@ -138,11 +139,10 @@ class MatchingRecyclingView : AppCompatActivity() {
 
             db.collection("BattleWait").document(userId)
                 .addSnapshotListener { snapshot, e ->
-                    if ((e != null || snapshot == null || !snapshot.exists())&& !flag) {
-                        flag = true
-
+                    if ((e != null || snapshot == null || !snapshot.exists()) && !flag) {
                         // 결투 버튼 클릭 이벤트
                         val onItemClick: (String) -> Unit = { text ->
+                            flag = true
                             makeGame(text)
                         }
 
@@ -262,7 +262,13 @@ class MatchingRecyclingView : AppCompatActivity() {
     private fun toastMatchingMessageAndDeleteDB(message : String, opponentId: String) {
         db.collection("BattleRooms").document(roomName).delete()
         db.collection("BattleWait").document(userId).delete()
+            .addOnSuccessListener {
+                flag = false
+            }
         db.collection("BattleWait").document(opponentId).delete()
+            .addOnSuccessListener {
+                flag = false
+            }
 
         createToast(message)
     }
@@ -336,7 +342,7 @@ class MatchingRecyclingView : AppCompatActivity() {
                                                 startActivityForResult(intent, 100)
 
                                                 db.collection("BattleWait").document(userId).delete()
-
+                                                    .addOnSuccessListener { flag = false }
                                             }
                                         }
                                 }
@@ -352,7 +358,6 @@ class MatchingRecyclingView : AppCompatActivity() {
                         } catch (e : Exception) {
                             Log.w("LogTemp", e.toString())
                         }
-
                     }
                 }
             }
@@ -383,6 +388,7 @@ class MatchingRecyclingView : AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             flag = false
             waitForOpponentChallenge()
+            monitoring()
             SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
         }
     }

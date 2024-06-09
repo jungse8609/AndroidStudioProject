@@ -110,7 +110,7 @@ class InGameActivity : AppCompatActivity() {
     private val roundTimeLimit: Long = 10000 // 15 seconds
 
     private var resultTimerJob: Job? = null
-    private val resultTimeLimit: Long = 1000 // 3.5 seconds
+    private val resultTimeLimit: Long = 200 // 3.5 seconds
 
     // Flow Control Boolean
     private var isWaiting: Boolean = false // 상대방이 고를 때까지 기다리는 중인가

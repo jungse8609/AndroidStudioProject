@@ -107,10 +107,10 @@ class InGameActivity : AppCompatActivity() {
     private var curOpponentHealth : Long = 20
 
     private var roundTimerJob: Job? = null
-    private val roundTimeLimit: Long = 10000 // 15 seconds
+    private val roundTimeLimit: Long = 10000 // 10 seconds
 
     private var resultTimerJob: Job? = null
-    private val resultTimeLimit: Long = 2500 // 2.5 seconds
+    private val resultTimeLimit: Long = 2000 // 2.0 seconds
 
     // Flow Control Boolean
     private var isWaiting: Boolean = false // 상대방이 고를 때까지 기다리는 중인가

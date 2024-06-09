@@ -18,17 +18,12 @@
             android:layout_height="80dp"
             android:layout_gravity="center"
             android:paddingTop="20dp"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="20dp"
             android:background="#00000000"
             android:text="게임 시작"
             android:textSize="50sp"
             android:textColor="@color/white"
             android:fontFamily="@font/neodgm"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
         <Button
             android:id="@+id/BtnTutorial"
@@ -37,6 +32,72 @@
             android:layout_margin="10dp"
             android:background="@drawable/icon_tutorial"/>
 
+
+    </LinearLayout>
+
+    <!-- Tutorial layout -->
+    <LinearLayout
+        android:id="@+id/LayoutTutorial"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="#333333"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/ImgTutorial"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@color/black"
+                android:src="@drawable/tutorial01"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="bottom"
+                android:gravity="center"
+                android:layout_marginTop="16dp">
+
+                <Button
+                    android:id="@+id/BtnPrev"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="20dp"
+                    android:text="이전"
+                    android:textColor="#ffffff"
+                    android:textSize="20dp"
+                    android:fontFamily="@font/neodgm"
+                    android:paddingTop="10dp"
+                    android:background="@drawable/button_white_border"/>
+
+                <Button
+                    android:id="@+id/BtnNext"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="20dp"
+                    android:text="다음"
+                    android:textColor="#ffffff"
+                    android:textSize="20dp"
+                    android:fontFamily="@font/neodgm"
+                    android:paddingTop="10dp"
+                    android:background="@drawable/button_white_border"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/BtnExit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="20dp"
+                android:paddingTop="10dp"
+                android:background="@drawable/icon_cancel"/>
+        </FrameLayout>
     </LinearLayout>
 
     <!-- Drawer content layout with semi-transparent overlay -->
@@ -56,7 +117,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#AA000000"/> <!-- Adjust the transparency here (#AA000000 is 67% opaque black) -->
+            android:background="#AA000000"/>
 
         <!-- Drawer Content -->
         <LinearLayout
@@ -166,81 +227,9 @@
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:fontFamily="@font/neodgm"/>
-
             </LinearLayout>
-
         </LinearLayout>
     </FrameLayout>
-
-    <LinearLayout
-        android:id="@+id/LayoutTutorial"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="#333333"
-        android:visibility="gone">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/ImgTutorial"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="@color/black"
-                android:src="@drawable/tutorial01"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="bottom"
-                android:gravity="center"
-                android:layout_marginTop="16dp">
-
-                <Button
-                    android:id="@+id/BtnPrev"
-                    android:layout_width="60dp"
-                    android:layout_height="40dp"
-                    android:layout_margin="20dp"
-                    android:text="이전"
-                    android:textColor="#ffffff"
-                    android:textSize="20dp"
-                    android:fontFamily="@font/neodgm"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/button_white_border"/>
-
-                <Button
-                    android:id="@+id/BtnNext"
-                    android:layout_width="60dp"
-                    android:layout_height="40dp"
-                    android:layout_margin="20dp"
-                    android:text="다음"
-                    android:textColor="#ffffff"
-                    android:textSize="20dp"
-                    android:fontFamily="@font/neodgm"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/button_white_border"/>
-
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/BtnExit"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_margin="20dp"
-                android:paddingTop="10dp"
-                android:background="@drawable/icon_cancel"/>
-
-
-        </FrameLayout>
-
-
-
-    </LinearLayout>
 
 
 

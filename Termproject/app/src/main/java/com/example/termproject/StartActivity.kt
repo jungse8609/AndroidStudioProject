@@ -5,12 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -18,6 +20,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.component1
 import androidx.core.graphics.component2
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.termproject.databinding.ActivityStartBinding
@@ -88,11 +92,13 @@ class StartActivity : AppCompatActivity() {
         btnTutorial.setOnClickListener {
             layoutTutorial.visibility = View.VISIBLE
             currentIndex = 0
+            //btnTutorial.visibility = View.GONE
         }
 
         btnExit.setOnClickListener {
             layoutTutorial.visibility = View.GONE
             currentIndex = 0
+            //btnTutorial.visibility = View.VISIBLE
         }
 
         btnPrev.setOnClickListener {

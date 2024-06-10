@@ -385,11 +385,9 @@ class MatchingRecyclingView : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode == Activity.RESULT_OK) {
-            flag = false
-            waitForOpponentChallenge()
-            monitoring()
-            SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
-        }
+        flag = false
+        waitForOpponentChallenge()
+        monitoring()
+        SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
     }
 }

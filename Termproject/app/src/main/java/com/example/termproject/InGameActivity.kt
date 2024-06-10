@@ -788,24 +788,28 @@ class InGameActivity : AppCompatActivity() {
         /*listenerWaitOpponent?.remove()
         listenerResultRound?.remove()*/
 
-        var resultScore : Long
+        var playerResultScore : Long
+        var opponentResultScore : Long
 
         // 무승부
         if (curPlayerHealth <= 0 && curOpponentHealth <= 0) {
-            resultScore = playerScore
-            showResultPopup("DRAW" , "$playerScore -> $resultScore", resultScore)
+            playerResultScore = playerScore
+            opponentResultScore = opponentScore
+            showResultPopup("DRAW" , "$playerScore -> $playerResultScore", playerResultScore, opponentResultScore)
         }
         else if (curPlayerHealth <= 0) {
-            resultScore = (playerScore - curOpponentHealth).clamp(0, Long.MAX_VALUE)
-            showResultPopup("DEFEAT" , "$playerScore -> $resultScore", resultScore)
+            playerResultScore = (playerScore - curOpponentHealth).clamp(0, Long.MAX_VALUE)
+            opponentResultScore = (opponentScore + curOpponentHealth).clamp(0, Long.MAX_VALUE)
+            showResultPopup("DEFEAT" , "$playerScore -> $playerResultScore", playerResultScore, opponentResultScore)
         }
         else {
-            resultScore = (playerScore + curPlayerHealth).clamp(0, Long.MAX_VALUE)
-            showResultPopup("WIN" , "$playerScore -> $resultScore", resultScore)
+            playerResultScore = (playerScore + curPlayerHealth).clamp(0, Long.MAX_VALUE)
+            opponentResultScore = (opponentScore - curPlayerHealth).clamp(0, Long.MAX_VALUE)
+            showResultPopup("WIN" , "$playerScore -> $playerResultScore", playerResultScore, opponentResultScore)
         }
     }
 
-    private fun showResultPopup(result: String, scoreStr: String, score: Long) {
+    private fun showResultPopup(result: String, scoreStr: String, playerScore: Long, opponentScore: Long) {
         // SFX
         SoundManager.playSoundEffect(R.raw.sfx_popup)
 
@@ -814,6 +818,8 @@ class InGameActivity : AppCompatActivity() {
 
         val db = FirebaseFirestore.getInstance()
 
+        Log.d("LogTemp", playerId)
+
         // 플레이어의 점수를 업데이트
         db.collection("users")
             .document(playerId)
@@ -821,7 +827,7 @@ class InGameActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
                     // Update player's score in the database
-                    document.reference.update("Score", score)
+                    //document.reference.update("Score", score)
 
                     // Fetch and update the ranking list
                     db.collection("Ranking")
@@ -835,12 +841,16 @@ class InGameActivity : AppCompatActivity() {
                                 val updatedScoreList = scoreList.map { it.toMutableMap() }.toMutableList()
 
                                 // 특정 ID의 score 변경
-                                val index = updatedScoreList.indexOfFirst { it["ID"] == playerId }
-                                if (index != -1) {
-                                    updatedScoreList[index]["Score"] = score
-                                } else {
-                                    updatedScoreList.add(mapOf("ID" to playerId, "Score" to score).toMutableMap())
-                                }
+                                val playerIndex = updatedScoreList.indexOfFirst { it["ID"] == playerId }
+                                val opponentIndex = updatedScoreList.indexOfFirst { it["ID"] == opponentId }
+
+                                if (playerIndex != -1) updatedScoreList[playerIndex]["Score"] = playerScore
+                                else updatedScoreList.add(mapOf("ID" to playerId, "Score" to playerScore).toMutableMap())
+
+                                if (opponentIndex != -1) updatedScoreList[opponentIndex]["Score"] = opponentScore
+                                else updatedScoreList.add(mapOf("ID" to opponentId, "Score" to opponentScore).toMutableMap())
+
+                                Log.d("LogTemp", updatedScoreList.toString())
 
                                 // score에 따라 내림차순 정렬
                                 updatedScoreList.sortByDescending { it["Score"] as Long }

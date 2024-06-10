@@ -273,25 +273,19 @@ class StartActivity : AppCompatActivity() {
         var userScore : Long = -1
         var userRank : Long = -1
 
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                100 -> {
-                    db.collection("users")
-                        .document(userId)
-                        .get()
-                        .addOnSuccessListener { document ->
-                            if (document != null) {
-                                userScore = document.getLong("Score") ?: 0
-                                userRank = document.getLong("Rank") ?: 0
+        db.collection("users")
+            .document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    userScore = document.getLong("Score") ?: 0
+                    userRank = document.getLong("Rank") ?: 0
 
-                                myScore.text = userScore.toString()
-                                myRank.text = userRank.toString() + "등"
-                            }
-                        }
-
-                    SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
+                    myScore.text = userScore.toString()
+                    myRank.text = userRank.toString() + "등"
                 }
             }
-        }
+
+        SoundManager.playBackgroundMusic(SoundManager.Bgm.LOBBY)
     }
 }
